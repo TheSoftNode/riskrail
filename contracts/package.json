@@ -8,7 +8,7 @@
     "check": "clarinet check"
   },
   "devDependencies": {
-    "@stacks/clarinet-sdk": "3.23.1",
+    "@stacks/clarinet-sdk": "3.24.0",
     "@stacks/transactions": "^7.6.0",
     "@types/node": "^22.18.0",
     "vitest": "^5.0.1",
