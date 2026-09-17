@@ -3,6 +3,7 @@ import { Worker } from 'bullmq';
 import type { ProtocolAdapter } from '@riskrail/adapter-core';
 import { BitPayAdapter, StacksBitPayReader } from '@riskrail/adapter-bitpay';
 import { NativeStacksAdapter } from '@riskrail/adapter-native-stacks';
+import { StacksZestV2Reader, ZestV2Adapter, zestV2ContractsFromEnv } from '@riskrail/adapter-zest-v2';
 import { failIndexingRun, persistPortfolio, prisma } from '@riskrail/database';
 import { createLogger } from '@riskrail/logger';
 import { CoinGeckoPriceOracle } from '@riskrail/oracle';
@@ -30,11 +31,19 @@ const riskQueue = createQueue<RiskRecalculateJob>(QueueName.Risk, connection);
 
 function createAdapters(): ProtocolAdapter[] {
   const adapters: ProtocolAdapter[] = [new NativeStacksAdapter()];
-  const contractId = process.env.BITPAY_CORE_CONTRACT;
-  if (contractId) {
-    const reader = new StacksBitPayReader(apiUrl, contractId, undefined, stacksApiKey);
-    adapters.push(new BitPayAdapter(reader, contractId));
+
+  const bitPayContractId = process.env.BITPAY_CORE_CONTRACT;
+  if (bitPayContractId) {
+    const reader = new StacksBitPayReader(apiUrl, bitPayContractId, undefined, stacksApiKey);
+    adapters.push(new BitPayAdapter(reader, bitPayContractId));
   }
+
+  if (process.env.ZEST_V2_ENABLED === 'true') {
+    const contracts = zestV2ContractsFromEnv(process.env);
+    const reader = new StacksZestV2Reader(apiUrl, contracts, stacksApiKey);
+    adapters.push(new ZestV2Adapter(reader, contracts));
+  }
+
   return adapters;
 }
 
@@ -49,8 +58,9 @@ async function indexWallet(job: PortfolioRefreshJob) {
     const positions = [];
 
     for (const adapter of adapters) {
-      const supported = await adapter.supports(address, { stacksApiUrl: apiUrl, blockHeight });
-      if (!supported) continue;
+      // Configured adapters are asked for positions directly. Calling `supports()`
+      // first would duplicate read-only contract calls for BitPay/Zest on every
+      // refresh. Adapters return an empty list when the address has no position.
       const adapterPositions = await adapter.getPositions(address, { stacksApiUrl: apiUrl, blockHeight });
       positions.push(...adapterPositions);
     }

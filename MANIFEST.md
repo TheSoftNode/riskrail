@@ -1,6 +1,6 @@
 # Repository manifest
 
-This file lists the tracked source files included in this repository bundle. The Git tree remains the source of truth.
+This file lists the tracked source and documentation files included in the current repository bundle. The Git tree remains the source of truth.
 
 - `.editorconfig`
 - `.env.example`
@@ -31,6 +31,10 @@ This file lists the tracked source files included in this repository bundle. The
 - `apps/api/src/modules/portfolios/portfolios.controller.ts`
 - `apps/api/src/modules/portfolios/portfolios.module.ts`
 - `apps/api/src/modules/portfolios/portfolios.service.ts`
+- `apps/api/src/modules/simulations/simulations.controller.ts`
+- `apps/api/src/modules/simulations/simulations.dto.ts`
+- `apps/api/src/modules/simulations/simulations.module.ts`
+- `apps/api/src/modules/simulations/simulations.service.ts`
 - `apps/api/tsconfig.build.json`
 - `apps/api/tsconfig.json`
 - `apps/indexer/package.json`
@@ -103,6 +107,7 @@ This file lists the tracked source files included in this repository bundle. The
 - `documentation/29-current-status.md`
 - `documentation/30-decisions-and-tradeoffs.md`
 - `documentation/31-milestone-1-implementation.md`
+- `documentation/32-zest-v2-lending-and-stress-engine.md`
 - `documentation/README.md`
 - `eslint.config.mjs`
 - `infrastructure/docker/Dockerfile`
@@ -119,6 +124,10 @@ This file lists the tracked source files included in this repository bundle. The
 - `packages/adapter-native-stacks/package.json`
 - `packages/adapter-native-stacks/src/index.ts`
 - `packages/adapter-native-stacks/tsconfig.json`
+- `packages/adapter-zest-v2/package.json`
+- `packages/adapter-zest-v2/src/index.test.ts`
+- `packages/adapter-zest-v2/src/index.ts`
+- `packages/adapter-zest-v2/tsconfig.json`
 - `packages/database/package.json`
 - `packages/database/prisma/schema.prisma`
 - `packages/database/prisma/seed.ts`

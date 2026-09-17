@@ -21,7 +21,8 @@
     "@riskrail/portfolio-engine": "workspace:*",
     "@riskrail/queue": "workspace:*",
     "@riskrail/stacks": "workspace:*",
-    "bullmq": "6.3.6"
+    "bullmq": "6.3.6",
+    "@riskrail/adapter-zest-v2": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.20.5"

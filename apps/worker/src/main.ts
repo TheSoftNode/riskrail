@@ -17,10 +17,10 @@ import {
   type RiskAttestationJob,
   type RiskRecalculateJob,
 } from '@riskrail/queue';
-import { calculatePortfolioRisk } from '@riskrail/risk-engine';
+import { calculatePortfolioRisk, runDefaultStressScenarios } from '@riskrail/risk-engine';
 import { RiskRegistryPublisher } from '@riskrail/riskrail-contracts';
 
-const METHODOLOGY_VERSION = 'riskrail-v1';
+const METHODOLOGY_VERSION = 'riskrail-v1.1';
 const log = createLogger('riskrail-worker');
 const connection = createRedisConnection();
 const attestationQueue = createQueue<RiskAttestationJob>(QueueName.Attestations, connection);
@@ -35,6 +35,7 @@ const riskWorker = new Worker<RiskRecalculateJob>(
 
     const positions = wallet.positions.map((position) => position.raw as unknown as NormalizedPosition);
     const risk = calculatePortfolioRisk(positions);
+    const stress = runDefaultStressScenarios(positions);
     const report = {
       version: METHODOLOGY_VERSION,
       wallet: address,
@@ -42,6 +43,14 @@ const riskWorker = new Worker<RiskRecalculateJob>(
       generatedAt: new Date().toISOString(),
       valuationCoverageBps: wallet.snapshots[0]?.valuationCoverageBps ?? 0,
       metrics: risk,
+      stress: stress.map((result) => ({
+        scenario: result.scenario,
+        after: result.after,
+        warnings: result.warnings,
+        positions: result.positions.filter((position) =>
+          position.beforeHealthFactorE4 !== undefined || position.afterHealthFactorE4 !== undefined,
+        ),
+      })),
       positions: positions.map((position) => ({
         id: position.id,
         protocolId: position.protocol.id,

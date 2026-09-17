@@ -23,7 +23,9 @@
     "class-validator": "^0.14.2",
     "helmet": "^8.1.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "@riskrail/adapter-core": "workspace:*",
+    "@riskrail/risk-engine": "workspace:*"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",

@@ -22,6 +22,8 @@ const DEFAULT_COINGECKO_IDS: Record<string, string> = {
   BTC: 'bitcoin',
   SBTC: 'bitcoin',
   STX: 'blockstack',
+  USDC: 'usd-coin',
+  USDCX: 'usd-coin',
 };
 
 export class CoinGeckoPriceOracle implements PriceOracle {

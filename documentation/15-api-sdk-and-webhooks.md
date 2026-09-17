@@ -12,18 +12,25 @@ Public routes live under:
 
 Breaking response changes should not be slipped into v1 without a compatibility plan.
 
-## Initial resource model
+## Current resource model
 
-A clean REST shape looks like:
+The implemented portfolio/simulation routes are:
 
 ```text
-GET  /api/v1/wallets/{address}
 GET  /api/v1/portfolios/{address}
-GET  /api/v1/portfolios/{address}/positions
+POST /api/v1/portfolios/{address}/refresh
 GET  /api/v1/portfolios/{address}/risk
-GET  /api/v1/protocols
+GET  /api/v1/simulations/presets
 POST /api/v1/simulations
-GET  /api/v1/simulations/{id}
+```
+
+The simulation POST is currently stateless: it runs a scenario against the latest persisted portfolio snapshot and returns the result. It does not create a simulation-history record yet.
+
+The broader public API is still expected to grow into dedicated positions/protocol resources plus alerts, webhooks and API-key management:
+
+```text
+GET  /api/v1/portfolios/{address}/positions
+GET  /api/v1/protocols
 POST /api/v1/alerts
 GET  /api/v1/alerts
 POST /api/v1/webhooks
@@ -31,7 +38,7 @@ GET  /api/v1/webhooks
 POST /api/v1/api-keys
 ```
 
-The exact route list will evolve as implementation starts, but resource naming should stay consistent.
+The exact list can evolve, but resource naming and versioning should stay consistent.
 
 ## Response envelope
 

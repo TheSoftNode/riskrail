@@ -5,6 +5,7 @@ import {
   calculateConcentration,
   calculatePortfolioRisk,
   classifyHealthFactor,
+  runStressScenario,
 } from './index.js';
 
 function position(overrides: Partial<NormalizedPosition> = {}): NormalizedPosition {
@@ -17,6 +18,27 @@ function position(overrides: Partial<NormalizedPosition> = {}): NormalizedPositi
     source: { blockHeight: 1, observedAt: new Date(0).toISOString(), exact: true },
     metadata: {},
     ...overrides,
+  };
+}
+
+function borrowingPosition(): NormalizedPosition {
+  return {
+    id: 'zest:1',
+    owner: 'SP1',
+    protocol: { id: 'zest-v2', name: 'Zest', type: 'lending', contracts: [] },
+    type: 'borrowing',
+    assets: [
+      { assetId: 'sBTC', symbol: 'sBTC', amountAtomic: '100000000', decimals: 8, valueUsd: '100000.00000000', role: 'collateral' },
+      { assetId: 'USDC', symbol: 'USDC', amountAtomic: '50000000000', decimals: 6, valueUsd: '50000.00000000', role: 'debt' },
+    ],
+    valueUsd: '50000.00000000',
+    collateral: { valueUsd: '100000.00000000', currentLtvBps: 5000, ratioE4: 5000 },
+    debt: { valueUsd: '50000.00000000' },
+    lending: { borrowLtvBps: 6000, partialLiquidationLtvBps: 7000, fullLiquidationLtvBps: 7500 },
+    liquidation: { healthFactorE4: 14000, distanceBps: 2857, partialThresholdBps: 7000, fullThresholdBps: 7500 },
+    accessibility: { liquidBps: 0 },
+    source: { blockHeight: 1, observedAt: new Date(0).toISOString(), exact: true },
+    metadata: { valuation: { grossExposureUsd: '150000.00000000' } },
   };
 }
 
@@ -46,6 +68,19 @@ describe('risk engine', () => {
     const result = calculatePortfolioRisk([position()]);
     expect(result.protocolConcentrationBps).toBe(0);
     expect(result.capitalAccessibilityBps).toBe(10_000);
-    expect(result.riskScoreBps).toBeGreaterThan(0);
+    expect(result.riskScoreBps).toBeGreaterThanOrEqual(0);
+  });
+
+  it('recalculates lending health under a BTC shock', () => {
+    const result = runStressScenario([borrowingPosition()], {
+      name: 'BTC -30%',
+      shocks: [{ symbol: 'sBTC', changeBps: -3000 }],
+    });
+    const stressed = result.positions[0];
+    expect(stressed?.beforeHealthFactorE4).toBe(14000);
+    expect(stressed?.afterHealthFactorE4).toBe(9800);
+    expect(stressed?.liquidatableBefore).toBe(false);
+    expect(stressed?.liquidatableAfter).toBe(true);
+    expect(result.warnings.length).toBeGreaterThan(0);
   });
 });

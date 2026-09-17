@@ -10,11 +10,7 @@ Deliver:
 - `risk-provider-trait`, `risk-registry`, and `protocol-registry` contracts.
 - Testnet risk-attestation flow: report -> canonical hash -> on-chain snapshot.
 
-Acceptance:
-- A Stacks address can be indexed into a normalized portfolio.
-- At least two position sources are aggregated.
-- Exact unit tests cover initial risk calculations.
-- A deterministic report hash can be verified against a testnet snapshot.
+Status: the repository now contains the working Milestone 1 data path. Testnet deployment/confirmation tracking still needs environment-level validation.
 
 ## Milestone 2 — Risk product + user policies (Weeks 4–7)
 
@@ -25,10 +21,20 @@ Deliver:
 - Risk dashboard and realtime updates.
 - `risk-policy.clar` with Chainhook-driven alert evaluation.
 
-Acceptance:
-- A user can run a stress scenario and see deterministic before/after metrics.
-- A user can set an on-chain risk policy.
-- A threshold crossing triggers an application alert without moving user funds.
+Current progress:
+- Zest V2 adapter foundation is implemented against the public V2 contract model.
+- Shared lending LTV/health/liquidation calculations are implemented.
+- Built-in and custom deterministic stress scenarios are implemented.
+- Simulation API endpoints are implemented.
+- Default stress results are included in versioned risk reports.
+
+Still required for Milestone 2 completion:
+- live Zest mainnet validation against known obligations;
+- dashboard screens;
+- risk-policy evaluation;
+- Chainhook-driven incremental refresh;
+- realtime/cooldown-aware alert delivery;
+- market-depth liquidity analysis.
 
 ## Milestone 3 — Public beta + developer infrastructure (Weeks 8–10)
 

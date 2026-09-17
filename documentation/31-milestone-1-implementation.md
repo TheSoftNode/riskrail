@@ -270,3 +270,5 @@ That pass should add:
 7. Chainhook events for incremental updates instead of full reads only.
 
 Once that is working, RiskRail stops being primarily an indexing/attestation foundation and starts demonstrating the full market-risk use case described in the grant proposal.
+
+> **Follow-up:** the lending adapter, collateral/debt normalization, shared health/liquidation calculations and simulation API described above were started in the next implementation pass. See [32 — Zest V2 lending and stress engine](./32-zest-v2-lending-and-stress-engine.md) for the current state.

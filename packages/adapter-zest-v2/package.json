@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/risk-engine",
+  "name": "@riskrail/adapter-zest-v2",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,14 +14,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
     "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/shared-types": "workspace:*",
-    "decimal.js": "10.6.0",
-    "@riskrail/portfolio-engine": "workspace:*"
+    "@riskrail/stacks": "workspace:*",
+    "@stacks/transactions": "^7.2.0"
   },
   "devDependencies": {
     "vitest": "^5.0.1"

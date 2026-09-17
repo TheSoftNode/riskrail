@@ -45,10 +45,13 @@ The scaffold already contains a small working risk core.
 
 ### Protocol concentration
 
-For valued positions, group position value by protocol:
+Protocol concentration is now based on **gross exposure**, not net equity. This matters for lending positions: $10,000 of collateral and $6,000 of debt should not look like only $4,000 of protocol exposure.
+
+Conceptually:
 
 ```text
-protocol share = protocol value / total known portfolio value
+protocol gross exposure = sum(abs(valued assets and debt))
+protocol share = protocol gross exposure / total gross exposure
 ```
 
 RiskRail reports the largest share in basis points and can later return the full distribution.
@@ -92,33 +95,36 @@ missing        unknown
 
 These labels are a RiskRail presentation convention. The actual liquidation behavior is controlled by the protocol, so the UI must also show protocol-native thresholds and source data.
 
-### Generic price shock
+### Lending LTV and health
 
-The current utility applies a basis-point price change to valued assets:
+The first shared lending calculation is implemented. After an adapter provides collateral/debt assets and the protocol's thresholds, the portfolio engine calculates:
 
 ```text
-stressed value = current value * (1 + changeBps / 10,000)
+current LTV = debt USD / collateral USD
+health factor = partial liquidation LTV / current LTV
 ```
 
-This is only the first building block. A real lending stress test must recalculate collateral/debt and protocol health, not just lower a displayed USD value.
+Health is stored in E4 fixed point. The protocol threshold comes from the adapter; RiskRail does not invent a generic liquidation LTV.
 
-## Planned risk components
-
-### Collateral health
-
-Where a protocol exposes a health factor directly, RiskRail can read it and independently validate the formula when practical.
-
-Where it does not, the adapter provides the inputs and the engine calculates according to documented protocol rules.
+For Zest V2, the adapter reads the applicable egroup values and the common engine performs the arithmetic.
 
 ### Liquidation distance
 
-There is no single universal formula. Depending on the protocol, RiskRail may calculate:
+For the current lending model, the estimated collateral-price distance to the partial-liquidation threshold is:
 
-- distance from current health factor to liquidation health factor;
-- collateral price at which the threshold is crossed;
-- percentage price move from current oracle price to that liquidation price.
+```text
+distance = 1 - (current LTV / partial liquidation LTV)
+```
 
-The methodology must be stored with the protocol integration.
+For a single-collateral position, RiskRail can also estimate the price at which that threshold would be reached. Multi-collateral positions are treated as portfolio approximations rather than being given a misleading single exact liquidation price.
+
+### Deterministic stress scenarios
+
+The scenario engine applies price changes to a copy of normalized positions and then recalculates lending metrics. It does not stop at changing a display value.
+
+Current presets are BTC -10%, BTC -20%, BTC -30% and STX -20%, with custom multi-asset shocks available through the API. The engine records before/after health and can warn when a position crosses the partial-liquidation threshold.
+
+## Risk components still being expanded
 
 ### Liquidity risk
 
@@ -133,7 +139,7 @@ We should not reduce this to a score until the underlying measurable values are 
 
 ### Asset concentration
 
-Group economic exposure by asset rather than protocol. Wrapped/derivative relationships need care so the system does not accidentally count the same exposure twice.
+Asset concentration is implemented from normalized economic exposure. Wrapped/derivative relationships still need care so the system does not accidentally count the same exposure twice as more adapters are added.
 
 ### Composite score
 
@@ -156,17 +162,7 @@ Every canonical risk report should identify the risk-engine/methodology version.
 
 Why? Because a snapshot calculated with methodology v1 should remain understandable after v2 changes a threshold or improves liquidity math.
 
-At minimum include:
-
-```json
-{
-  "schemaVersion": "1",
-  "engineVersion": "0.1.0",
-  "methodologyVersion": "2026-01"
-}
-```
-
-The exact version scheme can change, but the concept should not.
+The current risk worker writes `riskrail-v1.1` into canonical reports. The exact scheme can evolve, but an old snapshot must always say which methodology produced it.
 
 ## Missing data
 

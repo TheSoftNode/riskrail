@@ -90,21 +90,27 @@ The position is represented as a `stream` with sBTC in the `locked` role and an 
 
 This lets the portfolio engine answer a question that normal wallet balance screens do not: how much economic value exists but cannot be accessed immediately?
 
-## Lending adapter
+## Zest V2 lending adapter
 
-The first external lending adapter is the most important new integration because it unlocks the grant's collateral/liquidation use case.
+The first external lending adapter is now `packages/adapter-zest-v2`. It is the first integration that gives RiskRail real collateral and debt state rather than only wallet balances or time-locked streams.
 
-A lending adapter will likely need to map:
+The adapter reads the current Zest V2 obligation model and maps:
 
-- supplied assets;
-- borrowed assets;
-- collateral factor/liquidation threshold;
-- oracle/price inputs used by the protocol;
-- health factor or enough state to reproduce it;
-- market identifiers;
-- protocol-specific debt indices or accrued interest where applicable.
+- collateral entries;
+- scaled debt entries;
+- zToken shares into underlying exposure;
+- borrow indexes into current debt amounts;
+- borrow LTV;
+- partial/full liquidation LTVs;
+- liquidation penalty bounds.
 
-The adapter should mirror protocol math carefully. We should not create a generic formula and assume every market works the same way.
+Those protocol facts are attached to the normalized position. Shared LTV, health-factor, liquidation-distance and stress arithmetic stays outside the adapter. That is an important boundary: if a second lending protocol can supply the same normalized inputs, it should be able to reuse the same portfolio/risk path.
+
+The current adapter has mainnet defaults for the published Zest V2 deployment, but every contract is configurable. It is disabled unless `ZEST_V2_ENABLED=true`. Non-mainnet use requires explicit contract configuration.
+
+The adapter still needs live validation against known mainnet obligations. Mocked unit tests prove the mapping and math boundary; they are not a substitute for comparing the reader output to real protocol state.
+
+See [32 — Zest V2 lending and stress engine](./32-zest-v2-lending-and-stress-engine.md) for the full implementation note.
 
 ## Adapter implementation checklist
 

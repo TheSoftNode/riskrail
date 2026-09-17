@@ -267,9 +267,11 @@ A normalized position can represent wallet balances, streams, lending/borrowing 
 
 Current adapter work:
 
-- native Stacks adapter: initial implementation present;
-- BitPay stream adapter: normalization logic present, live reader wiring pending;
-- external lending/collateral adapter: milestone work.
+- native Stacks adapter: live STX/SIP-010 balance indexing with token metadata and accessibility data;
+- BitPay stream adapter: direct contract reader plus normalized locked/withdrawable sBTC positions;
+- Zest V2 adapter: first external lending integration, including obligation reads, zToken-to-underlying conversion, scaled-debt normalization and protocol LTV/liquidation parameters.
+
+The Zest adapter is disabled by default and is meant to be enabled deliberately after network configuration. Mainnet defaults track the current public Zest V2 deployment, while testnet/devnet require explicit contract overrides.
 
 See [Protocol adapter design](./documentation/09-protocol-adapter-design.md).
 
@@ -279,23 +281,19 @@ See [Protocol adapter design](./documentation/09-protocol-adapter-design.md).
 
 The deterministic risk engine is a pure package. It does not fetch HTTP data, call Prisma or sign Stacks transactions.
 
-The initial code already includes:
+The current implementation includes:
 
-- protocol concentration;
-- capital accessibility;
-- health-factor classification;
-- generic price shocks;
-- a basic portfolio risk summary.
-
-Planned grant work expands this with:
-
+- protocol concentration based on gross exposure;
 - asset concentration;
-- protocol-specific collateral health;
-- liquidation distance/price;
-- liquidity/exit analysis;
-- richer stress scenarios;
-- methodology/report versioning;
-- optional transparent composite score.
+- capital accessibility;
+- lending LTV and borrow headroom;
+- health-factor classification against adapter-supplied liquidation thresholds;
+- liquidation distance and single-collateral liquidation-price estimates;
+- deterministic BTC/STX and custom multi-asset price shocks;
+- versioned risk reports with standard stress results;
+- a transparent MVP composite score that remains secondary to the underlying metrics.
+
+Still planned for the grant work are market-depth exit/liquidity analysis, more protocol-native pricing where execution-level parity matters, policy-driven alerts, and additional adapters after the first lending path is validated.
 
 ### Numeric conventions
 
@@ -312,19 +310,27 @@ See [Risk engine methodology](./documentation/10-risk-engine-methodology.md).
 
 ## Stress testing
 
-The first user-facing scenarios are:
+The built-in user-facing scenarios are:
 
 ```text
 BTC -10%
 BTC -20%
 BTC -30%
+STX -20%
 ```
 
-Custom multi-asset shocks are part of the architecture as well.
+Custom multi-asset shocks are implemented as well. The scenario engine copies the latest normalized positions, applies the requested price changes, recalculates values and lending metrics, and reports before/after health and liquidation distance. It can flag positions that cross the partial-liquidation threshold under the scenario.
 
-A stress scenario is a what-if calculation. It does not predict market direction and it never executes a real transaction.
+The API exposes:
 
-See [Stress testing](./documentation/11-stress-testing.md).
+```text
+GET  /api/v1/simulations/presets
+POST /api/v1/simulations
+```
+
+A simulation runs against the latest persisted portfolio snapshot so the source block is known. It is a what-if calculation, not a market prediction, and it never executes a real transaction.
+
+See [Stress testing](./documentation/11-stress-testing.md) and [Zest V2 lending + stress implementation](./documentation/32-zest-v2-lending-and-stress-engine.md).
 
 ---
 
@@ -436,21 +442,17 @@ See [Data model](./documentation/08-data-model.md).
 
 Public API resources are versioned under `/api/v1`.
 
-Planned resource shape:
+Current implemented portfolio/simulation resources include:
 
 ```text
-GET  /api/v1/wallets/{address}
 GET  /api/v1/portfolios/{address}
-GET  /api/v1/portfolios/{address}/positions
+POST /api/v1/portfolios/{address}/refresh
 GET  /api/v1/portfolios/{address}/risk
-GET  /api/v1/protocols
+GET  /api/v1/simulations/presets
 POST /api/v1/simulations
-GET  /api/v1/simulations/{id}
-POST /api/v1/alerts
-GET  /api/v1/alerts
-POST /api/v1/webhooks
-POST /api/v1/api-keys
 ```
+
+Planned public resources include dedicated positions/protocol endpoints, alerts, webhooks and API-key management. Simulation history may be added later; the current custom simulation endpoint is stateless and runs against the latest persisted portfolio snapshot.
 
 The SDK should remain a thin typed client over these resources rather than reimplementing business logic.
 
@@ -494,13 +496,19 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 - native Stacks wallet adapter with STX lock/accessibility information;
 - concrete BitPay contract reader for sender/recipient streams;
 - BitPay stream normalization into RiskRail positions;
-- BTC/STX/sBTC USD valuation through a price-oracle abstraction;
-- normalized portfolio totals by protocol and asset;
+- Zest V2 external lending adapter foundation with current mainnet contract defaults and environment overrides;
+- zToken collateral normalization and scaled-debt normalization for Zest positions;
+- protocol-supplied borrow/partial/full liquidation thresholds normalized into common lending metadata;
+- BTC/STX/sBTC/USDC USD valuation through a price-oracle abstraction;
+- normalized net portfolio equity plus totals by protocol and asset;
+- shared current-LTV, borrow-headroom, health-factor, liquidation-distance and single-collateral liquidation-price calculations;
+- deterministic BTC -10/-20/-30, STX -20 and custom multi-asset stress scenarios;
+- `GET /api/v1/simulations/presets` and `POST /api/v1/simulations`;
 - persistent wallet indexing and position snapshots;
 - queue-backed `POST /api/v1/portfolios/:address/refresh` flow;
 - database-backed portfolio and risk API responses;
-- deterministic protocol/asset concentration, capital-accessibility and health-factor risk metrics;
-- canonical SHA-256 risk reports persisted with methodology versioning;
+- deterministic protocol/asset concentration and capital-accessibility metrics;
+- canonical SHA-256 risk reports with default stress results and methodology versioning (`riskrail-v1.1`);
 - four Clarity contract components;
 - testnet-capable `risk-registry.clar` attestation publisher worker;
 - initial unit/contract tests and CI/security scaffolding;
@@ -508,11 +516,10 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 
 ### Still being implemented
 
-- external lending/collateral adapter;
-- protocol-specific liquidation formulas;
+- live mainnet validation of the Zest adapter against known lending obligations;
+- closer protocol-oracle parity for execution-level Zest health checks;
 - market-depth liquidity model (the current MVP score uses capital accessibility as a clearly-labelled proxy);
-- complete multi-asset stress scenario engine;
-- production dashboard screens;
+- production dashboard screens for collateral, debt, liquidation distance and stress results;
 - authentication/API keys;
 - production webhooks/notifications and alert evaluation;
 - Chainhook-driven incremental position updates and reorg handling;
@@ -695,7 +702,7 @@ Deliver native Stacks/sBTC indexing, BitPay adapter, normalized position/portfol
 
 ### Milestone 2 — Risk product + user policies (Weeks 4–7)
 
-Deliver a lending/collateral integration, health/liquidation analytics, BTC stress scenarios, dashboard, alerting, realtime updates and `risk-policy.clar` integration.
+The first half of this milestone is now represented in code: Zest V2 lending normalization, shared health/liquidation analytics, standard BTC stress scenarios and a custom simulation API. The remaining work is live protocol validation, dashboard productization, `risk-policy.clar` evaluation, Chainhook-driven refresh, realtime alerts and market-depth liquidity analysis.
 
 ### Milestone 3 — Public beta + developer infrastructure (Weeks 8–10)
 
@@ -743,6 +750,7 @@ Start at [documentation/README.md](./documentation/README.md).
 | Glossary | [28-glossary.md](./documentation/28-glossary.md) |
 | Current status | [29-current-status.md](./documentation/29-current-status.md) |
 | Milestone 1 implementation | [31-milestone-1-implementation.md](./documentation/31-milestone-1-implementation.md) |
+| Zest V2 lending + stress implementation | [32-zest-v2-lending-and-stress-engine.md](./documentation/32-zest-v2-lending-and-stress-engine.md) |
 | Decisions/trade-offs | [30-decisions-and-tradeoffs.md](./documentation/30-decisions-and-tradeoffs.md) |
 
 The shorter `docs/` directory remains available for concise architecture notes and ADRs.

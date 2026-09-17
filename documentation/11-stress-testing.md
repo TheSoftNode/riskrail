@@ -4,17 +4,18 @@ Stress testing is one of the clearest ways to turn raw portfolio data into somet
 
 It is a simulation, not a prediction.
 
-## First supported scenarios
+## Supported scenarios
 
-The initial product should include three obvious BTC shocks:
+The current engine includes four built-in presets:
 
 ```text
 BTC -10%
 BTC -20%
 BTC -30%
+STX -20%
 ```
 
-Users should also be able to build a custom scenario such as:
+Users can also build a custom multi-asset scenario such as:
 
 ```json
 {
@@ -102,6 +103,33 @@ A stored simulation should identify:
 - result.
 
 That prevents a saved scenario from changing simply because today's market price is different.
+
+## Current API implementation
+
+The API exposes:
+
+```text
+GET  /api/v1/simulations/presets
+POST /api/v1/simulations
+```
+
+Custom requests use an indexed wallet plus one or more shocks. For example:
+
+```json
+{
+  "address": "SP...",
+  "name": "BTC drawdown",
+  "shocks": [
+    { "symbol": "sBTC", "changeBps": -2000 }
+  ]
+}
+```
+
+The endpoint uses the latest persisted portfolio snapshot and returns its source block and valuation coverage. It does not automatically reindex the wallet first, which keeps the scenario tied to a known baseline.
+
+The background risk worker also runs the default scenarios after every successful refresh and includes those results in the canonical `riskrail-v1.1` report before hashing.
+
+See [32 — Zest V2 lending and stress engine](./32-zest-v2-lending-and-stress-engine.md) for the implementation details and current Zest pricing caveat.
 
 ## UI language
 

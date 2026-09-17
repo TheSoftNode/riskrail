@@ -38,6 +38,8 @@ If you are new to the project, read these in order:
 28. [Glossary](./28-glossary.md)
 29. [Current implementation status](./29-current-status.md)
 30. [Architecture decisions and trade-offs](./30-decisions-and-tradeoffs.md)
+31. [Milestone 1 implementation](./31-milestone-1-implementation.md)
+32. [Zest V2 lending integration and stress engine](./32-zest-v2-lending-and-stress-engine.md)
 
 ## A note on language
 
@@ -64,4 +66,5 @@ The repository is intentionally a modular monorepo rather than a collection of i
 
 ## Implementation handoff
 
-- [31 — Milestone 1 implementation](./31-milestone-1-implementation.md) — what is wired today, how the refresh/index/risk/attestation flow works, and what to test next.
+- [31 — Milestone 1 implementation](./31-milestone-1-implementation.md) — how the first refresh/index/risk/attestation path was wired.
+- [32 — Zest V2 lending and stress engine](./32-zest-v2-lending-and-stress-engine.md) — how the first external lending adapter, health/liquidation math and scenario engine work.
