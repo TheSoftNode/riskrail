@@ -25,7 +25,7 @@
     "db:migrate:deploy": "pnpm --filter @riskrail/database db:migrate:deploy"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
+    "@eslint/js": "^10.0.1",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
     "turbo": "2.10.13",
