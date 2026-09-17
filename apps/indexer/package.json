@@ -8,12 +8,20 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo \"indexer tests pending\"",
+    "test": "echo \"Indexer integration tests pending database fixture harness\"",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
+    "@riskrail/adapter-bitpay": "workspace:*",
+    "@riskrail/adapter-core": "workspace:*",
+    "@riskrail/adapter-native-stacks": "workspace:*",
+    "@riskrail/database": "workspace:*",
     "@riskrail/logger": "workspace:*",
-    "@riskrail/stacks": "workspace:*"
+    "@riskrail/oracle": "workspace:*",
+    "@riskrail/portfolio-engine": "workspace:*",
+    "@riskrail/queue": "workspace:*",
+    "@riskrail/stacks": "workspace:*",
+    "bullmq": "6.3.6"
   },
   "devDependencies": {
     "tsx": "^4.20.5"

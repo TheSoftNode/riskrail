@@ -21,7 +21,8 @@
     "contracts:test": "pnpm --filter @riskrail/contracts test",
     "contracts:check": "pnpm --filter @riskrail/contracts check",
     "infra:up": "docker compose up -d postgres redis",
-    "infra:down": "docker compose down"
+    "infra:down": "docker compose down",
+    "db:migrate:deploy": "pnpm --filter @riskrail/database db:migrate:deploy"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

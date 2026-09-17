@@ -33,7 +33,7 @@ export interface NormalizedPosition {
   valueUsd?: string;
   collateral?: { valueUsd: string; ratioE4?: number };
   debt?: { valueUsd: string };
-  liquidation?: { thresholdE4?: number; priceUsd?: string; healthFactorE4?: number };
+  liquidation?: { thresholdE4?: number; priceUsd?: string; healthFactorE4?: number; distanceBps?: number };
   liquidity?: { availableUsd?: string; exitPriceImpactBps?: number };
   accessibility?: { liquidBps: number; lockedUntilBlock?: number };
   source: { blockHeight: number; observedAt: string; exact: boolean };

@@ -61,3 +61,7 @@ The current scaffold already contains the main application boundaries:
 - PostgreSQL/Prisma, Redis/BullMQ, Docker Compose, GitHub Actions, and infrastructure placeholders.
 
 The repository is intentionally a modular monorepo rather than a collection of independent microservices. We keep deployment boundaries where they are useful, but we keep business logic in reusable packages so the system can grow without forcing distributed-system complexity into the first grant milestone.
+
+## Implementation handoff
+
+- [31 — Milestone 1 implementation](./31-milestone-1-implementation.md) — what is wired today, how the refresh/index/risk/attestation flow works, and what to test next.

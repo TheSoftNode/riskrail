@@ -486,33 +486,39 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 ### Present now
 
 - monorepo/application/package structure;
-- Next.js, NestJS, indexer, worker and realtime app shells;
-- PostgreSQL/Prisma schema;
-- Redis/Docker infrastructure;
-- typed Stacks balance client;
-- native Stacks adapter foundation;
-- BitPay adapter normalization logic;
-- portfolio aggregation foundation;
-- initial deterministic risk calculations;
+- Next.js, NestJS, indexer, worker and realtime application boundaries;
+- PostgreSQL/Prisma schema with current positions, historical snapshots, indexing runs and risk reports;
+- Redis/BullMQ job infrastructure;
+- current Hiro v3 STX/FT balance reads with a compatibility fallback;
+- SIP-010 token metadata resolution through Hiro's metadata API;
+- native Stacks wallet adapter with STX lock/accessibility information;
+- concrete BitPay contract reader for sender/recipient streams;
+- BitPay stream normalization into RiskRail positions;
+- BTC/STX/sBTC USD valuation through a price-oracle abstraction;
+- normalized portfolio totals by protocol and asset;
+- persistent wallet indexing and position snapshots;
+- queue-backed `POST /api/v1/portfolios/:address/refresh` flow;
+- database-backed portfolio and risk API responses;
+- deterministic protocol/asset concentration, capital-accessibility and health-factor risk metrics;
+- canonical SHA-256 risk reports persisted with methodology versioning;
 - four Clarity contract components;
-- initial contract tests/configuration;
-- CI/security/infrastructure scaffolding;
-- full documentation set.
+- testnet-capable `risk-registry.clar` attestation publisher worker;
+- initial unit/contract tests and CI/security scaffolding;
+- full long-form documentation set.
 
 ### Still being implemented
 
-- live database wiring for the portfolio API;
-- concrete BitPay contract reader;
-- external lending adapter;
-- price/oracle implementation;
-- complete risk/stress engine;
-- dashboard screens;
+- external lending/collateral adapter;
+- protocol-specific liquidation formulas;
+- market-depth liquidity model (the current MVP score uses capital accessibility as a clearly-labelled proxy);
+- complete multi-asset stress scenario engine;
+- production dashboard screens;
 - authentication/API keys;
-- production webhooks/notifications;
-- robust indexer/worker processors;
-- on-chain publisher wiring;
+- production webhooks/notifications and alert evaluation;
+- Chainhook-driven incremental position updates and reorg handling;
+- on-chain attestation confirmation tracking/snapshot-id reconciliation;
 - public SDK methods;
-- hosted beta.
+- hosted beta and production observability.
 
 See [Current implementation status](./documentation/29-current-status.md) for the detailed breakdown.
 
@@ -736,6 +742,7 @@ Start at [documentation/README.md](./documentation/README.md).
 | Demo/acceptance plan | [27-demo-and-acceptance-plan.md](./documentation/27-demo-and-acceptance-plan.md) |
 | Glossary | [28-glossary.md](./documentation/28-glossary.md) |
 | Current status | [29-current-status.md](./documentation/29-current-status.md) |
+| Milestone 1 implementation | [31-milestone-1-implementation.md](./documentation/31-milestone-1-implementation.md) |
 | Decisions/trade-offs | [30-decisions-and-tradeoffs.md](./documentation/30-decisions-and-tradeoffs.md) |
 
 The shorter `docs/` directory remains available for concise architecture notes and ADRs.

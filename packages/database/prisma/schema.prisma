@@ -33,50 +33,53 @@ model User {
 }
 
 model Wallet {
-  id          String   @id @default(cuid())
-  address     String   @unique
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  lastIndexedAt DateTime?
-  positions   Position[]
-  snapshots   PortfolioSnapshot[]
-  riskSnapshots RiskSnapshot[]
-  alerts      AlertRule[]
+  id              String              @id @default(cuid())
+  address         String              @unique
+  userId          String?
+  user            User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  lastIndexedAt   DateTime?
+  positions       Position[]
+  snapshots       PortfolioSnapshot[]
+  riskSnapshots   RiskSnapshot[]
+  alerts          AlertRule[]
+  indexingRuns    IndexingRun[]
 
   @@index([userId])
 }
 
 model Protocol {
-  id            String   @id
-  name          String
-  protocolType  String
-  enabled       Boolean  @default(true)
-  adapterVersion Int     @default(1)
-  contractIds   String[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  positions     Position[]
+  id             String     @id
+  name           String
+  protocolType   String
+  enabled        Boolean    @default(true)
+  adapterVersion Int        @default(1)
+  contractIds    String[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  positions      Position[]
 }
 
 model Position {
-  id              String       @id
-  walletId        String
-  wallet          Wallet       @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  protocolId      String
-  protocol        Protocol     @relation(fields: [protocolId], references: [id], onDelete: Restrict)
-  type            PositionType
-  valueUsd        Decimal?     @db.Decimal(38, 12)
-  blockHeight     BigInt
-  exact           Boolean      @default(true)
-  raw             Json
-  observedAt      DateTime
-  updatedAt       DateTime     @updatedAt
-  assets          PositionAsset[]
-  snapshots       PositionSnapshot[]
+  id          String             @id
+  walletId    String
+  wallet      Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  protocolId  String
+  protocol    Protocol           @relation(fields: [protocolId], references: [id], onDelete: Restrict)
+  type        PositionType
+  valueUsd    Decimal?           @db.Decimal(38, 12)
+  blockHeight BigInt
+  exact       Boolean            @default(true)
+  active      Boolean            @default(true)
+  closedAt    DateTime?
+  raw         Json
+  observedAt  DateTime
+  updatedAt   DateTime           @updatedAt
+  assets      PositionAsset[]
+  snapshots   PositionSnapshot[]
 
-  @@index([walletId, observedAt])
+  @@index([walletId, active, observedAt])
   @@index([protocolId])
 }
 
@@ -108,34 +111,66 @@ model PositionSnapshot {
 }
 
 model PortfolioSnapshot {
-  id             String   @id @default(cuid())
-  walletId       String
-  wallet         Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  totalValueUsd  Decimal  @db.Decimal(38, 12)
-  protocolValues Json
-  blockHeight    BigInt
-  observedAt     DateTime
+  id                   String   @id @default(cuid())
+  walletId             String
+  wallet               Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  totalValueUsd        Decimal  @db.Decimal(38, 12)
+  protocolValues       Json
+  assetValues          Json
+  valuationCoverageBps Int
+  blockHeight          BigInt
+  observedAt           DateTime
 
   @@index([walletId, observedAt])
 }
 
 model RiskSnapshot {
-  id                        String   @id @default(cuid())
-  walletId                  String
-  wallet                    Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  riskScoreBps              Int
-  healthFactorE4            Int?
-  liquidationDistanceBps    Int?
-  protocolConcentrationBps  Int
-  liquidityScoreBps         Int
-  reportHash                String
-  sourceBlock               BigInt
-  onchainSnapshotId         BigInt?
-  onchainTxId               String?
-  observedAt                DateTime
+  id                       String   @id @default(cuid())
+  walletId                 String
+  wallet                   Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  riskLevel                String
+  riskScoreBps             Int
+  healthFactorE4           Int?
+  liquidationDistanceBps   Int?
+  protocolConcentrationBps Int
+  assetConcentrationBps    Int
+  liquidityScoreBps        Int
+  capitalAccessibilityBps  Int
+  reportHash               String
+  report                   Json
+  methodologyVersion       String   @default("riskrail-v1")
+  sourceBlock              BigInt
+  onchainSnapshotId        BigInt?
+  onchainTxId              String?
+  observedAt               DateTime
 
   @@index([walletId, observedAt])
   @@index([reportHash])
+}
+
+model PriceObservation {
+  id         String   @id @default(cuid())
+  assetId    String
+  symbol     String
+  priceUsd   Decimal  @db.Decimal(38, 12)
+  source     String
+  observedAt DateTime
+
+  @@index([assetId, observedAt])
+}
+
+model IndexingRun {
+  id            String   @id @default(cuid())
+  walletId      String
+  wallet        Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  correlationId String   @unique
+  sourceBlock   BigInt?
+  status        String
+  error         String?
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+
+  @@index([walletId, startedAt])
 }
 
 model AlertRule {
@@ -155,40 +190,40 @@ model AlertRule {
 }
 
 model AlertEvent {
-  id        String    @id @default(cuid())
-  alertId   String
-  alert     AlertRule @relation(fields: [alertId], references: [id], onDelete: Cascade)
-  value     String
-  metadata  Json
-  triggeredAt DateTime @default(now())
+  id          String    @id @default(cuid())
+  alertId     String
+  alert       AlertRule @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  value       String
+  metadata    Json
+  triggeredAt DateTime  @default(now())
 
   @@index([alertId, triggeredAt])
 }
 
 model ApiKey {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  prefix      String
-  hash        String
-  name        String
-  lastUsedAt  DateTime?
-  revokedAt   DateTime?
-  createdAt   DateTime @default(now())
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prefix     String
+  hash       String
+  name       String
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
 
   @@index([userId])
 }
 
 model WebhookEndpoint {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  url       String
-  secretHash String
-  events    String[]
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  deliveries WebhookDelivery[]
+  id           String            @id @default(cuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url          String
+  secretHash   String
+  events       String[]
+  enabled      Boolean           @default(true)
+  createdAt    DateTime          @default(now())
+  deliveries   WebhookDelivery[]
 
   @@index([userId])
 }
@@ -207,9 +242,9 @@ model WebhookDelivery {
 }
 
 model IndexedBlock {
-  height     BigInt   @id
-  blockHash  String   @unique
-  indexedAt  DateTime @default(now())
+  height    BigInt   @id
+  blockHash String   @unique
+  indexedAt DateTime @default(now())
 }
 
 model AuditLog {

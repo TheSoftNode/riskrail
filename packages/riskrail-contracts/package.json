@@ -14,7 +14,15 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo \"No package-level tests yet\"",
+    "test": "vitest run --passWithNoTests",
     "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@riskrail/stacks": "workspace:*",
+    "@stacks/transactions": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "vitest": "^5.0.1"
   }
 }

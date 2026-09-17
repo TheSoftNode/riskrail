@@ -17,10 +17,35 @@ export function calculateConcentration(entries: ConcentrationEntry[]): Concentra
 }
 
 export function protocolConcentration(positions: NormalizedPosition[]): ConcentrationResult {
+  const totalPortfolio = positions.reduce(
+    (total, position) => total.plus(position.valueUsd ?? 0),
+    new Decimal(0),
+  );
+  if (totalPortfolio.lte(0)) return { topShareBps: 0, totalUsd: '0.00' };
+
   const grouped = new Map<string, Decimal>();
   for (const position of positions) {
-    if (!position.valueUsd) continue;
+    // Direct wallet balances are the base portfolio, not a DeFi protocol dependency.
+    if (position.type === 'wallet' || !position.valueUsd) continue;
     grouped.set(position.protocol.id, (grouped.get(position.protocol.id) ?? new Decimal(0)).plus(position.valueUsd));
+  }
+  if (grouped.size === 0) return { topShareBps: 0, totalUsd: totalPortfolio.toFixed(2) };
+
+  const [topKey, topValue] = [...grouped].reduce((a, b) => a[1].gte(b[1]) ? a : b);
+  return {
+    topKey,
+    topShareBps: topValue.div(totalPortfolio).mul(10_000).toDecimalPlaces(0).toNumber(),
+    totalUsd: totalPortfolio.toFixed(2),
+  };
+}
+
+export function assetConcentration(positions: NormalizedPosition[]): ConcentrationResult {
+  const grouped = new Map<string, Decimal>();
+  for (const position of positions) {
+    for (const asset of position.assets) {
+      if (!asset.valueUsd) continue;
+      grouped.set(asset.assetId, (grouped.get(asset.assetId) ?? new Decimal(0)).plus(asset.valueUsd));
+    }
   }
   return calculateConcentration([...grouped].map(([key, value]) => ({ key, valueUsd: value.toString() })));
 }
@@ -59,19 +84,77 @@ export function applyPriceShocks(assets: ValuedAsset[], shocks: PriceShock[]): V
 
 export interface PortfolioRiskSummary {
   protocolConcentrationBps: number;
+  assetConcentrationBps: number;
   capitalAccessibilityBps: number;
+  liquidityScoreBps: number;
+  riskScoreBps: number;
   riskLevel: RiskLevel;
+  worstHealthFactorE4?: number;
+  liquidationDistanceBps?: number;
 }
 
+/**
+ * RiskRail v1 intentionally keeps the composite score simple and documented.
+ * It is a presentation aid, not a replacement for the underlying metrics.
+ *
+ * - 40% collateral/health risk (when health-factor data exists)
+ * - 30% protocol concentration risk
+ * - 30% capital accessibility risk
+ *
+ * If no collateral-bearing position exists, the health component contributes zero
+ * rather than pretending the system knows more than it does.
+ */
 export function calculatePortfolioRisk(positions: NormalizedPosition[]): PortfolioRiskSummary {
-  const concentration = protocolConcentration(positions);
+  const protocol = protocolConcentration(positions);
+  const asset = assetConcentration(positions);
+  const accessibility = capitalAccessibilityBps(positions);
   const worstHealth = positions
     .map((p) => p.liquidation?.healthFactorE4)
     .filter((x): x is number => x !== undefined)
     .sort((a, b) => a - b)[0];
+
+  const liquidationDistance = positions
+    .map((p) => p.liquidation?.distanceBps)
+    .filter((x): x is number => x !== undefined)
+    .sort((a, b) => a - b)[0];
+
+  const healthRisk = healthRiskBps(worstHealth);
+  const concentrationRisk = concentrationRiskBps(protocol.topShareBps);
+  const accessibilityRisk = Math.max(0, 10_000 - accessibility);
+  const score = Math.round(
+    healthRisk * 0.4 + concentrationRisk * 0.3 + accessibilityRisk * 0.3,
+  );
+
   return {
-    protocolConcentrationBps: concentration.topShareBps,
-    capitalAccessibilityBps: capitalAccessibilityBps(positions),
-    riskLevel: classifyHealthFactor(worstHealth),
+    protocolConcentrationBps: protocol.topShareBps,
+    assetConcentrationBps: asset.topShareBps,
+    capitalAccessibilityBps: accessibility,
+    liquidityScoreBps: accessibility,
+    riskScoreBps: Math.max(0, Math.min(10_000, score)),
+    riskLevel: overallRiskLevel(worstHealth, score),
+    worstHealthFactorE4: worstHealth,
+    liquidationDistanceBps: liquidationDistance,
   };
+}
+
+function healthRiskBps(healthFactorE4?: number): number {
+  if (healthFactorE4 === undefined) return 0;
+  if (healthFactorE4 < 12_000) return 10_000;
+  if (healthFactorE4 < 15_000) return 7_500;
+  if (healthFactorE4 < 20_000) return 4_000;
+  return 1_000;
+}
+
+function concentrationRiskBps(topShareBps: number): number {
+  if (topShareBps <= 2_500) return 0;
+  return Math.min(10_000, Math.round(((topShareBps - 2_500) / 7_500) * 10_000));
+}
+
+function overallRiskLevel(healthFactorE4: number | undefined, scoreBps: number): RiskLevel {
+  const health = classifyHealthFactor(healthFactorE4);
+  if (health !== 'unknown') return health;
+  if (scoreBps >= 7_500) return 'critical';
+  if (scoreBps >= 5_000) return 'elevated';
+  if (scoreBps >= 2_500) return 'moderate';
+  return 'healthy';
 }

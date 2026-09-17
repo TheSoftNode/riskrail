@@ -8,13 +8,18 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo \"worker tests pending\"",
+    "test": "echo \"worker integration tests pending database fixture harness\"",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
+    "@prisma/client": "6.19.3",
+    "@riskrail/adapter-core": "workspace:*",
+    "@riskrail/database": "workspace:*",
     "@riskrail/logger": "workspace:*",
     "@riskrail/queue": "workspace:*",
-    "bullmq": "6.3.6"
+    "@riskrail/risk-engine": "workspace:*",
+    "bullmq": "6.3.6",
+    "@riskrail/riskrail-contracts": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.20.5"

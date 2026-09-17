@@ -1,6 +1,6 @@
 # Repository manifest
 
-This file lists the files currently included in the scaffold/update bundle. It is generated for convenience; the Git tree remains the source of truth.
+This file lists the tracked source files included in this repository bundle. The Git tree remains the source of truth.
 
 - `.editorconfig`
 - `.env.example`
@@ -17,7 +17,6 @@ This file lists the files currently included in the scaffold/update bundle. It i
 - `CODE_OF_CONDUCT.md`
 - `CONTRIBUTING.md`
 - `LICENSE`
-- `MANIFEST.md`
 - `Makefile`
 - `README.md`
 - `SECURITY.md`
@@ -103,6 +102,7 @@ This file lists the files currently included in the scaffold/update bundle. It i
 - `documentation/28-glossary.md`
 - `documentation/29-current-status.md`
 - `documentation/30-decisions-and-tradeoffs.md`
+- `documentation/31-milestone-1-implementation.md`
 - `documentation/README.md`
 - `eslint.config.mjs`
 - `infrastructure/docker/Dockerfile`
@@ -110,6 +110,7 @@ This file lists the files currently included in the scaffold/update bundle. It i
 - `infrastructure/terraform/environments/dev/main.tf`
 - `package.json`
 - `packages/adapter-bitpay/package.json`
+- `packages/adapter-bitpay/src/index.test.ts`
 - `packages/adapter-bitpay/src/index.ts`
 - `packages/adapter-bitpay/tsconfig.json`
 - `packages/adapter-core/package.json`
@@ -130,9 +131,11 @@ This file lists the files currently included in the scaffold/update bundle. It i
 - `packages/logger/src/index.ts`
 - `packages/logger/tsconfig.json`
 - `packages/oracle/package.json`
+- `packages/oracle/src/index.test.ts`
 - `packages/oracle/src/index.ts`
 - `packages/oracle/tsconfig.json`
 - `packages/portfolio-engine/package.json`
+- `packages/portfolio-engine/src/index.test.ts`
 - `packages/portfolio-engine/src/index.ts`
 - `packages/portfolio-engine/tsconfig.json`
 - `packages/queue/package.json`
@@ -152,6 +155,7 @@ This file lists the files currently included in the scaffold/update bundle. It i
 - `packages/shared-types/src/index.ts`
 - `packages/shared-types/tsconfig.json`
 - `packages/stacks/package.json`
+- `packages/stacks/src/index.test.ts`
 - `packages/stacks/src/index.ts`
 - `packages/stacks/tsconfig.json`
 - `packages/validation/package.json`
