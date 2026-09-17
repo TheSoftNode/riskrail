@@ -1,4 +1,6 @@
-# Generated scaffold manifest
+# Repository manifest
+
+This file lists the files currently included in the scaffold/update bundle. It is generated for convenience; the Git tree remains the source of truth.
 
 - `.editorconfig`
 - `.env.example`
@@ -15,6 +17,7 @@
 - `CODE_OF_CONDUCT.md`
 - `CONTRIBUTING.md`
 - `LICENSE`
+- `MANIFEST.md`
 - `Makefile`
 - `README.md`
 - `SECURITY.md`
@@ -70,6 +73,37 @@
 - `docs/architecture/overview.md`
 - `docs/architecture/protocol-adapters.md`
 - `docs/architecture/risk-engine.md`
+- `documentation/01-product-overview.md`
+- `documentation/02-product-requirements.md`
+- `documentation/03-users-and-use-cases.md`
+- `documentation/04-scope-and-non-goals.md`
+- `documentation/05-system-architecture.md`
+- `documentation/06-repository-structure.md`
+- `documentation/07-technology-stack.md`
+- `documentation/08-data-model.md`
+- `documentation/09-protocol-adapter-design.md`
+- `documentation/10-risk-engine-methodology.md`
+- `documentation/11-stress-testing.md`
+- `documentation/12-smart-contract-design.md`
+- `documentation/13-onchain-attestations.md`
+- `documentation/14-chainhook-and-indexing.md`
+- `documentation/15-api-sdk-and-webhooks.md`
+- `documentation/16-realtime-and-alerts.md`
+- `documentation/17-security-model.md`
+- `documentation/18-testing-strategy.md`
+- `documentation/19-observability-and-operations.md`
+- `documentation/20-deployment-and-infrastructure.md`
+- `documentation/21-existing-code-reuse.md`
+- `documentation/22-grant-milestones.md`
+- `documentation/23-roadmap.md`
+- `documentation/24-local-development.md`
+- `documentation/25-engineering-workflow.md`
+- `documentation/26-risks-and-mitigations.md`
+- `documentation/27-demo-and-acceptance-plan.md`
+- `documentation/28-glossary.md`
+- `documentation/29-current-status.md`
+- `documentation/30-decisions-and-tradeoffs.md`
+- `documentation/README.md`
 - `eslint.config.mjs`
 - `infrastructure/docker/Dockerfile`
 - `infrastructure/terraform/README.md`
