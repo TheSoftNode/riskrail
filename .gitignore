@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+.next/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# database / local infra
+*.db
+*.sqlite
+postgres-data/
+redis-data/
+
+# Clarinet
+contracts/.cache/
+contracts/.requirements/
+contracts/settings/Devnet.toml.local
+
+# editors / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# logs
+*.log
+logs/
+
+# terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl

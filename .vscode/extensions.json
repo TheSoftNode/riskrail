@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "stacks.clarity",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "prisma.prisma"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "riskrail",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Risk intelligence and on-chain attestation infrastructure for Bitcoin capital on Stacks.",
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @riskrail/database db:generate",
+    "db:migrate": "pnpm --filter @riskrail/database db:migrate",
+    "db:seed": "pnpm --filter @riskrail/database db:seed",
+    "contracts:test": "pnpm --filter @riskrail/contracts test",
+    "contracts:check": "pnpm --filter @riskrail/contracts check",
+    "infra:up": "docker compose up -d postgres redis",
+    "infra:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "turbo": "2.10.13",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
+  }
+}

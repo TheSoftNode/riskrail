@@ -1,0 +1,22 @@
+{
+  "name": "@riskrail/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"worker tests pending\"",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@riskrail/logger": "workspace:*",
+    "@riskrail/queue": "workspace:*",
+    "bullmq": "6.3.6"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5"
+  }
+}

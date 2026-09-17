@@ -1,0 +1,21 @@
+{
+  "chain": "stacks",
+  "uuid": "riskrail-risk-policy-updated",
+  "name": "RiskRail risk policy updates",
+  "version": 1,
+  "networks": {
+    "testnet": {
+      "if_this": {
+        "scope": "contract_call",
+        "contract_identifier": "DEPLOYER.risk-policy",
+        "method": "set-risk-policy"
+      },
+      "then_that": {
+        "http_post": {
+          "url": "http://localhost:4000/api/v1/chainhook/risk-policy",
+          "authorization_header": "Bearer CHANGE_ME"
+        }
+      }
+    }
+  }
+}

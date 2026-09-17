@@ -1,0 +1,36 @@
+[project]
+name = "riskrail-contracts"
+description = "On-chain risk attestations, user risk policies, and supported protocol registry for RiskRail"
+authors = ["RiskRail contributors"]
+telemetry = false
+cache_dir = "./.cache"
+requirements = []
+
+[contracts.risk-provider-trait]
+path = "contracts/traits/risk-provider-trait.clar"
+clarity_version = 5
+epoch = 3.4
+
+[contracts.risk-registry]
+path = "contracts/risk-registry.clar"
+clarity_version = 5
+epoch = 3.4
+
+[contracts.risk-policy]
+path = "contracts/risk-policy.clar"
+clarity_version = 5
+epoch = 3.4
+
+[contracts.protocol-registry]
+path = "contracts/protocol-registry.clar"
+clarity_version = 5
+epoch = 3.4
+
+[repl.analysis]
+passes = ["check_checker"]
+
+[repl.analysis.check_checker]
+strict = true
+trusted_sender = false
+trusted_caller = false
+callee_filter = false

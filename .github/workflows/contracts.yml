@@ -1,0 +1,22 @@
+name: Contracts
+on:
+  pull_request:
+    paths:
+      - 'contracts/**'
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: corepack prepare pnpm@10.17.1 --activate
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm --filter @riskrail/contracts test

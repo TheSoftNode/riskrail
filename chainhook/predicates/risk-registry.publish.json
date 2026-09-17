@@ -1,0 +1,21 @@
+{
+  "chain": "stacks",
+  "uuid": "riskrail-risk-snapshot-published",
+  "name": "RiskRail risk snapshot publishing",
+  "version": 1,
+  "networks": {
+    "testnet": {
+      "if_this": {
+        "scope": "contract_call",
+        "contract_identifier": "DEPLOYER.risk-registry",
+        "method": "publish-risk-snapshot"
+      },
+      "then_that": {
+        "http_post": {
+          "url": "http://localhost:4000/api/v1/chainhook/risk-registry",
+          "authorization_header": "Bearer CHANGE_ME"
+        }
+      }
+    }
+  }
+}
