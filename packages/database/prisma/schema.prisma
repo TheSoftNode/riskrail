@@ -45,6 +45,7 @@ model Wallet {
   riskSnapshots   RiskSnapshot[]
   alerts          AlertRule[]
   indexingRuns    IndexingRun[]
+  policyBreaches  PolicyBreachEvent[]
 
   @@index([userId])
 }
@@ -198,6 +199,23 @@ model AlertEvent {
   triggeredAt DateTime  @default(now())
 
   @@index([alertId, triggeredAt])
+}
+
+model PolicyBreachEvent {
+  id          String   @id @default(cuid())
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  source      String   @default("onchain-policy")
+  metric      String
+  operator    String
+  threshold   String
+  value       String
+  sourceBlock BigInt
+  metadata    Json
+  triggeredAt DateTime @default(now())
+
+  @@index([walletId, triggeredAt])
+  @@index([walletId, metric, triggeredAt])
 }
 
 model ApiKey {

@@ -15,6 +15,14 @@ export interface RiskRecalculateJob {
   requestedAt: string;
 }
 
+export interface AlertEvaluateJob {
+  address: string;
+  riskSnapshotId: string;
+  correlationId: string;
+  sourceBlock: number;
+  requestedAt: string;
+}
+
 export interface RiskAttestationJob {
   address: string;
   riskSnapshotId: string;
@@ -41,6 +49,15 @@ export function createQueue<T = unknown>(name: string, connection = createRedisC
   });
 }
 
+export interface RealtimeEvent {
+  event: 'portfolio.updated' | 'risk.updated' | 'alert.triggered' | 'policy.breached';
+  address: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+export const RealtimeChannel = 'riskrail.realtime';
+
 export const QueueName = {
   Portfolio: 'riskrail.portfolio',
   Risk: 'riskrail.risk',
@@ -53,4 +70,5 @@ export const JobName = {
   PortfolioRefresh: 'portfolio.refresh',
   RiskRecalculate: 'risk.recalculate',
   RiskAttest: 'risk.attest',
+  AlertEvaluate: 'alert.evaluate',
 } as const;

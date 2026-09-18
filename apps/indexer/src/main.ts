@@ -15,6 +15,7 @@ import {
   QueueName,
   type PortfolioRefreshJob,
   type RiskRecalculateJob,
+  RealtimeChannel,
 } from '@riskrail/queue';
 import { StacksClient, isStacksPrincipal } from '@riskrail/stacks';
 
@@ -28,6 +29,7 @@ const priceOracle = new CoinGeckoPriceOracle(
 );
 const connection = createRedisConnection();
 const riskQueue = createQueue<RiskRecalculateJob>(QueueName.Risk, connection);
+const realtimePublisher = createRedisConnection();
 
 function createAdapters(): ProtocolAdapter[] {
   const adapters: ProtocolAdapter[] = [new NativeStacksAdapter()];
@@ -84,6 +86,13 @@ async function indexWallet(job: PortfolioRefreshJob) {
     const valued = valuePositions(positions, prices);
     const portfolio = buildPortfolio(address, valued);
     await persistPortfolio({ portfolio, blockHeight, correlationId });
+
+    await realtimePublisher.publish(RealtimeChannel, JSON.stringify({
+      event: 'portfolio.updated',
+      address,
+      data: { blockHeight, positionCount: valued.length, valuationCoverageBps: portfolio.valuationCoverageBps },
+      timestamp: new Date().toISOString(),
+    }));
 
     await riskQueue.add(
       JobName.RiskRecalculate,
@@ -154,6 +163,7 @@ async function shutdown() {
   await worker.close();
   await riskQueue.close();
   await connection.quit();
+  await realtimePublisher.quit();
   await prisma.$disconnect();
   process.exit(0);
 }

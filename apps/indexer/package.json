@@ -25,6 +25,7 @@
     "@riskrail/adapter-zest-v2": "workspace:*"
   },
   "devDependencies": {
-    "tsx": "^4.20.5"
+    "tsx": "^4.20.5",
+    "@types/node": "^22.18.0"
   }
 }

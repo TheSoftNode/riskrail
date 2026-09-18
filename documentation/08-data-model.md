@@ -164,3 +164,10 @@ During the grant phase, retaining all snapshots is simplest. If volume grows sig
 - hourly/daily rollups for older history;
 - immutable reports for snapshots that were published on-chain;
 - configurable retention for raw upstream payloads.
+
+
+## PolicyBreachEvent
+
+On-chain policy breaches are stored separately from ordinary `AlertEvent` rows because they come from wallet-owned Clarity policy state rather than a locally-created alert rule. A policy breach records the wallet, metric, comparison operator, threshold, observed value, source block, copied policy metadata and trigger time.
+
+Keeping the two event types separate makes it easy to answer two different questions later: "which rules did the RiskRail account configure?" and "which rules did the wallet itself commit on-chain?"

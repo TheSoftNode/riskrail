@@ -13,9 +13,11 @@
   },
   "dependencies": {
     "@riskrail/logger": "workspace:*",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "@riskrail/queue": "workspace:*"
   },
   "devDependencies": {
-    "tsx": "^4.20.5"
+    "tsx": "^4.20.5",
+    "@types/node": "^22.18.0"
   }
 }

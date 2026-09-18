@@ -4,7 +4,7 @@ import {
   Cl,
   makeContractCall,
 } from '@stacks/transactions';
-import { parseContractId, type StacksNetworkName } from '@riskrail/stacks';
+import { parseContractId, StacksClient, type StacksNetworkName } from '@riskrail/stacks';
 
 export interface CanonicalRiskReport {
   version: string;
@@ -98,6 +98,98 @@ export class RiskRegistryPublisher {
     }
     return { txId: result.txid };
   }
+}
+
+export interface RiskPolicy {
+  maxRiskScoreBps: number;
+  minHealthFactorE4: number;
+  maxProtocolConcentrationBps: number;
+  minLiquidityScoreBps: number;
+  enabled: boolean;
+  updatedAt: number;
+}
+
+/**
+ * Read-only client for wallet-owned RiskRail policies. It deliberately keeps
+ * policy reads separate from the API controller so the same logic can be used
+ * by the alert worker and future SDK methods.
+ */
+export class RiskPolicyReader {
+  private readonly client: StacksClient;
+
+  constructor(
+    stacksApiUrl: string,
+    private readonly contractId: string,
+    apiKey?: string,
+  ) {
+    this.client = new StacksClient(stacksApiUrl, apiKey);
+  }
+
+  async getPolicy(wallet: string): Promise<RiskPolicy | null> {
+    const raw = await this.client.callReadOnly(
+      this.contractId,
+      'get-risk-policy',
+      [Cl.principal(wallet)],
+      wallet,
+    );
+    const value = unwrapClarityJson(raw);
+    if (!isRecord(value)) return null;
+
+    return {
+      maxRiskScoreBps: toSafeNumber(value['max-risk-score-bps']),
+      minHealthFactorE4: toSafeNumber(value['min-health-factor-e4']),
+      maxProtocolConcentrationBps: toSafeNumber(value['max-protocol-concentration-bps']),
+      minLiquidityScoreBps: toSafeNumber(value['min-liquidity-score-bps']),
+      enabled: Boolean(unwrapClarityJson(value['enabled'])),
+      updatedAt: toSafeNumber(value['updated-at']),
+    };
+  }
+}
+
+function unwrapClarityJson(input: unknown): unknown {
+  if (input === null || input === undefined) return input;
+  if (Array.isArray(input)) return input.map(unwrapClarityJson);
+  if (typeof input !== 'object') return input;
+  const node = input as Record<string, unknown>;
+  const type = typeof node['type'] === 'string' ? node['type'].toLowerCase() : '';
+
+  if (type.includes('none')) return null;
+  if (type.includes('optional') && node['value'] === null) return null;
+  if (
+    type.includes('optional') ||
+    type.includes('tuple') ||
+    type.includes('list') ||
+    type.includes('uint') ||
+    type.includes('int') ||
+    type.includes('bool') ||
+    type.includes('principal') ||
+    type.includes('string') ||
+    type.includes('buffer') ||
+    type.includes('response')
+  ) {
+    return unwrapClarityJson(node['value']);
+  }
+  if ('value' in node && Object.keys(node).length <= 3) return unwrapClarityJson(node['value']);
+  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, unwrapClarityJson(value)]));
+}
+
+function toSafeNumber(input: unknown): number {
+  const value = unwrapClarityJson(input);
+  if (typeof value === 'number' && Number.isSafeInteger(value)) return value;
+  if (typeof value === 'bigint') {
+    const number = Number(value);
+    if (Number.isSafeInteger(number)) return number;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.replace(/^u/, '');
+    const number = Number(normalized);
+    if (Number.isSafeInteger(number)) return number;
+  }
+  throw new Error(`Expected safe Clarity integer, received ${String(value)}`);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function assertBps(name: string, value: number) {

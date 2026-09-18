@@ -326,6 +326,10 @@ The API exposes:
 ```text
 GET  /api/v1/simulations/presets
 POST /api/v1/simulations
+GET  /api/v1/alerts/{address}
+POST /api/v1/alerts/{address}
+PATCH /api/v1/alerts/{alertId}
+GET  /api/v1/policies/{address}
 ```
 
 A simulation runs against the latest persisted portfolio snapshot so the source block is known. It is a what-if calculation, not a market prediction, and it never executes a real transaction.
@@ -442,7 +446,7 @@ See [Data model](./documentation/08-data-model.md).
 
 Public API resources are versioned under `/api/v1`.
 
-Current implemented portfolio/simulation resources include:
+Current implemented portfolio, simulation, alert and policy resources include:
 
 ```text
 GET  /api/v1/portfolios/{address}
@@ -450,9 +454,13 @@ POST /api/v1/portfolios/{address}/refresh
 GET  /api/v1/portfolios/{address}/risk
 GET  /api/v1/simulations/presets
 POST /api/v1/simulations
+GET  /api/v1/alerts/{address}
+POST /api/v1/alerts/{address}
+PATCH /api/v1/alerts/{alertId}
+GET  /api/v1/policies/{address}
 ```
 
-Planned public resources include dedicated positions/protocol endpoints, alerts, webhooks and API-key management. Simulation history may be added later; the current custom simulation endpoint is stateless and runs against the latest persisted portfolio snapshot.
+Planned public resources include dedicated positions/protocol endpoints, authenticated email/webhook delivery and API-key management. Simulation history may be added later; the current custom simulation endpoint is stateless and runs against the latest persisted portfolio snapshot.
 
 The SDK should remain a thin typed client over these resources rather than reimplementing business logic.
 
@@ -475,7 +483,7 @@ liquidityScoreBps < 4000
 riskScoreBps > 7000
 ```
 
-The alert system should be edge-triggered/cooldown-aware so a user is not notified on every block while the same condition remains true.
+The current beta alert evaluator is edge-triggered: a rule fires when a metric crosses into a breach and does not fire again on every subsequent snapshot while it stays breached. Authenticated delivery preferences and longer cooldown controls are still planned.
 
 See [Realtime updates and alerts](./documentation/16-realtime-and-alerts.md).
 
@@ -503,12 +511,17 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 - normalized net portfolio equity plus totals by protocol and asset;
 - shared current-LTV, borrow-headroom, health-factor, liquidation-distance and single-collateral liquidation-price calculations;
 - deterministic BTC -10/-20/-30, STX -20 and custom multi-asset stress scenarios;
+- production-shaped Next.js landing page and address/wallet dashboard;
+- live portfolio/risk query invalidation through Redis pub/sub and Socket.IO;
+- address-scoped in-app alert rules with edge-trigger evaluation;
+- read-only `risk-policy.clar` lookup and worker-side policy evaluation;
+- persisted on-chain policy breach events;
 - `GET /api/v1/simulations/presets` and `POST /api/v1/simulations`;
 - persistent wallet indexing and position snapshots;
 - queue-backed `POST /api/v1/portfolios/:address/refresh` flow;
 - database-backed portfolio and risk API responses;
 - deterministic protocol/asset concentration and capital-accessibility metrics;
-- canonical SHA-256 risk reports with default stress results and methodology versioning (`riskrail-v1.1`);
+- canonical SHA-256 risk reports with default stress results and methodology versioning (`riskrail-v1.2`);
 - four Clarity contract components;
 - testnet-capable `risk-registry.clar` attestation publisher worker;
 - initial unit/contract tests and CI/security scaffolding;
@@ -516,12 +529,13 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 
 ### Still being implemented
 
+- authenticated wallet/user sessions and protected settings;
+- email and signed webhook notification delivery;
+- browser transaction flow for writing/updating on-chain risk policies;
 - live mainnet validation of the Zest adapter against known lending obligations;
 - closer protocol-oracle parity for execution-level Zest health checks;
 - market-depth liquidity model (the current MVP score uses capital accessibility as a clearly-labelled proxy);
-- production dashboard screens for collateral, debt, liquidation distance and stress results;
 - authentication/API keys;
-- production webhooks/notifications and alert evaluation;
 - Chainhook-driven incremental position updates and reorg handling;
 - on-chain attestation confirmation tracking/snapshot-id reconciliation;
 - public SDK methods;
@@ -702,7 +716,7 @@ Deliver native Stacks/sBTC indexing, BitPay adapter, normalized position/portfol
 
 ### Milestone 2 — Risk product + user policies (Weeks 4–7)
 
-The first half of this milestone is now represented in code: Zest V2 lending normalization, shared health/liquidation analytics, standard BTC stress scenarios and a custom simulation API. The remaining work is live protocol validation, dashboard productization, `risk-policy.clar` evaluation, Chainhook-driven refresh, realtime alerts and market-depth liquidity analysis.
+Most of the user-facing Milestone 2 path is now represented in code: Zest V2 lending normalization, shared health/liquidation analytics, deterministic stress scenarios, the dashboard, address-scoped alert rules, realtime updates and read/evaluate support for `risk-policy.clar`. Remaining work is live protocol validation, browser policy-write UX, authenticated notification delivery, Chainhook-driven incremental refresh and market-depth liquidity analysis.
 
 ### Milestone 3 — Public beta + developer infrastructure (Weeks 8–10)
 
@@ -751,6 +765,7 @@ Start at [documentation/README.md](./documentation/README.md).
 | Current status | [29-current-status.md](./documentation/29-current-status.md) |
 | Milestone 1 implementation | [31-milestone-1-implementation.md](./documentation/31-milestone-1-implementation.md) |
 | Zest V2 lending + stress implementation | [32-zest-v2-lending-and-stress-engine.md](./documentation/32-zest-v2-lending-and-stress-engine.md) |
+| Dashboard + alerts + policy evaluation | [33-dashboard-alerts-and-policy-evaluation.md](./documentation/33-dashboard-alerts-and-policy-evaluation.md) |
 | Decisions/trade-offs | [30-decisions-and-tradeoffs.md](./documentation/30-decisions-and-tradeoffs.md) |
 
 The shorter `docs/` directory remains available for concise architecture notes and ADRs.

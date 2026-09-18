@@ -2,7 +2,7 @@
 
 This page is intentionally conservative. It says what is in the repository today, what is usable now, and what still needs work. RiskRail has moved beyond the original scaffold and now has a real indexing/risk path, but the project is not being presented as production-complete before it has been validated in a hosted environment.
 
-Last reviewed during the first Milestone 2 lending/stress implementation pass.
+Last reviewed during the Milestone 2 dashboard, realtime alert and policy-evaluation pass.
 
 ## Repository foundation — present
 
@@ -100,7 +100,7 @@ Built-in presets include:
 
 Custom scenarios can contain multiple asset shocks. The engine applies shocks to a copy of the latest normalized positions, recalculates USD values and lending metrics, and reports before/after health and liquidation distance. It flags a position when a scenario moves it across the partial-liquidation threshold.
 
-The background worker includes the standard scenarios in each canonical risk report. The methodology version is now `riskrail-v1.1`.
+The background worker includes the standard scenarios in each canonical risk report. The methodology version is now `riskrail-v1.2`.
 
 ## Simulation API — implemented
 
@@ -221,22 +221,28 @@ The important next tests are not just more unit tests. We need:
 - controlled testnet attestation publication;
 - end-to-end refresh -> risk -> simulation -> alert tests.
 
-## Web application — still mostly scaffold
+## Web application — first usable product surface implemented
 
-The Next.js application still needs the real product screens. The next frontend work should surface portfolio exposure, Zest collateral/debt, current health, liquidation distance, standard stress scenarios and custom simulation input.
+The Next.js application now has a real landing page and dashboard rather than the original placeholder cards. A user can connect a Stacks wallet or enter a public address, refresh indexing, inspect portfolio/risk state, review normalized positions, run built-in or custom stress scenarios, create in-app alert rules and view the configured on-chain risk policy.
 
-## Realtime, policies, alerts and webhooks — next Milestone 2 work
+The dashboard is wired to the same API used by the rest of the system. It is not populated with demo-only state. When a wallet has not been indexed yet, the UI makes that explicit and lets the user queue the first scan.
 
-The realtime service and event boundaries exist, and `risk-policy.clar` already exists, but the full application path is not complete.
+## Realtime, policies and alerts — working beta path
 
-Remaining work includes:
+The realtime service now subscribes to the Redis `riskrail.realtime` channel and broadcasts events into address-scoped Socket.IO rooms. The indexer publishes portfolio updates; the risk worker publishes risk updates; the alert worker publishes local-alert and on-chain-policy breach events. The web client invalidates only the relevant React Query data when those events arrive.
 
-- policy reads/evaluation;
-- threshold edge detection and cooldowns;
+The API now exposes address-scoped in-app alert rules and read-only on-chain policy lookup. Alert evaluation is edge-triggered: a rule fires when a metric crosses into the breached side rather than on every subsequent snapshot while the breach remains active.
+
+`risk-policy.clar` is now part of the live application path through a shared `RiskPolicyReader`. When `RISK_POLICY_CONTRACT` is configured, the worker evaluates the wallet-owned maximum risk score, minimum health factor, maximum protocol concentration and minimum liquidity score after each risk snapshot. Policy breaches are persisted separately and sent to connected dashboards.
+
+Still remaining:
+
+- authenticated users and wallet-signature login;
+- email and signed developer-webhook delivery;
+- browser transaction flow for writing/updating `risk-policy.clar`;
+- notification preference/cooldown controls beyond edge-triggering;
 - Chainhook-driven incremental refresh for lending position changes;
-- Socket.IO risk updates;
-- email/in-app notification delivery;
-- signed outgoing developer webhooks.
+- production notification retries/observability.
 
 ## What "enterprise-ready" means right now
 
@@ -251,7 +257,7 @@ Before a public/mainnet launch we still need at least:
 - Chainhook incremental indexing and reorg handling;
 - production authentication/API-key handling;
 - signed webhook delivery;
-- alert delivery/cooldowns;
+- authenticated alert delivery, preferences and cooldown controls;
 - production observability and SLOs;
 - secret-manager-backed publisher key;
 - contract testnet deployment and soak testing;
@@ -259,3 +265,6 @@ Before a public/mainnet launch we still need at least:
 - hosted beta validation.
 
 The Milestone 1 handoff is in [31-milestone-1-implementation.md](./31-milestone-1-implementation.md). The lending/stress implementation is documented in [32-zest-v2-lending-and-stress-engine.md](./32-zest-v2-lending-and-stress-engine.md).
+
+
+The dashboard/realtime/policy implementation is documented in [33-dashboard-alerts-and-policy-evaluation.md](./33-dashboard-alerts-and-policy-evaluation.md).
