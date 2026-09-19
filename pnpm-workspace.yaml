@@ -1,4 +1,6 @@
 packages:
+  # apps/web is npm-managed (shadcn + its own lockfile); pnpm must not relink it.
   - "apps/*"
+  - "!apps/web"
   - "packages/*"
   - "contracts"

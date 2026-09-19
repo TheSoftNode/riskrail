@@ -1,0 +1,392 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* RiskRail brand + semantics */
+  --color-elevated: var(--elevated);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-text: var(--brand-text);
+  --color-brand-solid: var(--brand-solid);
+  --color-brand-solid-hover: var(--brand-solid-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-healthy: var(--healthy);
+  --color-warning: var(--warning);
+  --color-high: var(--high);
+  --color-critical: var(--critical);
+  --color-info: var(--info);
+
+  /* Asset / protocol series */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-debt: var(--chart-debt);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ---------------------------------------------------------------
+   LIGHT  —  #F8FAFC page + #0891B2 accent
+   --------------------------------------------------------------- */
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.9842 0.0034 247.86);        /* #F8FAFC */
+  --foreground: oklch(0.2077 0.0398 265.75);        /* #0F172A */
+  --card: oklch(1 0 0);                             /* #FFFFFF */
+  --card-foreground: oklch(0.2077 0.0398 265.75);
+  --elevated: oklch(0.9569 0.0118 239.91);          /* #EAF2F8 */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2077 0.0398 265.75);
+
+  --primary: oklch(0.6089 0.1109 221.72);           /* #0891B2 */
+  --primary-foreground: oklch(1 0 0);
+  --brand: oklch(0.6089 0.1109 221.72);             /* #0891B2 */
+  --brand-hover: oklch(0.5198 0.0936 223.13);       /* #0E7490 */
+  --brand-text: oklch(0.5198 0.0936 223.13);        /* #0E7490 — AA on white */
+  --brand-solid: oklch(0.5198 0.0936 223.13);       /* #0E7490 — 5.36:1 w/ white */
+  --brand-solid-hover: oklch(0.4500 0.0771 224.28);      /* #155E75 — 7.27:1 w/ white */
+  --brand-soft: oklch(0.9563 0.0443 203.39);        /* #CFFAFE */
+
+  --secondary: oklch(0.9683 0.0069 247.90);         /* #F1F5F9 */
+  --secondary-foreground: oklch(0.2077 0.0398 265.75);
+  --muted: oklch(0.9683 0.0069 247.90);
+  --muted-foreground: oklch(0.5544 0.0407 257.42);  /* #64748B */
+  --accent: oklch(0.9563 0.0443 203.39);            /* #CFFAFE */
+  --accent-foreground: oklch(0.4344 0.0793 224.05); /* #155E75 */
+
+  --destructive: oklch(0.5771 0.2152 27.33);        /* #DC2626 */
+  --border: oklch(0.8690 0.0198 252.89);            /* #CBD5E1 */
+  --input: oklch(0.8690 0.0198 252.89);
+  --ring: oklch(0.7148 0.1257 215.22);              /* #06B6D4 */
+
+  --healthy: oklch(0.6271 0.1699 149.21);           /* #16A34A */
+  --warning: oklch(0.6658 0.1574 58.32);            /* #D97706 */
+  --high: oklch(0.5771 0.2152 27.33);               /* #DC2626 */
+  --critical: oklch(0.5054 0.1905 27.52);           /* #B91C1C */
+  --info: oklch(0.5461 0.2152 262.88);              /* #2563EB */
+
+  --chart-1: oklch(0.6089 0.1109 221.72);           /* sBTC   #0891B2 */
+  --chart-2: oklch(0.5413 0.2466 293.01);           /* STX    #7C3AED */
+  --chart-3: oklch(0.5461 0.2152 262.88);           /* USDC   #2563EB */
+  --chart-4: oklch(0.5109 0.0861 186.39);           /* Zest   #0F766E */
+  --chart-5: oklch(0.6658 0.1574 58.32);            /* BitPay #D97706 */
+  --chart-debt: oklch(0.5771 0.2152 27.33);         /* Debt   #DC2626 */
+
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.2077 0.0398 265.75);
+  --sidebar-primary: oklch(0.6089 0.1109 221.72);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.9683 0.0069 247.90);
+  --sidebar-accent-foreground: oklch(0.2077 0.0398 265.75);
+  --sidebar-border: oklch(0.8690 0.0198 252.89);
+  --sidebar-ring: oklch(0.7148 0.1257 215.22);
+}
+
+/* ---------------------------------------------------------------
+   DARK  —  #07111F page + #22D3EE accent  (the primary identity)
+   --------------------------------------------------------------- */
+.dark {
+  --background: oklch(0.1762 0.0330 256.39);        /* #07111F */
+  --foreground: oklch(0.9842 0.0034 247.86);        /* #F8FAFC */
+  --card: oklch(0.2177 0.0356 251.29);              /* #0D1B2A */
+  --card-foreground: oklch(0.9842 0.0034 247.86);
+  --elevated: oklch(0.2507 0.0468 257.86);          /* #132238 */
+  --popover: oklch(0.2507 0.0468 257.86);
+  --popover-foreground: oklch(0.9842 0.0034 247.86);
+
+  --primary: oklch(0.7971 0.1339 211.53);           /* #22D3EE */
+  --primary-foreground: oklch(0.1762 0.0330 256.39);/* #07111F */
+  --brand: oklch(0.7971 0.1339 211.53);
+  --brand-hover: oklch(0.7148 0.1257 215.22);       /* #06B6D4 */
+  --brand-text: oklch(0.7971 0.1339 211.53);        /* #22D3EE */
+  --brand-solid: oklch(0.7971 0.1339 211.53);       /* #22D3EE */
+  --brand-solid-hover: oklch(0.7148 0.1257 215.22); /* #06B6D4 */
+  --brand-soft: oklch(0.7971 0.1339 211.53 / 12%);
+
+  --secondary: oklch(0.2507 0.0468 257.86);
+  --secondary-foreground: oklch(0.9842 0.0034 247.86);
+  --muted: oklch(0.2507 0.0468 257.86);
+  --muted-foreground: oklch(0.7107 0.0351 256.79);  /* #94A3B8 */
+  --accent: oklch(0.2507 0.0468 257.86);
+  --accent-foreground: oklch(0.7971 0.1339 211.53);
+
+  --destructive: oklch(0.6368 0.2078 25.33);        /* #EF4444 */
+  --border: oklch(0.3210 0.0433 255.50);            /* #243449 */
+  --input: oklch(0.3210 0.0433 255.50);
+  --ring: oklch(0.7148 0.1257 215.22);              /* #06B6D4 */
+
+  --healthy: oklch(0.7227 0.1920 149.58);           /* #22C55E */
+  --warning: oklch(0.7686 0.1647 70.08);            /* #F59E0B */
+  --high: oklch(0.6368 0.2078 25.33);               /* #EF4444 */
+  --critical: oklch(0.5771 0.2152 27.33);           /* #DC2626 */
+  --info: oklch(0.6231 0.1880 259.81);              /* #3B82F6 */
+
+  --chart-1: oklch(0.7971 0.1339 211.53);           /* sBTC   #22D3EE */
+  --chart-2: oklch(0.6056 0.2189 292.72);           /* STX    #8B5CF6 */
+  --chart-3: oklch(0.6231 0.1880 259.81);           /* USDC   #3B82F6 */
+  --chart-4: oklch(0.7038 0.1230 182.50);           /* Zest   #14B8A6 */
+  --chart-5: oklch(0.7686 0.1647 70.08);            /* BitPay #F59E0B */
+  --chart-debt: oklch(0.6368 0.2078 25.33);         /* Debt   #EF4444 */
+
+  --sidebar: oklch(0.2177 0.0356 251.29);
+  --sidebar-foreground: oklch(0.9842 0.0034 247.86);
+  --sidebar-primary: oklch(0.7971 0.1339 211.53);
+  --sidebar-primary-foreground: oklch(0.1762 0.0330 256.39);
+  --sidebar-accent: oklch(0.2507 0.0468 257.86);
+  --sidebar-accent-foreground: oklch(0.9842 0.0034 247.86);
+  --sidebar-border: oklch(0.3210 0.0433 255.50);
+  --sidebar-ring: oklch(0.7148 0.1257 215.22);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--brand), transparent 75%);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Large-display scaling.
+
+   Everything in this app is sized in rem, so lifting the root size is
+   a single lever that scales type, spacing, radii, icons and the shell
+   together. Without it a wider container on a 27" monitor just strands
+   14px text in more whitespace.
+   --------------------------------------------------------------- */
+@media (min-width: 1800px) {
+  html {
+    font-size: 17px;
+  }
+}
+@media (min-width: 2300px) {
+  html {
+    font-size: 18.5px;
+  }
+}
+@media (min-width: 3000px) {
+  html {
+    font-size: 20px;
+  }
+}
+
+@layer utilities {
+  /* The page shell. One definition so every surface stays in step. */
+  .rr-shell {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 90rem;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .rr-shell {
+      padding-inline: 2rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .rr-shell {
+      padding-inline: 3rem;
+    }
+  }
+  @media (min-width: 1800px) {
+    .rr-shell {
+      max-width: 100rem;
+      padding-inline: 4rem;
+    }
+  }
+  @media (min-width: 2300px) {
+    .rr-shell {
+      max-width: 108rem;
+      padding-inline: 5rem;
+    }
+  }
+
+  /* The one sanctioned gradient — logo mark, CTA glow, hero highlight only. */
+  .rr-gradient {
+    background-image: linear-gradient(135deg, #22d3ee 0%, #3b82f6 55%, #8b5cf6 100%);
+  }
+  .rr-gradient-text {
+    background-image: linear-gradient(135deg, #22d3ee 0%, #3b82f6 55%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .rr-tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Hero motion. Light travelling along the rails, a slow radar
+   sweep, and the gauge drawing itself in. All CSS so it runs off
+   the main thread and works before hydration.
+   --------------------------------------------------------------- */
+@keyframes rr-rail-travel {
+  0% {
+    stroke-dashoffset: 1600;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -260;
+    opacity: 0;
+  }
+}
+
+@keyframes rr-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rr-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes rr-draw {
+  from {
+    stroke-dashoffset: var(--rr-len);
+  }
+  to {
+    stroke-dashoffset: var(--rr-to);
+  }
+}
+
+.rr-rail-pulse {
+  stroke-dasharray: 150 1800;
+  animation: rr-rail-travel var(--rr-dur, 7s) linear infinite;
+  animation-delay: var(--rr-delay, 0s);
+}
+
+.rr-sweep {
+  transform-origin: center;
+  animation: rr-sweep 9s linear infinite;
+}
+
+/* Short-path variant of the rail pulse, for the merge harness. */
+@keyframes rr-drop {
+  0% {
+    stroke-dashoffset: 170;
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -40;
+    opacity: 0;
+  }
+}
+
+.rr-drop {
+  stroke-dasharray: 22 210;
+  animation: rr-drop var(--rr-dur, 3.4s) linear infinite;
+  animation-delay: var(--rr-delay, 0s);
+}
+
+.rr-breathe {
+  animation: rr-breathe 3.2s ease-in-out infinite;
+}
+
+/* Only the offset is animated — stroke-dasharray stays on the element so the
+   gauge keeps its "arc length + gap" pattern instead of turning into dashes. */
+.rr-draw {
+  stroke-dashoffset: var(--rr-len);
+  animation: rr-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--rr-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rr-rail-pulse,
+  .rr-drop,
+  .rr-sweep,
+  .rr-breathe {
+    animation: none;
+  }
+  .rr-drop {
+    opacity: 0.55;
+  }
+  .rr-rail-pulse {
+    opacity: 0.6;
+  }
+  .rr-draw {
+    animation-duration: 0.01ms;
+    stroke-dashoffset: var(--rr-to);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
