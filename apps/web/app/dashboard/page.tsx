@@ -1,8 +1,7 @@
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
-import { Button } from "@/components/ui/button";
+import { WalletEntry } from "@/components/wallet-entry";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata = { title: "Dashboard" };
@@ -29,21 +28,21 @@ export default async function DashboardPage({
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">
               Start with a Stacks address.
             </h1>
-            <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted-foreground">
-              Head back to the home page and connect a wallet, or paste any
-              public address to inspect it read-only.
+            <p className="mt-3 mb-8 text-[0.9375rem] leading-relaxed text-muted-foreground">
+              Connect a wallet to load your own portfolio, or paste any public
+              address to inspect it read-only.
             </p>
-            <Button
-              size="lg"
-              nativeButton={false}
-              render={<Link href="/" />}
-              className="mt-8 bg-brand-solid text-primary-foreground hover:bg-brand-solid-hover"
-            >
-              <ArrowLeft className="size-4" />
-              Back to RiskRail
-            </Button>
+            {/* Offering the choice here rather than a link home: someone who
+                arrives at this URL directly should be able to finish from it. */}
+            <WalletEntry />
           </CardContent>
         </Card>
+
+        <p className="mt-6 text-center text-[0.8125rem] text-muted-foreground">
+          <Link href="/" className="underline underline-offset-4 hover:text-foreground">
+            Back to RiskRail
+          </Link>
+        </p>
       </main>
     );
   }

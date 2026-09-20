@@ -125,8 +125,20 @@ export function Fragmentation() {
           <p className="mt-4 max-w-3xl text-[0.8125rem] leading-relaxed text-muted-foreground">
             The three codes in each footer are the data sources. Only the lit one
             is visible to that protocol; the struck-through codes are the
-            positions it cannot see — which is why no single row adds up to a
+            positions it cannot see &mdash; which is why no single row adds up to a
             portfolio.
+          </p>
+        </Reveal>
+
+        {/* Three is today's adapter coverage, not a limit of the design. A
+            reader should not leave thinking RiskRail only ever reads three
+            venues. */}
+        <Reveal delay={0.22}>
+          <p className="mt-3 max-w-3xl text-[0.8125rem] leading-relaxed text-muted-foreground">
+            Three is what RiskRail reads today, not what it is limited to. Each
+            source is an adapter behind one interface, so the next venue changes
+            nothing above it &mdash; not the portfolio engine, the risk engine, the
+            API or this page.
           </p>
         </Reveal>
 

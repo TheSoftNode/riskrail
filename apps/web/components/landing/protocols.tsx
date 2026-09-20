@@ -11,14 +11,31 @@ const ADAPTERS = [
     tone: "healthy" as const,
     body: "STX plus SIP-010 balances with sBTC resolved per network, token metadata resolved before valuation, and exact on-chain quantities preserved even when pricing is unavailable.",
     surfaces: ["STX", "sBTC", "SIP-010"],
+    validation: {
+      tone: "healthy" as const,
+      title: "Verified on mainnet",
+      rows: [["Balance and FT reads", "live mainnet"]] as Array<[string, string]>,
+      note: "Exercised against mainnet Hiro endpoints, including read-only contract calls.",
+    },
   },
   {
     name: "Zest Protocol V2",
     kind: "Lending",
-    status: "Integrated",
-    tone: "brand" as const,
+    status: "Live-validated",
+    tone: "healthy" as const,
     body: "Reads the wallet obligation from the market vault, converts zToken collateral to underlying and scaled debt via the borrow index, then pulls borrow and liquidation LTVs straight from the egroup registry.",
     surfaces: ["Collateral", "Debt", "LTV bands"],
+    // Numbers a reader can check themselves, rather than the word "integrated".
+    // Source: docs/validation/zest-v2.md, mainnet obligation 762 at block 9031697.
+    validation: {
+      tone: "healthy" as const,
+      title: "Verified on mainnet",
+      note: "Checked against a live mainnet position, block 9031697.",
+      rows: [
+        ["Scaled debt read", "exact match"],
+        ["Debt vs Zest own figure", "x0.99985"],
+      ] as Array<[string, string]>,
+    },
   },
   {
     name: "BitPay streams",
@@ -27,6 +44,14 @@ const ADAPTERS = [
     tone: "brand" as const,
     body: "Discovers sender and recipient streams and splits locked, vested, withdrawn and currently withdrawable sBTC — the capital a wallet owns economically but cannot spend right now.",
     surfaces: ["Locked", "Vested", "Withdrawable"],
+    // Saying nothing here would let a reader assume the same level of proof as
+    // the Zest card above, which has not been done for streams.
+    validation: {
+      tone: "warning" as const,
+      title: "Not yet live-validated",
+      rows: [["Unit tested", "yes"], ["Checked vs live stream", "not yet"]] as Array<[string, string]>,
+      note: "The adapter is implemented and tested, but has not been compared against a real stream on mainnet.",
+    },
   },
 ];
 
@@ -83,6 +108,42 @@ export function Protocols() {
                       ))}
                     </div>
                   </div>
+
+                  {"validation" in a && a.validation ? (
+                    <div
+                      className={`mt-4 rounded-lg border px-3 py-2.5 ${
+                        a.validation.tone === "healthy"
+                          ? "border-healthy/25 bg-healthy/[0.06]"
+                          : "border-warning/25 bg-warning/[0.06]"
+                      }`}
+                    >
+                      <p
+                        className={`font-mono text-[0.5625rem] uppercase tracking-[0.12em] ${
+                          a.validation.tone === "healthy" ? "text-healthy" : "text-warning"
+                        }`}
+                      >
+                        {a.validation.title}
+                      </p>
+                      <dl className="mt-2 space-y-1">
+                        {a.validation.rows.map(([k, v]) => (
+                          <div
+                            key={k}
+                            className="flex flex-wrap items-baseline justify-between gap-x-3"
+                          >
+                            <dt className="text-[0.75rem] text-muted-foreground">
+                              {k}
+                            </dt>
+                            <dd className="rr-tnum font-mono text-[0.75rem] text-foreground">
+                              {v}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <p className="mt-2 text-[0.6875rem] leading-relaxed text-muted-foreground">
+                        {a.validation.note}
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               </article>
             </Reveal>

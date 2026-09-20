@@ -1,8 +1,9 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BellRing, Loader2, Pause, Play } from "lucide-react";
-import { useState } from "react";
+import { BellRing, KeyRound, Loader2, Pause, Play } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { riskrailApi } from "@/lib/api";
+import { hasSession, sessionAddress, signIn } from "@/lib/auth";
+import { shorten } from "@/lib/format";
 import {
   formatMetric,
   METRIC_OPTIONS,
@@ -32,6 +35,34 @@ export function AlertsPanel({ address }: { address: string }) {
   const [metric, setMetric] = useState<AlertMetric>("healthFactorE4");
   const [operator, setOperator] = useState<AlertOperator>("lt");
   const [threshold, setThreshold] = useState("1.30");
+
+  // The rules list stays readable for any address, but writing one requires a
+  // session for *this* address — the API enforces that, and showing the form to
+  // someone who cannot use it would just produce a 403 on submit.
+  const [session, setSession] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
+
+  useEffect(() => {
+    setSession(hasSession() ? sessionAddress() : null);
+    setReady(true);
+  }, []);
+
+  const owns = session === address;
+
+  async function startSignIn() {
+    try {
+      setSigningIn(true);
+      const next = await signIn();
+      setSession(next.address);
+      await queryClient.invalidateQueries();
+      toast.success("Signed in");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Sign-in failed");
+    } finally {
+      setSigningIn(false);
+    }
+  }
 
   const selected = METRIC_OPTIONS.find((m) => m.value === metric)!;
 
@@ -80,10 +111,35 @@ export function AlertsPanel({ address }: { address: string }) {
 
         <p className="mt-3 text-[0.875rem] leading-relaxed text-muted-foreground">
           Rules are evaluated on every new risk snapshot and fire when a metric
-          crosses into breach — not repeatedly while it stays there. Email and
-          webhook delivery stay off until authenticated accounts land.
+          crosses into breach — not repeatedly while it stays there. Delivery
+          goes to the dashboard, and to email or a signed webhook when you have
+          configured one.
         </p>
 
+        {!ready ? null : !owns ? (
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-xl border border-border bg-elevated/50 px-4 py-3.5">
+            <p className="flex-1 text-[0.8125rem] leading-relaxed text-muted-foreground">
+              {session
+                ? `Alert rules belong to the account that controls the address. You are signed in as ${shorten(session, 6, 4)}, so you can read this address but not monitor it.`
+                : "Alert rules belong to an account. Sign a one-time challenge with this address to create them — it is not a transaction and moves no funds."}
+            </p>
+            {session ? null : (
+              <Button
+                size="sm"
+                disabled={signingIn}
+                onClick={() => void startSignIn()}
+                className="bg-brand-solid text-primary-foreground hover:bg-brand-solid-hover"
+              >
+                {signingIn ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <KeyRound className="size-3.5" />
+                )}
+                {signingIn ? "Waiting for signature…" : "Sign in"}
+              </Button>
+            )}
+          </div>
+        ) : (
         <div className="mt-5 grid gap-3 rounded-xl border border-border bg-elevated/50 p-4 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_auto] lg:items-end">
           <div className="grid gap-1.5">
             <Label htmlFor="alert-metric" className="text-[0.6875rem] uppercase tracking-wider text-muted-foreground">
@@ -149,6 +205,7 @@ export function AlertsPanel({ address }: { address: string }) {
             Add alert
           </Button>
         </div>
+        )}
 
         {create.error ? (
           <p className="mt-3 rounded-lg border border-high/30 bg-high/10 px-3 py-2 text-[0.8125rem] text-high">
@@ -193,7 +250,7 @@ export function AlertsPanel({ address }: { address: string }) {
                   >
                     {rule.status.toLowerCase()}
                   </Badge>
-                  {rule.status !== "ARCHIVED" ? (
+                  {rule.status !== "ARCHIVED" && owns ? (
                     <Button
                       variant="ghost"
                       size="sm"

@@ -54,6 +54,23 @@ const TABS = {
       ["}"],
     ],
   },
+  clarity: {
+    label: "Clarity",
+    planned: false,
+    note: "risk-provider-trait, tested in simnet. Not yet deployed to testnet.",
+    lines: [
+      ["(use-trait risk-provider ", ".risk-provider-trait.risk-provider-trait", ")"],
+      [""],
+      [";; none rather than a stale reading, so the"],
+      [";; freshness check cannot be forgotten"],
+      ["(", "contract-call?", " provider"],
+      ["  ", "get-risk-if-fresh", " user u144)"],
+      [""],
+      [";; => (some { health-factor-e4: ", "u14700", ","],
+      [";;            source-block: ", "u184233", ","],
+      [";;            report-hash: ", "0x...", " })"],
+    ],
+  },
 } as const;
 
 const CAPS = [
@@ -68,6 +85,12 @@ const CAPS = [
     title: "Edge-triggered alerts",
     planned: false,
     body: "A rule fires when a metric crosses into breach — not on every snapshot while it stays there.",
+  },
+  {
+    code: "CLAR",
+    title: "On-chain reads",
+    planned: false,
+    body: "Another Clarity contract can read a wallet's attested risk through risk-provider-trait, with a freshness bound that returns none rather than a stale number.",
   },
   {
     code: "HOOK",
@@ -89,7 +112,7 @@ export function Developers() {
               <SectionHeading
                 eyebrow="For developers"
                 title="Don't rebuild a risk engine inside your wallet."
-                lede="The same deterministic metrics the dashboard renders are available over REST, a typed client and signed webhooks — so wallets, treasuries and protocols can ship risk without owning an indexer."
+                lede="The same deterministic metrics the dashboard renders are available over REST, a typed client, signed webhooks and a Clarity trait — so wallets, treasuries, protocols and other contracts can ship risk without owning an indexer."
               />
             </Reveal>
 
@@ -120,7 +143,7 @@ export function Developers() {
 
           <Reveal delay={0.15}>
             <div className="overflow-hidden rounded-xl border border-border bg-card">
-              <div className="flex items-center gap-1 border-b border-border bg-elevated/60 px-3 py-2 font-mono text-[0.625rem] uppercase tracking-[0.12em]">
+              <div className="flex flex-wrap items-center gap-1 border-b border-border bg-elevated/60 px-3 py-2 font-mono text-[0.625rem] uppercase tracking-[0.12em]">
                 <Code2 className="mr-1.5 size-3.5 text-muted-foreground" />
                 {(Object.keys(TABS) as Array<keyof typeof TABS>).map((key) => (
                   <button

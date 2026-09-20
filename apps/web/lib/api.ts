@@ -80,13 +80,15 @@ export const riskrailApi = {
     address: string,
     input: { metric: AlertMetric; operator: AlertOperator; threshold: string },
   ) {
-    return request(`/alerts/${encodeURIComponent(address)}`, {
+    // Writes are account state and the API checks wallet ownership, so these
+    // two carry the session token while the list above stays public.
+    return authed(`/alerts/${encodeURIComponent(address)}`, {
       method: 'POST',
       body: JSON.stringify({ ...input, channel: 'in_app' }),
     });
   },
   setAlertStatus(id: string, status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED') {
-    return request(`/alerts/${encodeURIComponent(id)}`, {
+    return authed(`/alerts/${encodeURIComponent(id)}`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });

@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { OpenDashboardButton } from "@/components/open-dashboard-button";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "./primitives";
@@ -65,15 +66,13 @@ export function ClosingCta() {
               streams — scored, stressed and hashed in one pass.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button
+              <OpenDashboardButton
                 size="lg"
-                nativeButton={false}
-                render={<Link href="/dashboard" />}
                 className="h-11 bg-brand-solid px-5 text-primary-foreground hover:bg-brand-solid-hover"
               >
                 Open the dashboard
                 <ArrowRight className="size-4" />
-              </Button>
+              </OpenDashboardButton>
               <Button
                 variant="outline"
                 size="lg"

@@ -1,5 +1,6 @@
 import { Attestation } from "@/components/landing/attestation";
 import { ClosingCta } from "@/components/landing/closing-cta";
+import { Consumers } from "@/components/landing/consumers";
 import { Developers } from "@/components/landing/developers";
 import { Fragmentation } from "@/components/landing/fragmentation";
 import { Hero } from "@/components/landing/hero";
@@ -20,6 +21,7 @@ export default function Home() {
         <StressShowcase />
         <Attestation />
         <Protocols />
+        <Consumers />
         <Developers />
         <ClosingCta />
       </main>
