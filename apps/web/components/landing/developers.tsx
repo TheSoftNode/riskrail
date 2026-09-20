@@ -2,34 +2,56 @@
 
 import { Code2 } from "lucide-react";
 import { useState } from "react";
-import { Reveal, SectionHeading } from "./primitives";
+import { PlannedTag, Reveal, SectionHeading } from "./primitives";
 import { cn } from "cn";
 
 const TABS = {
   sdk: {
     label: "TypeScript SDK",
+    planned: false,
+    note: "Implemented in-repo. Not yet published to npm.",
     lines: [
-      ['import { RiskRail } from ', '"@riskrail/sdk"', ";"],
+      ['import { RiskRailClient } from ', '"@riskrail/sdk"', ";"],
       [""],
-      ["const rr = ", "new RiskRail", "({ apiKey });"],
+      ["const rr = ", "new RiskRailClient", "({ baseUrl, apiKey });"],
       [""],
-      ["const risk = ", "await", " rr.risk.get(addr);"],
-      ["const sim  = ", "await", " rr.simulations.run(addr, {"],
+      ["await", " rr.portfolios.risk(addr);"],
+      ["await", " rr.simulations.run(addr, {"],
       ["  shocks: [{ symbol: ", '"sBTC"', ", changeBps: -2000 }],"],
       ["});"],
+      ["await", " rr.webhooks.create(url, [", '"risk.updated"', "]);"],
     ],
   },
   rest: {
     label: "REST",
+    planned: false,
+    note: "Live on the API.",
     lines: [
-      ["GET  /api/v1/portfolios/", "{address}"],
       ["GET  /api/v1/portfolios/", "{address}", "/risk"],
       ["POST /api/v1/portfolios/", "{address}", "/refresh"],
-      [""],
-      ["GET  /api/v1/simulations/presets"],
       ["POST /api/v1/simulations"],
       [""],
-      ["GET  /api/v1/policies/", "{address}"],
+      ["POST /api/v1/auth/challenge"],
+      ["POST /api/v1/auth/verify"],
+      [""],
+      ["POST /api/v1/api-keys"],
+      ["POST /api/v1/webhooks"],
+    ],
+  },
+  hook: {
+    label: "Webhook payload",
+    planned: false,
+    note: "Signature is HMAC-SHA256 over `timestamp.body`.",
+    lines: [
+      ["riskrail-signature: ", "t=1758…,v1=9f2c…"],
+      ["riskrail-event-type: ", "risk.updated"],
+      [""],
+      ["{"],
+      ['  "id": ', '"3f8a…"', ","],
+      ['  "type": ', '"risk.updated"', ","],
+      ['  "address": ', '"SP2ABC…"', ","],
+      ['  "data": ', "{ healthFactorE4: 12700 }"],
+      ["}"],
     ],
   },
 } as const;
@@ -38,17 +60,20 @@ const CAPS = [
   {
     code: "WS",
     title: "Realtime",
+    planned: false,
     body: "Address-scoped Socket.IO rooms push portfolio, risk and breach events the moment a snapshot lands.",
   },
   {
     code: "ALERT",
     title: "Edge-triggered alerts",
+    planned: false,
     body: "A rule fires when a metric crosses into breach — not on every snapshot while it stays there.",
   },
   {
     code: "HOOK",
     title: "Signed webhooks",
-    body: "Risk events delivered to your endpoint with a shared secret and replayable delivery records.",
+    planned: false,
+    body: "Risk events delivered to your endpoint, HMAC-signed with a per-endpoint secret, with delivery records and retry backoff.",
   },
 ];
 
@@ -64,7 +89,7 @@ export function Developers() {
               <SectionHeading
                 eyebrow="For developers"
                 title="Don't rebuild a risk engine inside your wallet."
-                lede="The same deterministic metrics the dashboard renders are available over REST, a typed SDK and webhooks — so wallets, treasuries and protocols can ship risk without owning an indexer."
+                lede="The same deterministic metrics the dashboard renders are available over REST, a typed client and signed webhooks — so wallets, treasuries and protocols can ship risk without owning an indexer."
               />
             </Reveal>
 
@@ -79,8 +104,9 @@ export function Developers() {
                       {c.code}
                     </span>
                     <div>
-                      <h3 className="text-[0.875rem] font-semibold tracking-tight">
+                      <h3 className="flex flex-wrap items-center gap-2 text-[0.875rem] font-semibold tracking-tight">
                         {c.title}
+                        {c.planned ? <PlannedTag /> : null}
                       </h3>
                       <p className="mt-1 text-[0.8125rem] leading-relaxed text-muted-foreground">
                         {c.body}
@@ -139,8 +165,9 @@ export function Developers() {
 
               <div className="border-t border-border px-5 py-3">
                 <p className="text-[0.75rem] text-muted-foreground">
-                  Responses carry the source block and valuation coverage, so a
-                  caller always knows which chain state a number came from.
+                  {TABS[tab].note} Responses carry the source block and
+                  valuation coverage, so a caller always knows which chain state
+                  a number came from.
                 </p>
               </div>
             </div>

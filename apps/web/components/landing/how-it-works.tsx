@@ -33,7 +33,7 @@ const STAGES = [
     n: "04",
     code: "ATTEST",
     title: "Verify the report",
-    body: "The full report is canonicalized and hashed with SHA-256. The digest is anchored in RiskRail's Clarity registry, so anyone can re-hash the JSON and confirm nothing was edited after the fact.",
+    body: "The full report is canonicalized and hashed with SHA-256, and stored alongside its digest. That digest can then be anchored in RiskRail's Clarity registry, so anyone can re-hash the JSON and confirm nothing was edited after the fact.",
     emits: "risk-registry.clar",
   },
 ];

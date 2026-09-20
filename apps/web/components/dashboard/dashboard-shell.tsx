@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, Layers, Waves, Bell, FileLock2, Menu, X } from "lucide-react";
+import { LayoutGrid, Layers, Waves, Bell, FileLock2, KeyRound, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
@@ -91,6 +91,17 @@ export function DashboardShell({
             </a>
           ))}
         </nav>
+
+        <div className={cn("px-3 pb-4 lg:mt-2 lg:block", open ? "block" : "hidden")}>
+          <Link
+            href="/developers"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <KeyRound className="size-4" />
+            Developers
+          </Link>
+        </div>
 
         <div className="hidden items-center gap-2 px-5 pb-6 lg:absolute lg:bottom-0 lg:flex">
           <span className="size-1.5 rounded-full bg-brand" />

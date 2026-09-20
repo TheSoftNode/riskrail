@@ -310,10 +310,11 @@ export function RiskInstrument() {
           {/* Plain-language anchor: the dial and the threshold mean nothing to a
               reader who does not already know what a health factor is. */}
           <p className="mt-3 text-[0.75rem] leading-relaxed text-muted-foreground">
-            Health factor is collateral against debt. Below{" "}
-            <span className="text-foreground">1.00</span> the position can be
-            liquidated — so this wallet survives a 35% BTC drop, and does not
-            survive 40%.
+            Health factor compares the position against the protocol&apos;s
+            partial-liquidation threshold. Above{" "}
+            <span className="text-foreground">1.00</span> it sits clear of that
+            threshold; at or below, it has crossed it and may become eligible
+            for liquidation under the protocol&apos;s own rules.
           </p>
         </div>
 

@@ -15,6 +15,16 @@ jobs:
       - run: corepack enable
       - run: corepack prepare pnpm@10.17.1 --activate
       - run: pnpm install --no-frozen-lockfile
+      - run: pnpm db:generate
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+
+      # apps/web is npm-managed and excluded from the pnpm workspace,
+      # so the turbo tasks above never reach it.
+      - run: npm ci
+        working-directory: apps/web
+      - run: npm run typecheck
+        working-directory: apps/web
+      - run: npm run build
+        working-directory: apps/web

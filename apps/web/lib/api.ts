@@ -1,4 +1,10 @@
+import { accessToken } from '@/lib/auth';
 import type {
+  Profile,
+  ApiKey,
+  ApiKeyCreated,
+  WebhookEndpoint,
+  WebhookCreated,
   AlertMetric,
   AlertOperator,
   AlertsResponse,
@@ -34,6 +40,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(message);
   }
   return (await response.json()) as T;
+}
+
+/** Same as `request`, but attaches the session token and refuses without one. */
+async function authed<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = await accessToken();
+  if (!token) throw new Error('Sign in with your wallet to manage developer settings.');
+  return request<T>(path, {
+    ...init,
+    headers: { authorization: `Bearer ${token}`, ...(init?.headers ?? {}) },
+  });
 }
 
 export const riskrailApi = {
@@ -77,5 +93,48 @@ export const riskrailApi = {
   },
   policy(address: string) {
     return request<PolicyResponse>(`/policies/${encodeURIComponent(address)}`);
+  },
+
+  // ── developer settings (wallet session required) ──────────────────────
+  me() {
+    return authed<Profile>('/auth/me');
+  },
+  updateProfile(input: { email?: string; notifyByEmail?: boolean }) {
+    return authed<Omit<Profile, 'userId' | 'wallets'>>('/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+    });
+  },
+
+  apiKeys() {
+    return authed<{ keys: ApiKey[] }>('/api-keys');
+  },
+  createApiKey(name: string, live: boolean) {
+    return authed<ApiKeyCreated>('/api-keys', {
+      method: 'POST',
+      body: JSON.stringify({ name, live }),
+    });
+  },
+  revokeApiKey(id: string) {
+    return authed(`/api-keys/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  },
+
+  webhooks() {
+    return authed<{ endpoints: WebhookEndpoint[] }>('/webhooks');
+  },
+  createWebhook(url: string, events: string[]) {
+    return authed<WebhookCreated>('/webhooks', {
+      method: 'POST',
+      body: JSON.stringify({ url, events }),
+    });
+  },
+  setWebhookEnabled(id: string, enabled: boolean) {
+    return authed(`/webhooks/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ enabled }),
+    });
+  },
+  deleteWebhook(id: string) {
+    return authed(`/webhooks/${encodeURIComponent(id)}`, { method: 'DELETE' });
   },
 };

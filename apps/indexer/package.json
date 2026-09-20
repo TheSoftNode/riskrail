@@ -15,14 +15,15 @@
     "@riskrail/adapter-bitpay": "workspace:*",
     "@riskrail/adapter-core": "workspace:*",
     "@riskrail/adapter-native-stacks": "workspace:*",
+    "@riskrail/adapter-zest-v2": "workspace:*",
     "@riskrail/database": "workspace:*",
     "@riskrail/logger": "workspace:*",
     "@riskrail/oracle": "workspace:*",
     "@riskrail/portfolio-engine": "workspace:*",
     "@riskrail/queue": "workspace:*",
     "@riskrail/stacks": "workspace:*",
-    "bullmq": "6.3.6",
-    "@riskrail/adapter-zest-v2": "workspace:*"
+    "@riskrail/webhooks": "workspace:*",
+    "bullmq": "6.3.6"
   },
   "devDependencies": {
     "tsx": "^4.20.5",

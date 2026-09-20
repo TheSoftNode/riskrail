@@ -171,3 +171,61 @@ export interface RealtimeMessage {
   data: Record<string, unknown>;
   timestamp: string;
 }
+
+export interface ApiKey {
+  id: string;
+  name: string;
+  prefix: string;
+  lastUsedAt: string | null;
+  createdAt: string;
+}
+
+export interface ApiKeyCreated extends Omit<ApiKey, 'lastUsedAt'> {
+  /** Shown once at creation and never returned again. */
+  token: string;
+  warning: string;
+}
+
+export interface WebhookDelivery {
+  id: string;
+  eventId: string;
+  statusCode: number | null;
+  attempt: number;
+  deliveredAt: string | null;
+  createdAt: string;
+}
+
+export interface WebhookEndpoint {
+  id: string;
+  url: string;
+  events: string[];
+  enabled: boolean;
+  createdAt: string;
+  deliveries: WebhookDelivery[];
+}
+
+export interface WebhookCreated {
+  id: string;
+  url: string;
+  events: string[];
+  enabled: boolean;
+  createdAt: string;
+  /** Shown once at creation and never returned again. */
+  secret: string;
+  warning: string;
+}
+
+export const WEBHOOK_EVENT_TYPES = [
+  'portfolio.updated',
+  'risk.updated',
+  'alert.triggered',
+  'policy.breached',
+] as const;
+
+export interface Profile {
+  userId: string;
+  email: string | null;
+  emailVerified: boolean;
+  notifyByEmail: boolean;
+  wallets: Array<{ address: string; lastIndexedAt: string | null }>;
+}

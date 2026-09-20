@@ -89,8 +89,8 @@ export function StressShowcase() {
         <Reveal>
           <SectionHeading
             eyebrow="Stress testing"
-            title="Find the drawdown that breaks the position — before it happens."
-            lede="Shocks are applied to the latest indexed positions and re-scored against each protocol's own liquidation thresholds. Nothing is executed and no funds move; it is arithmetic on a copy of your portfolio."
+            title="See how close a position is to breaking, before it does."
+            lede="Shocks are applied to the latest indexed positions and re-scored against each protocol's own liquidation thresholds. RiskRail marks positions with its own price source, so these are modeled estimates rather than a protocol's execution-time verdict. Nothing is executed and no funds move."
           />
         </Reveal>
 
@@ -113,7 +113,7 @@ export function StressShowcase() {
                 Health factor under BTC drawdown
               </h3>
               <p className="mt-1 text-[0.75rem] text-muted-foreground">
-                Partial-liquidation threshold at 1.00
+                Modeled partial-liquidation threshold at 1.00
               </p>
 
               <div className="mt-5 h-[16.25rem] w-full">
@@ -208,9 +208,10 @@ export function StressShowcase() {
 
               <p className="mt-4 flex items-start gap-2 rounded-lg border border-warning/25 bg-warning/[0.07] px-3 py-2 text-[0.75rem] leading-relaxed text-foreground">
                 <TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-warning" />
-                A 35% BTC drawdown takes this position to 0.98 — across the
-                partial-liquidation threshold. RiskRail raises it as a breach
-                rather than leaving it in a table.
+                A 35% BTC drawdown is estimated to take this position to
+                0.98 — across its modeled partial-liquidation threshold.
+                RiskRail raises that as a breach rather than leaving it in a
+                table.
               </p>
               </div>
 

@@ -6,6 +6,7 @@ import {
   getCurrentPortfolio,
   markRiskSnapshotPublished,
   persistRiskSnapshot,
+  planDeliveries,
   prisma,
 } from '@riskrail/database';
 import { createLogger } from '@riskrail/logger';
@@ -15,13 +16,17 @@ import {
   JobName,
   QueueName,
   RealtimeChannel,
+  type WebhookDeliverJob,
   type AlertEvaluateJob,
   type RiskAttestationJob,
   type RiskRecalculateJob,
 } from '@riskrail/queue';
 import { calculatePortfolioRisk, runDefaultStressScenarios } from '@riskrail/risk-engine';
 import { RiskPolicyReader, RiskRegistryPublisher } from '@riskrail/riskrail-contracts';
+import { createMailer, dedupeKey, renderAlertEmail } from '@riskrail/notifications';
+import { buildEvent } from '@riskrail/webhooks';
 import { crossedIntoBreach, metricValue, policyChecks, type MetricSnapshot } from './alert-evaluator.js';
+import { deliver } from './webhook-delivery.js';
 
 const METHODOLOGY_VERSION = 'riskrail-v1.2';
 const log = createLogger('riskrail-worker');
@@ -29,6 +34,8 @@ const connection = createRedisConnection();
 const realtimePublisher = createRedisConnection();
 const attestationQueue = createQueue<RiskAttestationJob>(QueueName.Attestations, connection);
 const alertQueue = createQueue<AlertEvaluateJob>(QueueName.Alerts, connection);
+const webhookQueue = createQueue<WebhookDeliverJob>(QueueName.Webhooks, connection);
+const mailer = createMailer();
 
 const riskWorker = new Worker<RiskRecalculateJob>(
   QueueName.Risk,
@@ -88,18 +95,13 @@ const riskWorker = new Worker<RiskRecalculateJob>(
       methodologyVersion: METHODOLOGY_VERSION,
     });
 
-    await realtimePublisher.publish(RealtimeChannel, JSON.stringify({
-      event: 'risk.updated',
-      address,
-      data: {
-        riskSnapshotId: snapshot.id,
-        riskLevel: risk.riskLevel,
-        riskScoreBps: risk.riskScoreBps,
-        healthFactorE4: risk.worstHealthFactorE4 ?? null,
-        reportHash,
-      },
-      timestamp: new Date().toISOString(),
-    }));
+    await emit('risk.updated', address, {
+      riskSnapshotId: snapshot.id,
+      riskLevel: risk.riskLevel,
+      riskScoreBps: risk.riskScoreBps,
+      healthFactorE4: risk.worstHealthFactorE4 ?? null,
+      reportHash,
+    });
 
     await alertQueue.add(
       JobName.AlertEvaluate,
@@ -180,6 +182,16 @@ const alertWorker = new Worker<AlertEvaluateJob>(
         operator: rule.operator,
         threshold: rule.threshold,
         value: String(currentValue),
+      });
+      await sendAlertEmail({
+        address: snapshot.wallet.address,
+        ruleId: rule.id,
+        sourceBlock: snapshot.sourceBlock.toString(),
+        metricLabel: rule.metric,
+        comparison: rule.operator,
+        observed: String(currentValue),
+        threshold: rule.threshold.toString(),
+        source: 'local',
       });
     }
 
@@ -282,6 +294,16 @@ async function evaluateOnchainPolicy(
         threshold: String(check.threshold),
         value: String(currentValue),
       });
+      await sendAlertEmail({
+        address: snapshot.wallet.address,
+        ruleId: `policy:${check.metric}`,
+        sourceBlock: snapshot.sourceBlock.toString(),
+        metricLabel: check.metric,
+        comparison: check.operator,
+        observed: String(currentValue),
+        threshold: String(check.threshold),
+        source: 'on-chain',
+      });
     }
     return triggered;
   } catch (error) {
@@ -290,18 +312,128 @@ async function evaluateOnchainPolicy(
   }
 }
 
+/**
+ * Emails the wallet's owner, if there is one and they have opted in. Silent when
+ * SMTP is unconfigured — email is optional, and a missing mailer must not stop
+ * the in-app alert that already fired.
+ */
+async function sendAlertEmail(input: {
+  address: string;
+  ruleId: string;
+  sourceBlock: string;
+  metricLabel: string;
+  comparison: string;
+  observed: string;
+  threshold: string;
+  source: 'local' | 'on-chain';
+}) {
+  if (!mailer.enabled) return;
+
+  try {
+    const wallet = await prisma.wallet.findUnique({
+      where: { address: input.address },
+      select: { user: { select: { id: true, email: true, notifyByEmail: true } } },
+    });
+    const user = wallet?.user;
+    if (!user?.email || !user.notifyByEmail) return;
+
+    const key = dedupeKey({ userId: user.id, ruleId: input.ruleId, sourceBlock: input.sourceBlock });
+    const email = renderAlertEmail({
+      address: input.address,
+      metricLabel: input.metricLabel,
+      comparison: input.comparison,
+      observed: input.observed,
+      threshold: input.threshold,
+      source: input.source,
+      dashboardUrl: `${process.env.WEB_URL ?? 'http://localhost:3000'}/dashboard?address=${encodeURIComponent(input.address)}`,
+    });
+
+    // The unique dedupeKey is what actually prevents a double-send; a race
+    // between two workers loses here rather than emailing twice.
+    try {
+      await prisma.notification.create({
+        data: { userId: user.id, channel: 'email', subject: email.subject, body: email.text, dedupeKey: key },
+      });
+    } catch {
+      return; // already queued by another worker
+    }
+
+    const result = await mailer.send(user.email, email);
+    await prisma.notification.update({
+      where: { dedupeKey: key },
+      data: result.sent ? { sentAt: new Date() } : { error: result.error ?? 'unknown' },
+    });
+    if (result.sent) log.info({ address: input.address }, 'alert email sent');
+    else log.warn({ address: input.address, error: result.error }, 'alert email failed');
+  } catch (error) {
+    log.warn({ error, address: input.address }, 'alert email skipped');
+  }
+}
+
 async function publishRealtime(event: 'alert.triggered' | 'policy.breached', address: string, data: Record<string, unknown>) {
+  await emit(event, address, data);
+}
+
+/**
+ * Every risk event goes to two places: the Redis channel the dashboard listens
+ * on, and the webhook queue. Routing both through one function means a new
+ * event type cannot reach the UI while silently skipping subscribers.
+ */
+async function emit(
+  event: 'portfolio.updated' | 'risk.updated' | 'alert.triggered' | 'policy.breached',
+  address: string,
+  data: Record<string, unknown>,
+) {
   await realtimePublisher.publish(RealtimeChannel, JSON.stringify({
     event,
     address,
     data,
     timestamp: new Date().toISOString(),
   }));
+
+  try {
+    const built = buildEvent(event, address, data);
+    for (const target of await planDeliveries(built.type)) {
+      await webhookQueue.add(
+        JobName.WebhookDeliver,
+        { endpointId: target.endpointId, event: built, attempt: 1 },
+        { jobId: `wh:${built.id}:${target.endpointId}` },
+      );
+    }
+  } catch (error) {
+    // A webhook fan-out failure must never take down risk processing.
+    log.warn({ error, event, address }, 'webhook fan-out failed');
+  }
 }
+
+const webhookWorker = new Worker<WebhookDeliverJob>(
+  QueueName.Webhooks,
+  async (bullJob) => {
+    const job = bullJob.data;
+    const outcome = await deliver(job);
+    if (outcome.delivered) {
+      log.info({ endpointId: job.endpointId, eventId: job.event.id }, 'webhook delivered');
+      return outcome;
+    }
+    if (outcome.retryInSeconds !== undefined) {
+      await webhookQueue.add(
+        JobName.WebhookDeliver,
+        { ...job, attempt: job.attempt + 1 },
+        { delay: outcome.retryInSeconds * 1000, jobId: `wh:${job.event.id}:${job.endpointId}:${job.attempt + 1}` },
+      );
+      log.warn({ endpointId: job.endpointId, attempt: job.attempt, retryInSeconds: outcome.retryInSeconds }, 'webhook retry scheduled');
+    } else {
+      log.warn({ endpointId: job.endpointId, statusCode: outcome.statusCode, error: outcome.error }, 'webhook dropped');
+    }
+    return outcome;
+  },
+  { connection },
+);
 
 riskWorker.on('failed', (job, error) => log.error({ jobId: job?.id, error }, 'risk job failed'));
 alertWorker.on('failed', (job, error) => log.error({ jobId: job?.id, error }, 'alert evaluation job failed'));
 attestationWorker.on('failed', (job, error) => log.error({ jobId: job?.id, error }, 'attestation job failed'));
+webhookWorker.on('failed', (job, error) => log.error({ jobId: job?.id, error }, 'webhook delivery job failed'));
 log.info({ methodologyVersion: METHODOLOGY_VERSION }, 'risk worker online');
 
 export function canonicalJson(value: unknown): string {

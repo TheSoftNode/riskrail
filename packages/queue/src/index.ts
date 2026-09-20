@@ -1,4 +1,4 @@
-import IORedis from 'ioredis';
+import { Redis } from 'ioredis';
 import { Queue } from 'bullmq';
 
 export interface PortfolioRefreshJob {
@@ -23,6 +23,18 @@ export interface AlertEvaluateJob {
   requestedAt: string;
 }
 
+export interface WebhookDeliverJob {
+  endpointId: string;
+  event: {
+    id: string;
+    type: 'portfolio.updated' | 'risk.updated' | 'alert.triggered' | 'policy.breached';
+    address: string;
+    createdAt: string;
+    data: Record<string, unknown>;
+  };
+  attempt: number;
+}
+
 export interface RiskAttestationJob {
   address: string;
   riskSnapshotId: string;
@@ -31,7 +43,7 @@ export interface RiskAttestationJob {
 }
 
 export function createRedisConnection(url = process.env.REDIS_URL ?? 'redis://localhost:6379') {
-  return new IORedis(url, {
+  return new Redis(url, {
     maxRetriesPerRequest: null,
     enableReadyCheck: true,
   });
@@ -71,4 +83,5 @@ export const JobName = {
   RiskRecalculate: 'risk.recalculate',
   RiskAttest: 'risk.attest',
   AlertEvaluate: 'alert.evaluate',
+  WebhookDeliver: 'webhook.deliver',
 } as const;

@@ -1,0 +1,34 @@
+{
+  "chain": "stacks",
+  "uuid": "riskrail-protocol-activity",
+  "name": "RiskRail protocol activity",
+  "version": 1,
+  "networks": {
+    "testnet": {
+      "if_this": {
+        "scope": "print_event",
+        "contract_identifier": "DEPLOYER.bitpay-core",
+        "contains": "stream"
+      },
+      "then_that": {
+        "http_post": {
+          "url": "http://localhost:4000/api/v1/chainhook/protocol",
+          "authorization_header": "Bearer CHANGE_ME"
+        }
+      }
+    },
+    "mainnet": {
+      "if_this": {
+        "scope": "contract_call",
+        "contract_identifier": "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.v0-market-vault",
+        "method": "get-position"
+      },
+      "then_that": {
+        "http_post": {
+          "url": "https://api.riskrail.dev/api/v1/chainhook/protocol",
+          "authorization_header": "Bearer CHANGE_ME"
+        }
+      }
+    }
+  }
+}

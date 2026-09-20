@@ -4,15 +4,17 @@ import type { ProtocolAdapter } from '@riskrail/adapter-core';
 import { BitPayAdapter, StacksBitPayReader } from '@riskrail/adapter-bitpay';
 import { NativeStacksAdapter } from '@riskrail/adapter-native-stacks';
 import { StacksZestV2Reader, ZestV2Adapter, zestV2ContractsFromEnv } from '@riskrail/adapter-zest-v2';
-import { failIndexingRun, persistPortfolio, prisma } from '@riskrail/database';
+import { failIndexingRun, persistPortfolio, planDeliveries, prisma } from '@riskrail/database';
 import { createLogger } from '@riskrail/logger';
 import { CoinGeckoPriceOracle } from '@riskrail/oracle';
 import { buildPortfolio, valuePositions } from '@riskrail/portfolio-engine';
+import { buildEvent } from '@riskrail/webhooks';
 import {
   createQueue,
   createRedisConnection,
   JobName,
   QueueName,
+  type WebhookDeliverJob,
   type PortfolioRefreshJob,
   type RiskRecalculateJob,
   RealtimeChannel,
@@ -29,6 +31,7 @@ const priceOracle = new CoinGeckoPriceOracle(
 );
 const connection = createRedisConnection();
 const riskQueue = createQueue<RiskRecalculateJob>(QueueName.Risk, connection);
+const webhookQueue = createQueue<WebhookDeliverJob>(QueueName.Webhooks, connection);
 const realtimePublisher = createRedisConnection();
 
 function createAdapters(): ProtocolAdapter[] {
@@ -87,12 +90,32 @@ async function indexWallet(job: PortfolioRefreshJob) {
     const portfolio = buildPortfolio(address, valued);
     await persistPortfolio({ portfolio, blockHeight, correlationId });
 
+    const portfolioEvent = {
+      blockHeight,
+      positionCount: valued.length,
+      valuationCoverageBps: portfolio.valuationCoverageBps,
+    };
+
     await realtimePublisher.publish(RealtimeChannel, JSON.stringify({
       event: 'portfolio.updated',
       address,
-      data: { blockHeight, positionCount: valued.length, valuationCoverageBps: portfolio.valuationCoverageBps },
+      data: portfolioEvent,
       timestamp: new Date().toISOString(),
     }));
+
+    // Subscribers get the same event the dashboard does.
+    try {
+      const built = buildEvent('portfolio.updated', address, portfolioEvent);
+      for (const target of await planDeliveries(built.type)) {
+        await webhookQueue.add(
+          JobName.WebhookDeliver,
+          { endpointId: target.endpointId, event: built, attempt: 1 },
+          { jobId: `wh:${built.id}:${target.endpointId}` },
+        );
+      }
+    } catch (error) {
+      log.warn({ error, address }, 'webhook fan-out failed');
+    }
 
     await riskQueue.add(
       JobName.RiskRecalculate,

@@ -24,12 +24,35 @@ enum AlertStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  wallets   Wallet[]
-  apiKeys   ApiKey[]
-  webhooks  WebhookEndpoint[]
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  // Optional: an account is usable with wallet auth alone. Email is only
+  // needed to receive alert notifications.
+  email           String?  @unique
+  emailVerifiedAt DateTime?
+  notifyByEmail   Boolean  @default(true)
+  wallets         Wallet[]
+  apiKeys         ApiKey[]
+  webhooks        WebhookEndpoint[]
+  notifications   Notification[]
+}
+
+/// One row per delivered (or attempted) notification, so a user can see what
+/// was sent and the worker can avoid sending the same alert twice.
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel    String
+  subject    String
+  body       String
+  dedupeKey  String    @unique
+  sentAt     DateTime?
+  error      String?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model Wallet {
@@ -237,7 +260,7 @@ model WebhookEndpoint {
   userId       String
   user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   url          String
-  secretHash   String
+  secretCipher String   // AES-256-GCM, see packages/webhooks
   events       String[]
   enabled      Boolean           @default(true)
   createdAt    DateTime          @default(now())

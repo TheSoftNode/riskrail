@@ -240,3 +240,17 @@ function toPrismaPositionType(type: PositionType): PrismaPositionType {
 }
 
 export * from '@prisma/client';
+
+/**
+ * Which enabled endpoints subscribe to this event type. Callers own the queue,
+ * so this stays a plain query.
+ */
+export async function planDeliveries(
+  type: string,
+): Promise<Array<{ endpointId: string }>> {
+  const endpoints = await prisma.webhookEndpoint.findMany({
+    where: { enabled: true, events: { has: type } },
+    select: { id: true },
+  });
+  return endpoints.map((e) => ({ endpointId: e.id }));
+}

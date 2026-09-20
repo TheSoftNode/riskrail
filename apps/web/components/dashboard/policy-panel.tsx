@@ -1,7 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { FileLock2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ExternalLink, FileLock2, Loader2, PenLine } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { explorerTxUrl, writeRiskPolicy, type PolicyInput } from "@/lib/policy";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,10 +15,54 @@ import { riskrailApi } from "@/lib/api";
 import { formatBps, formatHealth, shorten } from "@/lib/format";
 
 export function PolicyPanel({ address }: { address: string }) {
+  const queryClient = useQueryClient();
   const policy = useQuery({
     queryKey: ["policy", address],
     queryFn: () => riskrailApi.policy(address),
   });
+
+  const [editing, setEditing] = useState(false);
+  const [txid, setTxid] = useState<string | null>(null);
+  const [draft, setDraft] = useState<PolicyInput>({
+    maxRiskScore: 70,
+    minHealthFactor: 1.3,
+    maxProtocolConcentration: 50,
+    minLiquidityScore: 40,
+  });
+
+  const write = useMutation({
+    mutationFn: () => writeRiskPolicy(draft),
+    onSuccess: async (id) => {
+      setTxid(id);
+      setEditing(false);
+      toast.success("Policy transaction submitted");
+      // The contract write is not mined yet; refetch once it likely is.
+      setTimeout(
+        () => void queryClient.invalidateQueries({ queryKey: ["policy", address] }),
+        20_000,
+      );
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const field = (key: keyof PolicyInput, label: string, step: string, suffix: string) => (
+    <div className="grid gap-1.5">
+      <Label
+        htmlFor={`policy-${key}`}
+        className="text-[0.6875rem] uppercase tracking-wider text-muted-foreground"
+      >
+        {label} ({suffix})
+      </Label>
+      <Input
+        id={`policy-${key}`}
+        type="number"
+        step={step}
+        value={draft[key]}
+        onChange={(e) => setDraft({ ...draft, [key]: Number(e.target.value) })}
+        className="h-9"
+      />
+    </div>
+  );
 
   const value = policy.data?.policy;
   const configured = policy.data?.configured;
@@ -91,11 +141,62 @@ export function PolicyPanel({ address }: { address: string }) {
         ) : (
           <p className="mt-5 rounded-lg border border-dashed border-border px-4 py-6 text-[0.8125rem] leading-relaxed text-muted-foreground">
             No policy is stored on-chain for this wallet yet. RiskRail keeps
-            using local alert rules until the wallet writes one. Writing a
-            policy from the browser lands once the contracts are deployed to
-            testnet and the transaction flow is verified.
+            using local alert rules until the wallet writes one.
           </p>
         )}
+        {configured ? (
+          <div className="mt-5 border-t border-border pt-5">
+            {editing ? (
+              <div className="grid gap-3 rounded-xl border border-border bg-elevated/50 p-4">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  {field("maxRiskScore", "Max risk score", "1", "/100")}
+                  {field("minHealthFactor", "Min health factor", "0.01", "ratio")}
+                  {field("maxProtocolConcentration", "Max concentration", "1", "%")}
+                  {field("minLiquidityScore", "Min liquidity", "1", "%")}
+                </div>
+                <p className="text-[0.75rem] leading-relaxed text-muted-foreground">
+                  This writes to <code className="font-mono">risk-policy.clar</code>{" "}
+                  from your wallet. The contract keys on the signing address, so
+                  the limits belong to you, not to RiskRail. A network fee applies.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    disabled={write.isPending}
+                    onClick={() => write.mutate()}
+                    className="h-9 bg-brand-solid text-primary-foreground hover:bg-brand-solid-hover"
+                  >
+                    {write.isPending ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <PenLine className="size-4" />
+                    )}
+                    {write.isPending ? "Waiting for wallet…" : "Sign and write policy"}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+                <PenLine className="size-3.5" />
+                {value ? "Update policy on-chain" : "Set a policy on-chain"}
+              </Button>
+            )}
+
+            {txid ? (
+              <a
+                href={explorerTxUrl(txid)}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-healthy/25 bg-healthy/[0.07] px-3 py-2 font-mono text-[0.75rem] text-healthy"
+              >
+                <ExternalLink className="size-3.5" />
+                submitted · {txid.slice(0, 18)}…
+              </a>
+            ) : null}
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );

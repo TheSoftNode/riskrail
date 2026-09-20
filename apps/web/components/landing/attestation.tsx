@@ -19,7 +19,7 @@ const CHAIN = [
   {
     icon: Link2,
     title: "Anchored in Clarity",
-    body: "Only an authorized publisher writes the digest to risk-registry.clar, with the source block and freshness.",
+    body: "An authorized publisher writes the digest to risk-registry.clar with the source block and freshness. The contract and publisher are written; this step is disabled until they are deployed.",
     mono: "risk-registry.clar",
   },
 ];
@@ -34,17 +34,18 @@ export function Attestation() {
               <SectionHeading
                 eyebrow="Attestations"
                 title="Don't trust the dashboard. Re-hash the report."
-                lede="The heavy analytics stay off-chain, where they can read prices and protocol state. What goes on-chain is the commitment — a 32-byte digest anyone can check against the JSON we served them."
+                lede="The heavy analytics stay off-chain, where they can read prices and protocol state. What goes on-chain is the commitment — a 32-byte digest anyone can check against the JSON we served them. Hashing runs today; the publisher and registry contract are in the repository and switch on once deployed."
               />
             </Reveal>
 
             <Reveal delay={0.1}>
               <ul className="mt-8 space-y-3">
                 {[
-                  "Full report kept off-chain and served alongside its digest",
+                  "Full report kept off-chain and served alongside its digest — running today",
                   "Snapshot history is append-only — nothing is overwritten",
                   "Freshness is readable on-chain, so stale risk can be rejected",
                   "Publisher key lives in a worker, never in the API process",
+                  "On-chain publication stays off until the registry is deployed",
                   "Contracts hold zero user funds — reads only, by design",
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-2.5">

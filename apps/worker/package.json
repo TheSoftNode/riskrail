@@ -16,10 +16,12 @@
     "@riskrail/adapter-core": "workspace:*",
     "@riskrail/database": "workspace:*",
     "@riskrail/logger": "workspace:*",
+    "@riskrail/notifications": "workspace:*",
     "@riskrail/queue": "workspace:*",
     "@riskrail/risk-engine": "workspace:*",
-    "bullmq": "6.3.6",
-    "@riskrail/riskrail-contracts": "workspace:*"
+    "@riskrail/riskrail-contracts": "workspace:*",
+    "@riskrail/webhooks": "workspace:*",
+    "bullmq": "6.3.6"
   },
   "devDependencies": {
     "tsx": "^4.20.5",

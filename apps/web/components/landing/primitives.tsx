@@ -69,6 +69,24 @@ export function IllustrativeTag({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Marks a capability the repository does not implement yet. Distinct from
+ * IllustrativeTag, which marks real features shown with worked-example numbers.
+ */
+export function PlannedTag({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-[0.625rem] font-medium uppercase tracking-wider text-warning",
+        className,
+      )}
+    >
+      <span className="size-1 rounded-full bg-warning" />
+      Planned
+    </span>
+  );
+}
+
 export function SectionHeading({
   eyebrow,
   title,

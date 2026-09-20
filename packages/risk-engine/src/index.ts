@@ -1,4 +1,4 @@
-import Decimal from 'decimal.js';
+import { Decimal } from 'decimal.js';
 import type { NormalizedPosition } from '@riskrail/adapter-core';
 import type { RiskLevel } from '@riskrail/shared-types';
 import { deriveLendingMetrics } from '@riskrail/portfolio-engine';
