@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "bullmq": "6.3.6",
-    "ioredis": "^5.7.0"
+    "ioredis": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",
