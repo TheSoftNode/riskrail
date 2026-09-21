@@ -100,7 +100,8 @@ export default function RestApi() {
           <C>404</C> if the wallet has not been indexed. <C>healthFactorE4</C> and{" "}
           <C>liquidationDistanceBps</C> are <C>null</C> when there is no debt. See{" "}
           <A href="/docs/concepts#no-debt">A wallet with no debt</A>. <C>onchain</C> carries the
-          attestation <C>txId</C> once the snapshot has been published.
+          attestation <C>txId</C> once the snapshot has been broadcast. Its <C>snapshotId</C> stays{" "}
+          <C>null</C> until the transaction is mined and Chainhook confirms it.
         </P>
       </Endpoint>
 

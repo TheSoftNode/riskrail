@@ -10,7 +10,14 @@ import {
   jobId,
 } from '@rivisk/queue';
 import { isStacksPrincipal } from '@rivisk/stacks';
-import { extractAffected, type ChainhookPayload } from './chainhook.parser.js';
+import {
+  extractAffected,
+  extractRegistryConfirmations,
+  type ChainhookPayload,
+} from './chainhook.parser.js';
+
+/** The worker stores whatever the broadcast returned, so match both spellings. */
+const spellings = (txId: string) => [txId, `0x${txId}`];
 
 /**
  * Turns a Chainhook callback into incremental indexing: only the wallets named
@@ -60,6 +67,47 @@ export class ChainhookService implements OnModuleDestroy {
       reorg: affected.reorg,
       seen: candidates.length,
       queued,
+      receivedAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Records which on-chain snapshot id each attestation became.
+   *
+   * Deliberately does not re-index: publishing changes nothing about the
+   * wallet, and a re-index would produce a new snapshot that the worker then
+   * attests again, so every confirmation would pay for the next one.
+   */
+  async confirmAttestations(payload: ChainhookPayload) {
+    const { confirmed, rolledBack } = extractRegistryConfirmations(payload);
+
+    // A reorg in the same payload is applied first, so a transaction that was
+    // rolled back and re-mined ends up confirmed.
+    let cleared = 0;
+    for (const txId of rolledBack) {
+      const result = await prisma.riskSnapshot.updateMany({
+        where: { onchainTxId: { in: spellings(txId) } },
+        data: { onchainSnapshotId: null },
+      });
+      cleared += result.count;
+    }
+
+    let matched = 0;
+    for (const item of confirmed) {
+      const result = await prisma.riskSnapshot.updateMany({
+        where: { onchainTxId: { in: spellings(item.txId) } },
+        data: { onchainSnapshotId: item.snapshotId },
+      });
+      matched += result.count;
+    }
+
+    return {
+      accepted: true,
+      source: 'risk-registry',
+      confirmed: confirmed.length,
+      matched,
+      rolledBack: rolledBack.length,
+      cleared,
       receivedAt: new Date().toISOString(),
     };
   }

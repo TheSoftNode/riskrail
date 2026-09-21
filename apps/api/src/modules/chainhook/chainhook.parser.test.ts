@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { collectPrincipals, extractAffected } from './chainhook.parser.js';
+import {
+  collectPrincipals,
+  extractAffected,
+  extractRegistryConfirmations,
+} from './chainhook.parser.js';
 
 const WALLET = 'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7';
 const OTHER = 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE';
@@ -162,5 +166,57 @@ describe('real Zest vault print event', () => {
     const { addresses } = extractAffected(payload);
     expect(addresses).toContain('SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7');
     expect(addresses.some((a) => a.includes('.'))).toBe(false);
+  });
+});
+
+describe('extractRegistryConfirmations', () => {
+  const HASH = '0877e7b2a15bbea25fba100f14bea0321d2cfdab3c2278b627026cba93981e55';
+  const tx = (hash: string, result: string, success = true) => ({
+    transaction_identifier: { hash },
+    metadata: { success, result },
+  });
+
+  it('reads the snapshot id from the (ok uN) return value', () => {
+    const result = extractRegistryConfirmations({
+      apply: [{ block_identifier: { index: 454753 }, transactions: [tx(`0x${HASH}`, '(ok u1)')] }],
+    });
+    expect(result.confirmed).toEqual([{ txId: HASH, snapshotId: 1n, blockHeight: 454753 }]);
+    expect(result.rolledBack).toEqual([]);
+  });
+
+  it('normalises the hash to lower case without 0x', () => {
+    const result = extractRegistryConfirmations({
+      apply: [{ transactions: [tx(`0x${HASH.toUpperCase()}`, '(ok u7)')] }],
+    });
+    expect(result.confirmed[0]?.txId).toBe(HASH);
+  });
+
+  it('keeps ids beyond the safe integer range exact', () => {
+    const result = extractRegistryConfirmations({
+      apply: [{ transactions: [tx(HASH, '(ok u9007199254740993)')] }],
+    });
+    expect(result.confirmed[0]?.snapshotId).toBe(9007199254740993n);
+  });
+
+  it('ignores failed and aborted transactions', () => {
+    const result = extractRegistryConfirmations({
+      apply: [{ transactions: [tx(HASH, '(err u100)', false), tx(HASH, '(ok u1)', false)] }],
+    });
+    expect(result.confirmed).toEqual([]);
+  });
+
+  it('ignores malformed hashes and results', () => {
+    const result = extractRegistryConfirmations({
+      apply: [{ transactions: [tx('0x1234', '(ok u1)'), tx(HASH, '(ok true)'), null, 'x'] }],
+    });
+    expect(result.confirmed).toEqual([]);
+  });
+
+  it('reports rolled-back transactions once each', () => {
+    const result = extractRegistryConfirmations({
+      rollback: [{ transactions: [tx(HASH, '(ok u1)'), tx(`0x${HASH}`, '(ok u1)')] }],
+    });
+    expect(result.rolledBack).toEqual([HASH]);
+    expect(result.confirmed).toEqual([]);
   });
 });

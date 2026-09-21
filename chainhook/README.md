@@ -1,14 +1,27 @@
 # Chainhook predicates
 
-Rivisk's own contract predicates are templates until the contracts are
-deployed. The Zest mainnet predicate is not a template — it is verified against
-the live deployment (see below).
+The Rivisk contract predicates point at the testnet deployment
+(`ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7`, see
+`contracts/deployments/testnet.json`). The Zest mainnet predicate is verified
+against the live deployment (see below).
 
 Before registering a predicate:
-1. Replace `DEPLOYER` with the testnet/mainnet deployer principal.
-2. Replace the callback URL with the deployed indexer/API callback.
-3. Store the callback bearer token outside source control.
-4. Validate the predicate against the Chainhook version used in the target environment.
+1. Replace the callback URL with the deployed API. Chainhook runs remotely and
+   cannot reach `localhost`.
+2. Replace `Bearer CHANGE_ME` with `CHAINHOOK_AUTH_TOKEN`, kept outside source control.
+3. Validate the predicate against the Chainhook version used in the target environment.
+
+## Attestation confirmations
+
+`POST /api/v1/chainhook/risk-registry` records which on-chain snapshot id each
+attestation became. The worker stores the transaction id when it broadcasts;
+the id is only known once the transaction is mined, so the receiver reads it
+from the call's return value, `(ok uN)`, and writes it to the snapshot with the
+matching `onchainTxId`. A rollback clears the id again.
+
+This endpoint **does not re-index the wallet**. Publishing changes nothing about
+the position, and a re-index produces a new snapshot that the worker attests
+too, so each confirmation would trigger another paid transaction, every block.
 
 ## Why the Zest predicate watches the vault, not the market
 

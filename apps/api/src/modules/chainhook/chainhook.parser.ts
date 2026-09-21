@@ -70,3 +70,66 @@ export function extractAffected(payload: ChainhookPayload): AffectedWallets {
     reorg: rollback.length > 0,
   };
 }
+
+export interface PublishedSnapshot {
+  /** Lower-case hex, no `0x`, so it compares against either spelling we store. */
+  txId: string;
+  snapshotId: bigint;
+  blockHeight?: number;
+}
+
+export interface RegistryConfirmations {
+  confirmed: PublishedSnapshot[];
+  /** Transactions a reorg removed from the canonical chain. */
+  rolledBack: string[];
+}
+
+export function normalizeTxId(value: string): string {
+  return value.toLowerCase().replace(/^0x/, '');
+}
+
+interface ChainhookTx {
+  transaction_identifier?: { hash?: unknown };
+  metadata?: { success?: unknown; result?: unknown };
+}
+
+function txHash(tx: unknown): string | undefined {
+  const hash = (tx as ChainhookTx | null)?.transaction_identifier?.hash;
+  return typeof hash === 'string' && /^(0x)?[0-9a-fA-F]{64}$/.test(hash) ? normalizeTxId(hash) : undefined;
+}
+
+/**
+ * `publish-risk-snapshot` returns `(ok next-id)`. The return value is the
+ * contract's own answer, so it is read instead of the print event, whose
+ * decoded shape differs between Chainhook versions.
+ */
+function snapshotIdFromResult(tx: unknown): bigint | undefined {
+  const meta = (tx as ChainhookTx | null)?.metadata;
+  if (meta?.success !== true || typeof meta.result !== 'string') return undefined;
+  const match = /^\(ok u(\d+)\)$/.exec(meta.result.trim());
+  return match?.[1] ? BigInt(match[1]) : undefined;
+}
+
+export function extractRegistryConfirmations(payload: ChainhookPayload): RegistryConfirmations {
+  const confirmed: PublishedSnapshot[] = [];
+  for (const block of payload.apply ?? []) {
+    const blockHeight = block.block_identifier?.index;
+    for (const tx of block.transactions ?? []) {
+      const txId = txHash(tx);
+      const snapshotId = snapshotIdFromResult(tx);
+      if (txId && snapshotId !== undefined) {
+        confirmed.push({ txId, snapshotId, ...(typeof blockHeight === 'number' ? { blockHeight } : {}) });
+      }
+    }
+  }
+
+  const rolledBack = new Set<string>();
+  for (const block of payload.rollback ?? []) {
+    for (const tx of block.transactions ?? []) {
+      const txId = txHash(tx);
+      if (txId) rolledBack.add(txId);
+    }
+  }
+
+  return { confirmed, rolledBack: [...rolledBack] };
+}

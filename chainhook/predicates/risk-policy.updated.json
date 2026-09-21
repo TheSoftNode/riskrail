@@ -7,7 +7,7 @@
     "testnet": {
       "if_this": {
         "scope": "contract_call",
-        "contract_identifier": "DEPLOYER.risk-policy",
+        "contract_identifier": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-policy",
         "method": "set-risk-policy"
       },
       "then_that": {

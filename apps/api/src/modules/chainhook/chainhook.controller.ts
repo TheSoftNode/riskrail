@@ -17,6 +17,7 @@ function authorized(value?: string): boolean {
 export class ChainhookController {
   constructor(private readonly chainhook: ChainhookService) {}
 
+  /** An attestation was mined; record its on-chain snapshot id. */
   @Post('risk-registry')
   @ApiExcludeEndpoint()
   riskRegistry(
@@ -24,7 +25,7 @@ export class ChainhookController {
     @Body() body: ChainhookPayload,
   ) {
     if (!authorized(authorization)) throw new UnauthorizedException();
-    return this.chainhook.ingest('risk-registry', body);
+    return this.chainhook.confirmAttestations(body);
   }
 
   @Post('risk-policy')

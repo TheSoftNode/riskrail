@@ -25,7 +25,7 @@
       },
       "then_that": {
         "http_post": {
-          "url": "https://api.rivisk.dev/api/v1/chainhook/protocol",
+          "url": "https://YOUR_API_HOST/api/v1/chainhook/protocol",
           "authorization_header": "Bearer CHANGE_ME"
         }
       }
