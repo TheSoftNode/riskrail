@@ -20,13 +20,15 @@ import {
 import { RiviskClient } from '@rivisk/sdk';
 
 const BASE = process.env.RIVISK_BASE_URL ?? 'http://localhost:4000/api/v1';
+// Must match the API's STACKS_NETWORK: sign-in checks the address prefix.
+const NETWORK = process.env.STACKS_NETWORK === 'mainnet' ? 'mainnet' : 'testnet';
 const out = (n, v) => console.log(`${String(n).padEnd(32)} ${v}`);
 
 // A throwaway identity. Rivisk never sees a private key in real use -- the
 // browser wallet signs. Here we act as the wallet.
 const priv = randomPrivateKey();
 const pubHex = publicKeyToHex(privateKeyToPublic(priv));
-const address = publicKeyToAddress(pubHex, 'mainnet');
+const address = publicKeyToAddress(pubHex, NETWORK);
 out('generated address', address);
 
 const rivisk = new RiviskClient({ baseUrl: BASE, retry: false });
@@ -82,7 +84,7 @@ await rivisk.auth.updateProfile({ email: taken });
 {
   const other = randomPrivateKey();
   const otherPub = publicKeyToHex(privateKeyToPublic(other));
-  const otherAddr = publicKeyToAddress(otherPub, 'mainnet');
+  const otherAddr = publicKeyToAddress(otherPub, NETWORK);
   const second = new RiviskClient({ baseUrl: BASE, retry: false });
   const c = await second.auth.challenge(otherAddr);
   const sig = signMessageHashRsv({ messageHash: Buffer.from(hashMessage(c.message)).toString('hex'), privateKey: other });

@@ -69,10 +69,33 @@ node apps/realtime/dist/main.js
           <P>
             The smoke test acts as a wallet: it signs in with a throwaway key, then exercises API
             keys, webhooks, alerts, ownership checks and the key permission boundary against your
-            running API. Unit tests mock the database and the queue. This does not.
+            running API. Unit tests mock the database and the queue. This does not. Set{" "}
+            <C>STACKS_NETWORK</C> to the API&apos;s network: sign-in checks the address prefix.
           </P>
         </Step>
       </Steps>
+
+      <H2 id="production">Production on one server</H2>
+      <P>
+        <C>infrastructure/deploy/</C> runs the whole backend from one image with Docker Compose:
+        the four services, a one-off migration step, Postgres and Redis on a private network, and
+        Caddy in front for automatic HTTPS. Only ports 80 and 443 are published.
+      </P>
+      <CodeBlock
+        lang="bash"
+        code={`
+cd infrastructure/deploy
+./setup-env.sh api.example.com ws.example.com you@example.com https://your-site.vercel.app
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+`}
+      />
+      <P>
+        <C>setup-env.sh</C> generates every secret on the server and never prints one. The{" "}
+        <A href="https://github.com/TheSoftNode/rivisk/blob/main/documentation/37-aws-beta-deployment.md">
+          AWS runbook
+        </A>{" "}
+        walks through it on EC2, with the web app on Vercel, backups and Chainhook registration.
+      </P>
 
       <H2 id="env">Environment</H2>
       <Callout type="danger" title="Three secrets, at least 32 characters each">

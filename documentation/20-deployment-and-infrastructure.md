@@ -1,5 +1,7 @@
 # Deployment and Infrastructure
 
+> **Beta deployment:** the working single-server setup is `infrastructure/deploy/`, and the step-by-step AWS guide is [37-aws-beta-deployment.md](./37-aws-beta-deployment.md). This page describes the longer-term shape.
+
 ## Early production target
 
 The first hosted version should be boring to operate.

@@ -57,3 +57,6 @@ logs/
 
 # local launcher that handles the publisher key
 contracts/scripts/.run-publisher-worker.mjs
+
+# Production secrets written on the server or by export-publisher-key.mjs
+infrastructure/deploy/publisher.env

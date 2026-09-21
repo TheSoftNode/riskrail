@@ -1,0 +1,137 @@
+# Production stack for a single server. Run from this directory:
+#   docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+#
+# Only Caddy publishes ports. Postgres, Redis and the apps are reachable on the
+# private network alone, so nothing but 80/443 is exposed to the internet.
+name: rivisk
+
+x-build: &build
+  context: ../..
+  dockerfile: infrastructure/docker/Dockerfile
+
+x-app: &app
+  image: rivisk-backend:latest
+  build: *build
+  env_file: .env.production
+  environment:
+    NODE_ENV: production
+    DATABASE_URL: postgresql://rivisk:${POSTGRES_PASSWORD}@postgres:5432/rivisk?schema=public
+    REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+  restart: unless-stopped
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+    redis:
+      condition: service_healthy
+  networks: [internal]
+  logging:
+    driver: json-file
+    options: { max-size: 10m, max-file: "5" }
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: rivisk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+      POSTGRES_DB: rivisk
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rivisk -d rivisk"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [internal]
+
+  redis:
+    image: redis:7.4-alpine
+    # BullMQ needs keys to survive restarts, and must never have them evicted.
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --maxmemory-policy
+      - noeviction
+      - --requirepass
+      - ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.production}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    restart: unless-stopped
+    networks: [internal]
+
+  # Applies pending migrations, then exits. Every app waits for it.
+  migrate:
+    image: rivisk-backend:latest
+    build: *build
+    command: ["pnpm", "--filter", "@rivisk/database", "db:migrate:deploy"]
+    environment:
+      DATABASE_URL: postgresql://rivisk:${POSTGRES_PASSWORD}@postgres:5432/rivisk?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks: [internal]
+
+  api:
+    <<: *app
+    command: ["node", "apps/api/dist/main.js"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  indexer:
+    <<: *app
+    command: ["node", "apps/indexer/dist/main.js"]
+
+  worker:
+    <<: *app
+    command: ["node", "apps/worker/dist/main.js"]
+    # The publisher key lives in its own file so it can be added, rotated or
+    # removed without touching the rest of the configuration.
+    env_file:
+      - .env.production
+      - path: publisher.env
+        required: false
+
+  realtime:
+    <<: *app
+    command: ["node", "apps/realtime/dist/main.js"]
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      API_HOST: ${API_HOST:?set API_HOST in .env.production}
+      REALTIME_HOST: ${REALTIME_HOST:?set REALTIME_HOST in .env.production}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env.production}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [api, realtime]
+    restart: unless-stopped
+    networks: [internal]
+
+networks:
+  internal:
+
+volumes:
+  postgres-data:
+  redis-data:
+  caddy-data:
+  caddy-config:

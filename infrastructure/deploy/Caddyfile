@@ -1,0 +1,15 @@
+# Caddy obtains and renews Let's Encrypt certificates for both hosts on its own.
+# Hosts come from .env.production (API_HOST, REALTIME_HOST).
+{
+	email {$ACME_EMAIL}
+}
+
+{$API_HOST} {
+	encode zstd gzip
+	reverse_proxy api:4000
+}
+
+# Socket.IO upgrades to WebSocket through the same proxy; Caddy handles it.
+{$REALTIME_HOST} {
+	reverse_proxy realtime:4001
+}

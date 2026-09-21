@@ -1,0 +1,27 @@
+# Secrets must never reach an image layer.
+.env
+.env.*
+!.env.example
+**/*.pem
+**/*.key
+contracts/settings/Testnet.toml
+contracts/settings/Mainnet.toml
+contracts/scripts/.run-publisher-worker.mjs
+infrastructure/deploy/.env.production
+infrastructure/deploy/publisher.env
+
+# Rebuilt inside the image.
+**/node_modules
+**/dist
+**/.turbo
+**/*.tsbuildinfo
+**/coverage
+
+# Not part of the backend image. The web app deploys to Vercel.
+apps/web
+.git
+.github
+contracts/.cache
+contracts/.requirements
+documentation
+docs

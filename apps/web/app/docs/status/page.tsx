@@ -50,7 +50,7 @@ export default function Status() {
           ["Wallet-signature authentication", LIVE, "Real challenge, signature and verification in the smoke test"],
           ["API keys", TESTED, "Accepted for alerts and webhooks, refused for key management, checked live"],
           ["Signed webhooks", TESTED, "Signing, verification, retry classification"],
-          ["Realtime", IMPLEMENTED, "Wire protocol matches the gateway; not exercised against a live socket in CI"],
+          ["Realtime", IMPLEMENTED, "Exercised end to end through the production stack: a refresh reached a WSS subscriber in 2.9 s. Not yet covered in CI"],
           ["Hosted public API", PLANNED, <>Self-host for now: <A key="s" href="/docs/self-hosting">Self-hosting</A></>],
         ]}
       />

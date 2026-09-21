@@ -17,7 +17,13 @@ async function bootstrap() {
   app.set('trust proxy', Number(process.env.TRUST_PROXY_HOPS ?? 0));
 
   app.use(helmet());
-  app.enableCors({ origin: process.env.WEB_URL ?? 'http://localhost:3000', credentials: true });
+  // Comma-separated, like the realtime gateway: a Vercel deployment is usually
+  // reached through both its vercel.app host and a custom domain.
+  const origins = (process.env.WEB_URL ?? 'http://localhost:3000')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  app.enableCors({ origin: origins, credentials: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.setGlobalPrefix('api/v1');
 
