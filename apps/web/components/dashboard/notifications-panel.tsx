@@ -10,11 +10,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 
 export function NotificationsPanel() {
   const queryClient = useQueryClient();
-  const profile = useQuery({ queryKey: ["profile"], queryFn: () => riskrailApi.me() });
+  const profile = useQuery({ queryKey: ["profile"], queryFn: () => riviskApi.me() });
 
   const [email, setEmail] = useState("");
   const [notify, setNotify] = useState(true);
@@ -31,7 +31,7 @@ export function NotificationsPanel() {
 
   const save = useMutation({
     mutationFn: () =>
-      riskrailApi.updateProfile({
+      riviskApi.updateProfile({
         ...(email.trim() ? { email: email.trim() } : {}),
         notifyByEmail: notify,
       }),

@@ -14,13 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://riskrail.dev"),
+  metadataBase: new URL("https://rivisk.dev"),
   title: {
-    default: "RiskRail — Risk intelligence for Bitcoin capital on Stacks",
-    template: "%s · RiskRail",
+    default: "Rivisk — Risk intelligence for Bitcoin capital on Stacks",
+    template: "%s · Rivisk",
   },
   description:
-    "RiskRail is a non-custodial risk intelligence layer for sBTC and Bitcoin-native finance on Stacks. Unified collateral health, liquidation distance, concentration, stress testing and verifiable on-chain risk attestations.",
+    "Rivisk is a non-custodial risk intelligence layer for sBTC and Bitcoin-native finance on Stacks. Unified collateral health, liquidation distance, concentration, stress testing and verifiable on-chain risk attestations.",
   keywords: [
     "Stacks",
     "sBTC",
@@ -33,14 +33,14 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    title: "RiskRail — Risk intelligence for Bitcoin capital on Stacks",
+    title: "Rivisk — Risk intelligence for Bitcoin capital on Stacks",
     description:
       "Unified collateral health, liquidation distance, concentration, stress testing and verifiable on-chain risk attestations for Bitcoin capital on Stacks.",
-    siteName: "RiskRail",
+    siteName: "Rivisk",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RiskRail — Risk intelligence for Bitcoin capital on Stacks",
+    title: "Rivisk — Risk intelligence for Bitcoin capital on Stacks",
     description:
       "Non-custodial, deterministic risk analytics for sBTC and Stacks DeFi positions.",
   },

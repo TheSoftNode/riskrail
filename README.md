@@ -1,16 +1,16 @@
-# RiskRail
+# Rivisk
 
 **Risk intelligence, portfolio observability and verifiable risk attestations for Bitcoin capital on Stacks.**
 
-RiskRail is a non-custodial platform for understanding how capital is deployed across Stacks applications. It indexes wallet and protocol positions, converts them into a common portfolio model, calculates deterministic risk metrics, runs stress scenarios, evaluates alerts, and can anchor compact risk attestations on-chain through Clarity contracts.
+Rivisk is a non-custodial platform for understanding how capital is deployed across Stacks applications. It indexes wallet and protocol positions, converts them into a common portfolio model, calculates deterministic risk metrics, runs stress scenarios, evaluates alerts, and can anchor compact risk attestations on-chain through Clarity contracts.
 
-The project is being built for users who need more than a balance screen. A wallet may hold sBTC directly while also having capital in a streaming contract, a lending market, a liquidity position or another protocol. RiskRail is designed to answer portfolio-level questions across those boundaries.
+The project is being built for users who need more than a balance screen. A wallet may hold sBTC directly while also having capital in a streaming contract, a lending market, a liquidity position or another protocol. Rivisk is designed to answer portfolio-level questions across those boundaries.
 
-> RiskRail observes and explains risk. It does not hold user funds, execute trades, or make investment decisions for the user.
+> Rivisk observes and explains risk. It does not hold user funds, execute trades, or make investment decisions for the user.
 
 ---
 
-## Why RiskRail exists
+## Why Rivisk exists
 
 As more Bitcoin-linked capital becomes usable on Stacks, a single address can have several different kinds of exposure at the same time. Each protocol naturally shows its own state, but the user owns the combined portfolio.
 
@@ -25,13 +25,13 @@ That creates questions that are difficult to answer from one protocol interface:
 - Is the displayed value realistically exit-able without large price impact?
 - Can another wallet, treasury tool or application consume the same risk data without rebuilding the entire indexing stack?
 
-RiskRail is being built as the shared layer between protocol-specific state and those portfolio-level questions.
+Rivisk is being built as the shared layer between protocol-specific state and those portfolio-level questions.
 
 ---
 
 ## What the product does
 
-At a high level, RiskRail follows this flow:
+At a high level, Rivisk follows this flow:
 
 ```mermaid
 flowchart LR
@@ -76,7 +76,7 @@ The grant/MVP work is centered on:
 
 ### Non-custodial
 
-RiskRail does not need custody of user assets to analyze them. The normal product path never asks for a seed phrase or raw private key.
+Rivisk does not need custody of user assets to analyze them. The normal product path never asks for a seed phrase or raw private key.
 
 ### Deterministic before intelligent
 
@@ -94,7 +94,7 @@ Important risk values should be traceable to:
 
 ### Prefer missing data to false precision
 
-If RiskRail cannot calculate a value reliably, the product should return `unavailable`, `stale` or a warning rather than a confident-looking guess.
+If Rivisk cannot calculate a value reliably, the product should return `unavailable`, `stale` or a warning rather than a confident-looking guess.
 
 ### Protocols plug in; the risk engine stays protocol-agnostic
 
@@ -102,20 +102,20 @@ Protocol-specific logic belongs in adapters. Once a position is normalized, port
 
 ### Keep the first system operationally sane
 
-RiskRail is enterprise-shaped without intentionally over-engineering the grant MVP. We use strong package boundaries, queues, observability, tests and containerized services, but we are not starting with Kafka, Kubernetes or a service mesh simply for appearance.
+Rivisk is enterprise-shaped without intentionally over-engineering the grant MVP. We use strong package boundaries, queues, observability, tests and containerized services, but we are not starting with Kafka, Kubernetes or a service mesh simply for appearance.
 
 ---
 
 ## Architecture
 
-RiskRail is a TypeScript monorepo with five deployable application processes and shared domain packages.
+Rivisk is a TypeScript monorepo with five deployable application processes and shared domain packages.
 
 ```mermaid
 flowchart TB
     subgraph Stacks[Stacks network]
         SA[Stacks API]
         SC[Protocol contracts]
-        RC[RiskRail contracts]
+        RC[Rivisk contracts]
     end
 
     subgraph Ingestion[Ingestion]
@@ -186,7 +186,7 @@ The risk engine should not query the database. The adapter should not send email
 ## Repository layout
 
 ```text
-riskrail/
+rivisk/
 ├── apps/
 │   ├── web/                    Next.js dashboard
 │   ├── api/                    NestJS REST API
@@ -205,7 +205,7 @@ riskrail/
 │   ├── database/               Prisma schema/client
 │   ├── events/                 Typed domain events
 │   ├── queue/                  BullMQ/Redis helpers
-│   ├── riskrail-contracts/     TypeScript client for RiskRail Clarity contracts
+│   ├── rivisk-contracts/     TypeScript client for Rivisk Clarity contracts
 │   ├── sdk/                    Public TypeScript SDK
 │   ├── shared-types/           Shared domain types
 │   ├── validation/             Shared validation helpers
@@ -293,11 +293,11 @@ The current implementation includes:
 - versioned risk reports with standard stress results;
 - a transparent MVP composite score that remains secondary to the underlying metrics.
 
-Still planned for the grant work are market-depth exit/liquidity analysis, more protocol-native pricing where execution-level parity matters, policy-driven alerts, and additional adapters after the first lending path is validated.
+Policy-driven alerts are now implemented. Still planned for the grant work are market-depth exit/liquidity analysis, more protocol-native pricing where execution-level parity matters, and additional adapters.
 
 ### Numeric conventions
 
-RiskRail avoids JavaScript floating-point values for token quantities and money where precision matters.
+Rivisk avoids JavaScript floating-point values for token quantities and money where precision matters.
 
 - atomic token values: strings / `bigint`;
 - USD math: Decimal.js / PostgreSQL Decimal;
@@ -340,7 +340,7 @@ See [Stress testing](./documentation/11-stress-testing.md) and [Zest V2 lending 
 
 ## Smart contracts
 
-RiskRail keeps financial analysis off-chain and uses Clarity for the parts that benefit from public state and verification.
+Rivisk keeps financial analysis off-chain and uses Clarity for the parts that benefit from public state and verification.
 
 ### `risk-provider-trait.clar`
 
@@ -382,7 +382,7 @@ See [Smart contract design](./documentation/12-smart-contract-design.md) and [On
 
 ## Existing Stacks work we can leverage
 
-RiskRail deliberately builds on lessons and reusable patterns from earlier Stacks projects instead of rewriting infrastructure for no reason.
+Rivisk deliberately builds on lessons and reusable patterns from earlier Stacks projects instead of rewriting infrastructure for no reason.
 
 ### StacksPay patterns
 
@@ -406,9 +406,9 @@ Useful pieces include:
 - stream state;
 - Clarity administration patterns.
 
-BitPay can also be a real RiskRail adapter: a stream is a protocol position whose remaining sBTC may be partly accessible and partly locked/vesting.
+BitPay can also be a real Rivisk adapter: a stream is a protocol position whose remaining sBTC may be partly accessible and partly locked/vesting.
 
-We do **not** copy merchant checkout, payment-link, marketplace, custody or unrelated treasury execution logic into RiskRail.
+We do **not** copy merchant checkout, payment-link, marketplace, custody or unrelated treasury execution logic into Rivisk.
 
 See [Existing code reuse](./documentation/21-existing-code-reuse.md).
 
@@ -460,7 +460,7 @@ PATCH /api/v1/alerts/{alertId}
 GET  /api/v1/policies/{address}
 ```
 
-Planned public resources include dedicated positions/protocol endpoints, authenticated email/webhook delivery and API-key management. Simulation history may be added later; the current custom simulation endpoint is stateless and runs against the latest persisted portfolio snapshot.
+Authenticated email/webhook delivery and API-key management are implemented; see [current status](./documentation/29-current-status.md) for exactly how far each has been proven. Dedicated positions/protocol endpoints are still planned. Simulation history may be added later; the current custom simulation endpoint is stateless and runs against the latest persisted portfolio snapshot.
 
 The SDK should remain a thin typed client over these resources rather than reimplementing business logic.
 
@@ -483,7 +483,7 @@ liquidityScoreBps < 4000
 riskScoreBps > 7000
 ```
 
-The current beta alert evaluator is edge-triggered: a rule fires when a metric crosses into a breach and does not fire again on every subsequent snapshot while it stays breached. Authenticated delivery preferences and longer cooldown controls are still planned.
+The alert evaluator is edge-triggered: a rule fires when a metric crosses into a breach and does not fire again on every subsequent snapshot while it stays breached. Authenticated delivery preferences are implemented, including a per-user email opt-out and database-enforced send deduplication. Longer cooldown controls are still planned.
 
 See [Realtime updates and alerts](./documentation/16-realtime-and-alerts.md).
 
@@ -503,7 +503,7 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 - SIP-010 token metadata resolution through Hiro's metadata API;
 - native Stacks wallet adapter with STX lock/accessibility information;
 - concrete BitPay contract reader for sender/recipient streams;
-- BitPay stream normalization into RiskRail positions;
+- BitPay stream normalization into Rivisk positions;
 - Zest V2 external lending adapter foundation with current mainnet contract defaults and environment overrides;
 - zToken collateral normalization and scaled-debt normalization for Zest positions;
 - protocol-supplied borrow/partial/full liquidation thresholds normalized into common lending metadata;
@@ -521,7 +521,7 @@ This repository is an enterprise-shaped **foundation**, not a claim that every p
 - queue-backed `POST /api/v1/portfolios/:address/refresh` flow;
 - database-backed portfolio and risk API responses;
 - deterministic protocol/asset concentration and capital-accessibility metrics;
-- canonical SHA-256 risk reports with default stress results and methodology versioning (`riskrail-v1.2`);
+- canonical SHA-256 risk reports with default stress results and methodology versioning (`rivisk-v1.2`);
 - four Clarity contract components;
 - testnet-capable `risk-registry.clar` attestation publisher worker;
 - initial unit/contract tests and CI/security scaffolding;
@@ -634,7 +634,7 @@ Main groups:
 Core                 NODE_ENV, ports, URLs
 Persistence          DATABASE_URL, REDIS_URL
 Stacks               network, API URL/key, Chainhook auth
-Contracts            deployed RiskRail contract principals
+Contracts            deployed Rivisk contract principals
 Publisher            enable flag + publisher secret
 Auth                  JWT secret + API-key pepper
 Notifications         SMTP configuration
@@ -669,7 +669,7 @@ See [Security model](./documentation/17-security-model.md).
 
 ## Testing
 
-RiskRail uses different test layers for different failure modes:
+Rivisk uses different test layers for different failure modes:
 
 - pure risk/portfolio unit tests;
 - adapter fixture tests;
@@ -814,4 +814,4 @@ See [LICENSE](./LICENSE).
 
 ## Project status
 
-RiskRail is under active development. The repository currently provides the architecture, contract foundation and first domain primitives needed for the grant milestones. Public beta/mainnet readiness should be judged by the explicit status and acceptance criteria in the documentation rather than by the presence of folders alone.
+Rivisk is under active development. The repository currently provides the architecture, contract foundation and first domain primitives needed for the grant milestones. Public beta/mainnet readiness should be judged by the explicit status and acceptance criteria in the documentation rather than by the presence of folders alone.

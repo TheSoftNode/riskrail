@@ -54,12 +54,12 @@ export function useRealtime(
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    socket.on("riskrail:event", onMessage);
+    socket.on("rivisk:event", onMessage);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.off("riskrail:event", onMessage);
+      socket.off("rivisk:event", onMessage);
       socket.emit("portfolio:unsubscribe", address);
       socket.disconnect();
     };

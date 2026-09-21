@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient, PositionType as PrismaPositionType } from '@prisma/client';
-import type { NormalizedPosition, PositionType } from '@riskrail/adapter-core';
-import type { Portfolio } from '@riskrail/portfolio-engine';
+import type { NormalizedPosition, PositionType } from '@rivisk/adapter-core';
+import type { Portfolio } from '@rivisk/portfolio-engine';
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 export const prisma = globalForPrisma.prisma ?? new PrismaClient();

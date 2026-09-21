@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { RiskPolicyReader } from '@riskrail/riskrail-contracts';
-import { isStacksPrincipal } from '@riskrail/stacks';
+import { RiskPolicyReader } from '@rivisk/rivisk-contracts';
+import { isStacksPrincipal } from '@rivisk/stacks';
 
 @Injectable()
 export class PoliciesService {

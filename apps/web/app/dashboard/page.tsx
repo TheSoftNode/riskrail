@@ -17,7 +17,7 @@ export default async function DashboardPage({
   if (!address) {
     return (
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-14 sm:px-8">
-        <Link href="/" aria-label="RiskRail home">
+        <Link href="/" aria-label="Rivisk home">
           <Logo />
         </Link>
         <Card className="mt-14">
@@ -40,7 +40,7 @@ export default async function DashboardPage({
 
         <p className="mt-6 text-center text-[0.8125rem] text-muted-foreground">
           <Link href="/" className="underline underline-offset-4 hover:text-foreground">
-            Back to RiskRail
+            Back to Rivisk
           </Link>
         </p>
       </main>

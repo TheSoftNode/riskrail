@@ -1,9 +1,9 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { prisma } from '@riskrail/database';
+import { prisma } from '@rivisk/database';
 
-const LIVE = 'rr_live_';
-const TEST = 'rr_test_';
+const LIVE = 'rv_live_';
+const TEST = 'rv_test_';
 
 /**
  * API keys are shown once and stored only as a peppered SHA-256 hash, so a

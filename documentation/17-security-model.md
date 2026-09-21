@@ -1,6 +1,6 @@
 # Security Model
 
-RiskRail is read-heavy and non-custodial, which removes a large class of risk, but it still handles security-sensitive infrastructure: API keys, webhook secrets, wallet authentication, contract administration and potentially a service key that publishes attestations.
+Rivisk is read-heavy and non-custodial, which removes a large class of risk, but it still handles security-sensitive infrastructure: API keys, webhook secrets, wallet authentication, contract administration and potentially a service key that publishes attestations.
 
 ## Security goals
 
@@ -13,7 +13,7 @@ RiskRail is read-heavy and non-custodial, which removes a large class of risk, b
 
 ## Non-custodial boundary
 
-The normal RiskRail workflow never asks a user for:
+The normal Rivisk workflow never asks a user for:
 
 - seed phrase;
 - raw private key;
@@ -50,7 +50,7 @@ Developer API keys should:
 
 ## Webhook secrets
 
-RiskRail signs outbound webhooks. Endpoint secrets should be generated with strong randomness and stored in a protected form appropriate for signing.
+Rivisk signs outbound webhooks. Endpoint secrets should be generated with strong randomness and stored in a protected form appropriate for signing.
 
 If the server needs the clear secret to compute HMAC signatures, simple one-way hashing is not enough; use encryption/key management or derive per-endpoint signing material securely. The current schema uses `secretHash` as a placeholder and should be finalized when webhook implementation begins.
 
@@ -62,7 +62,7 @@ Use idempotency keys so replayed callbacks cannot duplicate state transitions.
 
 ## Attestation publisher
 
-The RiskRail publisher key has authority to write snapshots to the registry. It should be isolated from ordinary API credentials.
+The Rivisk publisher key has authority to write snapshots to the registry. It should be isolated from ordinary API credentials.
 
 Production options include:
 

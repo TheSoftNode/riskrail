@@ -2,7 +2,7 @@
 
 ## Why the risk engine is separate
 
-RiskRail's credibility depends on being able to explain how a number was produced. For that reason, risk math lives in a pure TypeScript package and does not depend on the database, HTTP requests, Chainhook or the UI.
+Rivisk's credibility depends on being able to explain how a number was produced. For that reason, risk math lives in a pure TypeScript package and does not depend on the database, HTTP requests, Chainhook or the UI.
 
 A function should be testable with plain input objects.
 
@@ -54,7 +54,7 @@ protocol gross exposure = sum(abs(valued assets and debt))
 protocol share = protocol gross exposure / total gross exposure
 ```
 
-RiskRail reports the largest share in basis points and can later return the full distribution.
+Rivisk reports the largest share in basis points and can later return the full distribution.
 
 Example:
 
@@ -93,7 +93,7 @@ The current starting thresholds are:
 missing        unknown
 ```
 
-These labels are a RiskRail presentation convention. The actual liquidation behavior is controlled by the protocol, so the UI must also show protocol-native thresholds and source data.
+These labels are a Rivisk presentation convention. The actual liquidation behavior is controlled by the protocol, so the UI must also show protocol-native thresholds and source data.
 
 ### Lending LTV and health
 
@@ -104,7 +104,7 @@ current LTV = debt USD / collateral USD
 health factor = partial liquidation LTV / current LTV
 ```
 
-Health is stored in E4 fixed point. The protocol threshold comes from the adapter; RiskRail does not invent a generic liquidation LTV.
+Health is stored in E4 fixed point. The protocol threshold comes from the adapter; Rivisk does not invent a generic liquidation LTV.
 
 For Zest V2, the adapter reads the applicable egroup values and the common engine performs the arithmetic.
 
@@ -116,7 +116,7 @@ For the current lending model, the estimated collateral-price distance to the pa
 distance = 1 - (current LTV / partial liquidation LTV)
 ```
 
-For a single-collateral position, RiskRail can also estimate the price at which that threshold would be reached. Multi-collateral positions are treated as portfolio approximations rather than being given a misleading single exact liquidation price.
+For a single-collateral position, Rivisk can also estimate the price at which that threshold would be reached. Multi-collateral positions are treated as portfolio approximations rather than being given a misleading single exact liquidation price.
 
 ### Deterministic stress scenarios
 
@@ -162,7 +162,7 @@ Every canonical risk report should identify the risk-engine/methodology version.
 
 Why? Because a snapshot calculated with methodology v1 should remain understandable after v2 changes a threshold or improves liquidity math.
 
-The current risk worker writes `riskrail-v1.1` into canonical reports. The exact scheme can evolve, but an old snapshot must always say which methodology produced it.
+The current risk worker writes `rivisk-v1.1` into canonical reports. The exact scheme can evolve, but an old snapshot must always say which methodology produced it.
 
 ## Missing data
 
@@ -176,4 +176,4 @@ A report can contain warnings such as:
 - Lending position was last confirmed 14 blocks ago.
 ```
 
-RiskRail should never turn an unknown into zero just to make a dashboard look complete.
+Rivisk should never turn an unknown into zero just to make a dashboard look complete.

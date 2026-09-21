@@ -45,7 +45,7 @@ export const RISK_COPY: Record<RiskLevel, string> = {
   elevated:
     "At least one monitored metric deserves attention. Review the lending and stress sections.",
   critical:
-    "One or more monitored positions are at or beyond RiskRail's critical risk band.",
+    "One or more monitored positions are at or beyond Rivisk's critical risk band.",
   unknown:
     "Not enough priced data yet to classify this portfolio with confidence.",
 };

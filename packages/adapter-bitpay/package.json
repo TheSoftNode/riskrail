@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/adapter-bitpay",
+  "name": "@rivisk/adapter-bitpay",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,12 +14,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --config ../../vitest.shared.ts",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/stacks": "workspace:*",
+    "@rivisk/adapter-core": "workspace:*",
+    "@rivisk/stacks": "workspace:*",
     "@stacks/transactions": "^7.2.0"
   },
   "devDependencies": {

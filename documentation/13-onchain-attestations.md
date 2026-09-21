@@ -2,16 +2,16 @@
 
 ## What an attestation means
 
-A RiskRail attestation means:
+A Rivisk attestation means:
 
-> At a specific source block, RiskRail produced a specific risk report for a wallet using a known engine/methodology version, and the hash of that report matches the hash stored in the RiskRail registry contract.
+> At a specific source block, Rivisk produced a specific risk report for a wallet using a known engine/methodology version, and the hash of that report matches the hash stored in the Rivisk registry contract.
 
 It does **not** mean:
 
 - the future is guaranteed;
 - the portfolio cannot change in the next block;
 - the user is financially safe;
-- every protocol has been audited by RiskRail;
+- every protocol has been audited by Rivisk;
 - the report is useful forever.
 
 This distinction should be visible in product documentation.
@@ -41,7 +41,7 @@ flowchart LR
 
 Normal JSON serialization is not enough for a verifiable hash because key order and number formatting can differ.
 
-RiskRail needs a documented canonical serialization rule. One reasonable approach is a JSON canonicalization scheme with:
+Rivisk needs a documented canonical serialization rule. One reasonable approach is a JSON canonicalization scheme with:
 
 - deterministic key ordering;
 - UTF-8 encoding;
@@ -121,9 +121,9 @@ Consumers should choose a freshness requirement appropriate to their use case in
 
 ## Trust model
 
-An attestation proves integrity of a RiskRail-produced report relative to the on-chain hash. It does not eliminate trust in:
+An attestation proves integrity of a Rivisk-produced report relative to the on-chain hash. It does not eliminate trust in:
 
-- RiskRail's adapter implementation;
+- Rivisk's adapter implementation;
 - price/oracle sources;
 - the risk methodology;
 - the publisher key;

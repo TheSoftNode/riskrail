@@ -15,7 +15,7 @@ import {
  */
 
 const ALGO = 'aes-256-gcm';
-const SALT = 'riskrail.webhooks.v1';
+const SALT = 'rivisk.webhooks.v1';
 
 function key(): Buffer {
   const material = process.env.WEBHOOK_ENCRYPTION_KEY;

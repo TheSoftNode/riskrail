@@ -33,7 +33,7 @@ const STAGES = [
     n: "04",
     code: "ATTEST",
     title: "Verify the report",
-    body: "The full report is canonicalized and hashed with SHA-256, and stored alongside its digest. That digest can then be anchored in RiskRail's Clarity registry, so anyone can re-hash the JSON and confirm nothing was edited after the fact.",
+    body: "The full report is canonicalized and hashed with SHA-256, and stored alongside its digest. That digest can then be anchored in Rivisk's Clarity registry, so anyone can re-hash the JSON and confirm nothing was edited after the fact.",
     emits: "risk-registry.clar",
   },
 ];
@@ -46,7 +46,7 @@ export function HowItWorks() {
           <SectionHeading
             eyebrow="How it works"
             title="Four steps, and every one of them is auditable."
-            lede="RiskRail is built so a reviewer can follow a number from the chain all the way to the screen without trusting us in between."
+            lede="Rivisk is built so a reviewer can follow a number from the chain all the way to the screen without trusting us in between."
           />
         </Reveal>
 

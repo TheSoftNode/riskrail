@@ -10,7 +10,7 @@ Rules:
 - Decimal arithmetic for monetary values.
 - Every financial formula should have exact-value unit tests.
 - Protocol-specific facts such as LTV thresholds come from adapters/market metadata; shared arithmetic stays in the portfolio/risk packages.
-- A missing price remains missing. RiskRail lowers valuation coverage rather than inventing a value.
+- A missing price remains missing. Rivisk lowers valuation coverage rather than inventing a value.
 
 Current metrics:
 
@@ -24,6 +24,6 @@ Current metrics:
 - Default BTC -10%, -20%, -30% and STX -20% stress scenarios.
 - Custom multi-asset price shocks through the simulation API.
 
-The worker stores the standard scenario results inside the canonical risk report. The current methodology version is `riskrail-v1.1`.
+The worker stores the standard scenario results inside the canonical risk report. The current methodology version is `rivisk-v1.1`.
 
 A scenario is a what-if calculation against an indexed snapshot. It is not a market prediction and it never executes a transaction.

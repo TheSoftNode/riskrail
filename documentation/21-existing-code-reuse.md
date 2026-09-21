@@ -1,8 +1,8 @@
 # Reusing Existing Stacks Work
 
-RiskRail is not being built from a blank page. Two earlier projects, StacksPay and BitPay, already solved several engineering problems that RiskRail also needs to solve.
+Rivisk is not being built from a blank page. Two earlier projects, StacksPay and BitPay, already solved several engineering problems that Rivisk also needs to solve.
 
-The goal is not to copy those applications wholesale. The goal is to reuse patterns and small pieces of infrastructure that have already been exercised, while keeping RiskRail's new domain work clearly separate.
+The goal is not to copy those applications wholesale. The goal is to reuse patterns and small pieces of infrastructure that have already been exercised, while keeping Rivisk's new domain work clearly separate.
 
 ## What StacksPay gives us
 
@@ -25,7 +25,7 @@ Those are platform concerns, not payment-specific product logic.
 
 #### Stacks client and monitoring pattern
 
-The old payment monitor can be reduced into generic chain access and indexing code. RiskRail should not carry concepts such as payment status or merchant settlement into the indexer.
+The old payment monitor can be reduced into generic chain access and indexing code. Rivisk should not carry concepts such as payment status or merchant settlement into the indexer.
 
 #### Chainhook flow
 
@@ -38,19 +38,19 @@ Stacks event
  -> update application state
 ```
 
-RiskRail changes the domain action from "update a payment" to "refresh a position and recalculate portfolio risk."
+Rivisk changes the domain action from "update a payment" to "refresh a position and recalculate portfolio risk."
 
 #### API keys and webhooks
 
-StacksPay's developer-facing architecture is useful because RiskRail also needs to serve external applications. The implementation should be reviewed and modernized rather than blindly copied, especially around secret storage and signature details.
+StacksPay's developer-facing architecture is useful because Rivisk also needs to serve external applications. The implementation should be reviewed and modernized rather than blindly copied, especially around secret storage and signature details.
 
 #### SDK organization
 
-The earlier SDK pattern can guide `@riskrail/sdk`, but RiskRail endpoints should be designed around its own resources.
+The earlier SDK pattern can guide `@rivisk/sdk`, but Rivisk endpoints should be designed around its own resources.
 
 ## What BitPay gives us
 
-BitPay is more than a code-reuse source. It can be an actual RiskRail protocol integration.
+BitPay is more than a code-reuse source. It can be an actual Rivisk protocol integration.
 
 Useful existing concepts include:
 
@@ -74,7 +74,7 @@ A BitPay stream contains useful portfolio information:
 - end block;
 - cancellation state.
 
-RiskRail maps that into a `stream` position and calculates an accessibility ratio.
+Rivisk maps that into a `stream` position and calculates an accessibility ratio.
 
 For example:
 
@@ -87,7 +87,7 @@ remaining locked  0.040 sBTC
 withdrawable now  0.015 sBTC
 ```
 
-From RiskRail's point of view, this is not a payment screen. It is evidence that 0.040 sBTC remains economically associated with a stream and only part of it is currently accessible.
+From Rivisk's point of view, this is not a payment screen. It is evidence that 0.040 sBTC remains economically associated with a stream and only part of it is currently accessible.
 
 ## What should not be copied
 
@@ -106,9 +106,9 @@ From StacksPay:
 - settlement workflows;
 - order/merchant business logic.
 
-Bringing those into RiskRail would blur the product and make the grant work look like a rename.
+Bringing those into Rivisk would blur the product and make the grant work look like a rename.
 
-## Existing foundation vs new RiskRail work
+## Existing foundation vs new Rivisk work
 
 This distinction should remain clear in grant documentation and commit history.
 
@@ -122,7 +122,7 @@ This distinction should remain clear in grant documentation and commit history.
 - webhooks/API keys/SDK patterns;
 - realtime delivery patterns.
 
-### New RiskRail work
+### New Rivisk work
 
 - protocol adapter standard;
 - normalized cross-protocol position model;
@@ -135,7 +135,7 @@ This distinction should remain clear in grant documentation and commit history.
 - on-chain risk registry;
 - user-owned on-chain risk policies;
 - protocol registry;
-- public RiskRail API/SDK.
+- public Rivisk API/SDK.
 
 ## Reuse rule of thumb
 

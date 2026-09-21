@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/indexer",
+  "name": "@rivisk/indexer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,17 +12,17 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@riskrail/adapter-bitpay": "workspace:*",
-    "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/adapter-native-stacks": "workspace:*",
-    "@riskrail/adapter-zest-v2": "workspace:*",
-    "@riskrail/database": "workspace:*",
-    "@riskrail/logger": "workspace:*",
-    "@riskrail/oracle": "workspace:*",
-    "@riskrail/portfolio-engine": "workspace:*",
-    "@riskrail/queue": "workspace:*",
-    "@riskrail/stacks": "workspace:*",
-    "@riskrail/webhooks": "workspace:*",
+    "@rivisk/adapter-bitpay": "workspace:*",
+    "@rivisk/adapter-core": "workspace:*",
+    "@rivisk/adapter-native-stacks": "workspace:*",
+    "@rivisk/adapter-zest-v2": "workspace:*",
+    "@rivisk/database": "workspace:*",
+    "@rivisk/logger": "workspace:*",
+    "@rivisk/oracle": "workspace:*",
+    "@rivisk/portfolio-engine": "workspace:*",
+    "@rivisk/queue": "workspace:*",
+    "@rivisk/stacks": "workspace:*",
+    "@rivisk/webhooks": "workspace:*",
     "bullmq": "6.3.6"
   },
   "devDependencies": {

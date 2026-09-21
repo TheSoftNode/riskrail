@@ -1,8 +1,8 @@
-# RiskRail Documentation
+# Rivisk Documentation
 
-This folder is the long-form guide to RiskRail. The shorter files under `docs/` are useful when somebody already understands the project and just needs an architecture note or an ADR. The material here is different: it explains the product from the beginning, records why the system is being built the way it is, and gives a new engineer enough context to work on the code without relying on conversations that happened before the repository existed.
+This folder is the long-form guide to Rivisk. The shorter files under `docs/` are useful when somebody already understands the project and just needs an architecture note or an ADR. The material here is different: it explains the product from the beginning, records why the system is being built the way it is, and gives a new engineer enough context to work on the code without relying on conversations that happened before the repository existed.
 
-RiskRail is still early. Some parts of the repository are working foundations, some are scaffolding, and some are planned work for the grant milestones. The documentation calls that out deliberately. We do not want a README that makes the project look more complete than it is.
+Rivisk is still early. Some parts of the repository are working foundations, some are scaffolding, and some are planned work for the grant milestones. The documentation calls that out deliberately. We do not want a README that makes the project look more complete than it is.
 
 ## Start here
 
@@ -44,7 +44,7 @@ If you are new to the project, read these in order:
 
 ## A note on language
 
-RiskRail deals with financial risk, but it is not an investment adviser and it should not pretend to be one. The product describes observable positions, deterministic calculations, user-configured thresholds, and simulated scenarios. It does not tell a user what to buy or sell, and it does not call a position "safe" in an absolute sense.
+Rivisk deals with financial risk, but it is not an investment adviser and it should not pretend to be one. The product describes observable positions, deterministic calculations, user-configured thresholds, and simulated scenarios. It does not tell a user what to buy or sell, and it does not call a position "safe" in an absolute sense.
 
 Similarly, the AI explanation layer is intentionally downstream of the deterministic engine. The model can explain a result in plain language, but it does not invent the result.
 

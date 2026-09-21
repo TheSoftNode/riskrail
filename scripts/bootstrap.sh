@@ -7,5 +7,5 @@ cp -n .env.example .env || true
 pnpm infra:up
 pnpm db:generate
 printf '
-RiskRail bootstrap complete. Run: pnpm db:migrate && pnpm dev
+Rivisk bootstrap complete. Run: pnpm db:migrate && pnpm dev
 '

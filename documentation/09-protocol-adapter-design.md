@@ -1,6 +1,6 @@
 # Protocol Adapter Design
 
-Protocol adapters are the main extension point in RiskRail. The whole project depends on getting this boundary right.
+Protocol adapters are the main extension point in Rivisk. The whole project depends on getting this boundary right.
 
 ## The problem adapters solve
 
@@ -92,7 +92,7 @@ This lets the portfolio engine answer a question that normal wallet balance scre
 
 ## Zest V2 lending adapter
 
-The first external lending adapter is now `packages/adapter-zest-v2`. It is the first integration that gives RiskRail real collateral and debt state rather than only wallet balances or time-locked streams.
+The first external lending adapter is now `packages/adapter-zest-v2`. It is the first integration that gives Rivisk real collateral and debt state rather than only wallet balances or time-locked streams.
 
 The adapter reads the current Zest V2 obligation model and maps:
 
@@ -127,11 +127,11 @@ A new adapter is not finished when it can return a happy-path position. It shoul
 - event types that should trigger re-indexing;
 - fixture data;
 - unit/integration tests;
-- documentation of the protocol formulas RiskRail relies on.
+- documentation of the protocol formulas Rivisk relies on.
 
 ## Adapter versioning
 
-A protocol can upgrade its contract or economic model. RiskRail therefore needs adapter versions.
+A protocol can upgrade its contract or economic model. Rivisk therefore needs adapter versions.
 
 The database `Protocol.adapterVersion` and on-chain protocol registry both leave room for this.
 
@@ -141,7 +141,7 @@ A version change should be explicit when it changes how positions are interprete
 
 Adapters should fail in a way that preserves partial portfolio usefulness.
 
-If one protocol is temporarily unavailable, RiskRail should be able to say:
+If one protocol is temporarily unavailable, Rivisk should be able to say:
 
 > 2 of 3 integrations indexed successfully; Protocol X is stale as of block Y.
 

@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/database",
+  "name": "@rivisk/database",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
-    "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/portfolio-engine": "workspace:*"
+    "@rivisk/adapter-core": "workspace:*",
+    "@rivisk/portfolio-engine": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",

@@ -8,7 +8,7 @@ const base = {
   observed: '1.27',
   threshold: '1.30',
   source: 'local' as const,
-  dashboardUrl: 'https://riskrail.dev/dashboard?address=SP2J6ZY48',
+  dashboardUrl: 'https://rivisk.dev/dashboard?address=SP2J6ZY48',
 };
 
 afterEach(() => {
@@ -38,7 +38,7 @@ describe('dedupeKey', () => {
 describe('renderAlertEmail', () => {
   it('puts the rule in the subject', () => {
     expect(renderAlertEmail(base).subject).toBe(
-      'RiskRail: Health factor falls below 1.30',
+      'Rivisk: Health factor falls below 1.30',
     );
   });
 
@@ -48,7 +48,7 @@ describe('renderAlertEmail', () => {
   });
 
   it('names the trigger source', () => {
-    expect(renderAlertEmail(base).text).toContain('a RiskRail alert rule');
+    expect(renderAlertEmail(base).text).toContain('a Rivisk alert rule');
     expect(renderAlertEmail({ ...base, source: 'on-chain' }).text).toContain(
       'your on-chain risk policy',
     );
@@ -79,7 +79,7 @@ describe('createMailer', () => {
 
   it('enables once host and from are present', () => {
     process.env.SMTP_HOST = 'smtp.example.com';
-    process.env.SMTP_FROM = 'noreply@riskrail.dev';
+    process.env.SMTP_FROM = 'noreply@rivisk.dev';
     expect(createMailer().enabled).toBe(true);
   });
 });

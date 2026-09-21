@@ -42,7 +42,7 @@ The current portfolio should never be mutated by a simulation.
 
 ## Why a simple price multiplier is not enough
 
-If a user has a lending position, reducing the displayed value of BTC by 20% is only the first step. RiskRail also needs to recompute the protocol-specific collateral relationship.
+If a user has a lending position, reducing the displayed value of BTC by 20% is only the first step. Rivisk also needs to recompute the protocol-specific collateral relationship.
 
 For a position with BTC-linked collateral and stable debt, a BTC drop can lower collateral value while debt stays roughly unchanged. That can move the health factor substantially.
 
@@ -127,7 +127,7 @@ Custom requests use an indexed wallet plus one or more shocks. For example:
 
 The endpoint uses the latest persisted portfolio snapshot and returns its source block and valuation coverage. It does not automatically reindex the wallet first, which keeps the scenario tied to a known baseline.
 
-The background risk worker also runs the default scenarios after every successful refresh and includes those results in the canonical `riskrail-v1.1` report before hashing.
+The background risk worker also runs the default scenarios after every successful refresh and includes those results in the canonical `rivisk-v1.1` report before hashing.
 
 See [32 — Zest V2 lending and stress engine](./32-zest-v2-lending-and-stress-engine.md) for the implementation details and current Zest pricing caveat.
 

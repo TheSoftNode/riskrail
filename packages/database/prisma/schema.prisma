@@ -162,7 +162,7 @@ model RiskSnapshot {
   capitalAccessibilityBps  Int
   reportHash               String
   report                   Json
-  methodologyVersion       String   @default("riskrail-v1")
+  methodologyVersion       String   @default("rivisk-v1")
   sourceBlock              BigInt
   onchainSnapshotId        BigInt?
   onchainTxId              String?

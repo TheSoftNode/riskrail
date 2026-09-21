@@ -6,7 +6,7 @@ The stack was chosen to keep the first version fast to build while leaving clean
 
 ### Node.js 22+
 
-RiskRail is TypeScript-first. Node 22 gives the services a modern runtime and lets us share types and domain libraries across the API, indexer, worker, realtime service and SDK.
+Rivisk is TypeScript-first. Node 22 gives the services a modern runtime and lets us share types and domain libraries across the API, indexer, worker, realtime service and SDK.
 
 ### TypeScript 5.9
 
@@ -48,7 +48,7 @@ NestJS gives the API a clear module boundary, dependency injection, guards/inter
 
 ### REST + OpenAPI
 
-REST is deliberately the first public interface. RiskRail resources map naturally to wallets, portfolios, positions, risk snapshots, simulations and alerts. OpenAPI also gives us a stable path to SDK generation and external integration.
+REST is deliberately the first public interface. Rivisk resources map naturally to wallets, portfolios, positions, risk snapshots, simulations and alerts. OpenAPI also gives us a stable path to SDK generation and external integration.
 
 GraphQL is not prohibited; it is simply not necessary for the first release.
 
@@ -56,7 +56,7 @@ GraphQL is not prohibited; it is simply not necessary for the first release.
 
 ### PostgreSQL 16
 
-RiskRail data is relational and historical. Wallets have positions, positions have assets and snapshots, alerts have events, users have API keys and webhook endpoints. PostgreSQL fits these relationships and gives us strong querying for historical analytics later.
+Rivisk data is relational and historical. Wallets have positions, positions have assets and snapshots, alerts have events, users have API keys and webhook endpoints. PostgreSQL fits these relationships and gives us strong querying for historical analytics later.
 
 ### Prisma 6
 
@@ -95,7 +95,7 @@ Used for event-driven contract monitoring. Chainhook reduces the need to repeate
 
 ### Clarity + Clarinet
 
-RiskRail's own on-chain components are Clarity contracts. Clarinet is the local development/test environment.
+Rivisk's own on-chain components are Clarity contracts. Clarinet is the local development/test environment.
 
 ## Numeric handling
 
@@ -169,7 +169,7 @@ Useful when service count, traffic or operational requirements justify it. Cloud
 
 ### Python risk service
 
-Python becomes attractive if RiskRail adds Monte Carlo analysis, statistical time-series work, machine learning or heavy numerical workloads. The deterministic MVP does not require an extra language/runtime boundary.
+Python becomes attractive if Rivisk adds Monte Carlo analysis, statistical time-series work, machine learning or heavy numerical workloads. The deterministic MVP does not require an extra language/runtime boundary.
 
 ### Elasticsearch / ClickHouse
 

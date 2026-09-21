@@ -1,5 +1,5 @@
-import type { AdapterContext, NormalizedPosition, ProtocolAdapter, ProtocolMetadata } from '@riskrail/adapter-core';
-import { StacksClient, isStacksPrincipal } from '@riskrail/stacks';
+import type { AdapterContext, NormalizedPosition, ProtocolAdapter, ProtocolMetadata } from '@rivisk/adapter-core';
+import { StacksClient, isStacksPrincipal } from '@rivisk/stacks';
 
 export class NativeStacksAdapter implements ProtocolAdapter {
   metadata(): ProtocolMetadata {

@@ -46,7 +46,7 @@ export function validate(input: PolicyInput): string | null {
 /**
  * Opens the wallet to write the caller's thresholds into risk-policy.clar.
  * The contract keys on `tx-sender`, so the policy belongs to the signing wallet
- * rather than to RiskRail.
+ * rather than to Rivisk.
  */
 export async function writeRiskPolicy(input: PolicyInput): Promise<string> {
   const contract = process.env.NEXT_PUBLIC_RISK_POLICY_CONTRACT;

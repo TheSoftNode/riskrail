@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { atomicToDecimal, buildPortfolio, valuePositions } from './index.js';
-import type { NormalizedPosition } from '@riskrail/adapter-core';
+import type { NormalizedPosition } from '@rivisk/adapter-core';
 
 const base: NormalizedPosition = {
   id: 'native:SP1',

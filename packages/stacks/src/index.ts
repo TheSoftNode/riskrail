@@ -1,3 +1,4 @@
+import { validateStacksAddress } from '@stacks/transactions';
 import { networkFromName } from '@stacks/network';
 import {
   cvToJSON,
@@ -114,7 +115,7 @@ export class StacksClient {
   }
 
   async getAddressBalances(address: string, signal?: AbortSignal): Promise<AddressBalances> {
-    // Prefer the current v3 principal balance endpoints. The fallback keeps RiskRail
+    // Prefer the current v3 principal balance endpoints. The fallback keeps Rivisk
     // compatible with providers that have not exposed v3 yet.
     try {
       const [stxBody, ftBalances] = await Promise.all([
@@ -277,6 +278,21 @@ export function inferNetworkFromApiUrl(apiUrl: string): StacksNetworkName {
   return 'mainnet';
 }
 
+/**
+ * Shape *and* c32 checksum.
+ *
+ * The shape check alone lets a mistyped address through the API, which then
+ * becomes a queued job that fails four times deep in the indexer with
+ * "Invalid c32check string: checksum mismatch". Validating the checksum at the
+ * boundary turns that into a clean 400 and keeps the queue free of work that
+ * can never succeed.
+ */
 export function isStacksPrincipal(value: string): boolean {
-  return /^(SP|ST|SM|SN)[0-9A-HJKMNP-TV-Z]{38,41}(\.[a-zA-Z][a-zA-Z0-9-_]{0,39})?$/.test(value);
+  if (!/^(SP|ST|SM|SN)[0-9A-HJKMNP-TV-Z]{38,41}(\.[a-zA-Z][a-zA-Z0-9-_]{0,39})?$/.test(value)) {
+    return false;
+  }
+  const [address] = value.split('.');
+  return address !== undefined && validateStacksAddress(address);
 }
+
+export * from './clarity.js';

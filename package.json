@@ -1,5 +1,5 @@
 {
-  "name": "riskrail",
+  "name": "rivisk",
   "version": "0.1.0",
   "private": true,
   "description": "Risk intelligence and on-chain attestation infrastructure for Bitcoin capital on Stacks.",
@@ -15,14 +15,14 @@
     "lint": "turbo lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "pnpm --filter @riskrail/database db:generate",
-    "db:migrate": "pnpm --filter @riskrail/database db:migrate",
-    "db:seed": "pnpm --filter @riskrail/database db:seed",
-    "contracts:test": "pnpm --filter @riskrail/contracts test",
-    "contracts:check": "pnpm --filter @riskrail/contracts check",
+    "db:generate": "pnpm --filter @rivisk/database db:generate",
+    "db:migrate": "pnpm --filter @rivisk/database db:migrate",
+    "db:seed": "pnpm --filter @rivisk/database db:seed",
+    "contracts:test": "pnpm --filter @rivisk/contracts test",
+    "contracts:check": "pnpm --filter @rivisk/contracts check",
     "infra:up": "docker compose up -d postgres redis",
     "infra:down": "docker compose down",
-    "db:migrate:deploy": "pnpm --filter @riskrail/database db:migrate:deploy"
+    "db:migrate:deploy": "pnpm --filter @rivisk/database db:migrate:deploy"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

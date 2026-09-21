@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { prisma } from '@riskrail/database';
+import { prisma } from '@rivisk/database';
 import { AuthService } from './auth.service.js';
 import { ChallengeDto, RefreshDto, UpdateProfileDto, VerifyDto } from './auth.dto.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
@@ -59,7 +59,9 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Set the notification email address and preference' })
   async updateProfile(@CurrentUser() userId: string, @Body() input: UpdateProfileDto) {
-    const user = await prisma.user.update({
+    let user;
+    try {
+      user = await prisma.user.update({
       where: { id: userId },
       data: {
         ...(input.email === undefined
@@ -69,7 +71,15 @@ export class AuthController {
         ...(input.notifyByEmail === undefined ? {} : { notifyByEmail: input.notifyByEmail }),
       },
       select: { email: true, emailVerifiedAt: true, notifyByEmail: true },
-    });
+      });
+    } catch (error) {
+      // `email` is unique. Without this, an address already linked to another
+      // account surfaced as a raw database error and a 500.
+      if ((error as { code?: string }).code === 'P2002') {
+        throw new ConflictException('That email address is already linked to another account');
+      }
+      throw error;
+    }
     return {
       email: user.email,
       emailVerified: Boolean(user.emailVerifiedAt),

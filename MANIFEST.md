@@ -179,9 +179,9 @@ This file lists the tracked source and documentation files included in the curre
 - `packages/risk-engine/src/index.test.ts`
 - `packages/risk-engine/src/index.ts`
 - `packages/risk-engine/tsconfig.json`
-- `packages/riskrail-contracts/package.json`
-- `packages/riskrail-contracts/src/index.ts`
-- `packages/riskrail-contracts/tsconfig.json`
+- `packages/rivisk-contracts/package.json`
+- `packages/rivisk-contracts/src/index.ts`
+- `packages/rivisk-contracts/tsconfig.json`
 - `packages/sdk/package.json`
 - `packages/sdk/src/index.ts`
 - `packages/sdk/tsconfig.json`

@@ -1,7 +1,7 @@
 {
   "chain": "stacks",
-  "uuid": "riskrail-risk-policy-updated",
-  "name": "RiskRail risk policy updates",
+  "uuid": "rivisk-risk-policy-updated",
+  "name": "Rivisk risk policy updates",
   "version": 1,
   "networks": {
     "testnet": {

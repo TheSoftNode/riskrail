@@ -1,6 +1,6 @@
 # Smart Contract Design
 
-RiskRail uses Clarity where the blockchain adds something real: verifiability, user-owned policy state and composability. The contracts are not there simply so the product can say it has smart contracts.
+Rivisk uses Clarity where the blockchain adds something real: verifiability, user-owned policy state and composability. The contracts are not there simply so the product can say it has smart contracts.
 
 ## Contract suite
 
@@ -18,7 +18,7 @@ contracts/contracts/
 
 The trait defines the smallest useful interface that an external Clarity application can depend on for risk data.
 
-The intention is to make the registry replaceable at the interface level. A future protocol should not need to know every internal detail of RiskRail to request the latest supported risk output.
+The intention is to make the registry replaceable at the interface level. A future protocol should not need to know every internal detail of Rivisk to request the latest supported risk output.
 
 The trait should remain small. Once an interface is used by other contracts, unnecessary changes become expensive.
 
@@ -89,7 +89,7 @@ The policy belongs to `tx-sender`. Another wallet cannot write somebody else's t
 A normal database alert is practical, but an on-chain policy has two extra properties:
 
 1. the user can prove the threshold they configured;
-2. another Stacks application can read the same policy without asking RiskRail's private database.
+2. another Stacks application can read the same policy without asking Rivisk's private database.
 
 The off-chain worker still evaluates and delivers notifications.
 
@@ -114,7 +114,7 @@ This registry is useful for transparency, but it should not be treated as a magi
 
 Clarity uses integers for these metrics.
 
-RiskRail conventions:
+Rivisk conventions:
 
 ```text
 basis points:

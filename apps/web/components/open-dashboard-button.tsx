@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { WalletEntry } from "@/components/wallet-entry";
-import { restoreRiskRailWallet } from "@/lib/wallet";
+import { restoreRiviskWallet } from "@/lib/wallet";
 
 /**
  * "Open dashboard" that does not dead-end.
@@ -43,7 +43,7 @@ export function OpenDashboardButton({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    void restoreRiskRailWallet().then(setWallet);
+    void restoreRiviskWallet().then(setWallet);
   }, []);
 
   const href = wallet

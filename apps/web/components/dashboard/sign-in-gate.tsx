@@ -65,7 +65,7 @@ export function SignInGate({ children }: { children: ReactNode }) {
           <p className="mt-2.5 text-[0.875rem] leading-relaxed text-muted-foreground">
             API keys and webhooks belong to an account, so this page needs proof
             you control the address. Your wallet signs a one-time challenge — it
-            is not a transaction, it moves no funds, and RiskRail never sees a
+            is not a transaction, it moves no funds, and Rivisk never sees a
             private key.
           </p>
           <Button

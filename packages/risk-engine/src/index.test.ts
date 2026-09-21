@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { NormalizedPosition } from '@riskrail/adapter-core';
+import type { NormalizedPosition } from '@rivisk/adapter-core';
 import {
   assetConcentration,
   calculateConcentration,

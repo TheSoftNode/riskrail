@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/api",
+  "name": "@rivisk/api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,21 +8,22 @@
     "build": "nest build",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "lint": "eslint src --ext .ts"
+    "test": "vitest run --config ../../vitest.shared.ts --passWithNoTests",
+    "lint": "eslint src --ext .ts",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.5",
     "@nestjs/core": "^11.2.5",
     "@nestjs/platform-express": "^11.2.5",
     "@nestjs/swagger": "^11.0.0",
-    "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/database": "workspace:*",
-    "@riskrail/queue": "workspace:*",
-    "@riskrail/risk-engine": "workspace:*",
-    "@riskrail/riskrail-contracts": "workspace:*",
-    "@riskrail/stacks": "workspace:*",
-    "@riskrail/webhooks": "workspace:*",
+    "@rivisk/adapter-core": "workspace:*",
+    "@rivisk/database": "workspace:*",
+    "@rivisk/queue": "workspace:*",
+    "@rivisk/risk-engine": "workspace:*",
+    "@rivisk/rivisk-contracts": "workspace:*",
+    "@rivisk/stacks": "workspace:*",
+    "@rivisk/webhooks": "workspace:*",
     "@stacks/encryption": "^7.2.0",
     "@stacks/transactions": "^7.2.0",
     "class-transformer": "^0.5.1",
@@ -38,6 +39,7 @@
     "@nestjs/testing": "^11.2.5",
     "@types/express": "^5.0.3",
     "@types/node": "^22.18.0",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "@rivisk/sdk": "workspace:*"
   }
 }

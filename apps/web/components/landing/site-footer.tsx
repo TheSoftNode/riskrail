@@ -14,16 +14,17 @@ const COLUMNS = [
   {
     heading: "Developers",
     links: [
-      { label: "API & SDK", href: "#developers" },
+      { label: "API & SDK", href: "/docs/sdk" },
+      { label: "Smart contracts", href: "/docs/contracts" },
       {
         label: "Documentation",
-        href: "https://github.com/TheSoftNode/riskrail/tree/main/documentation",
+        href: "/docs",
       },
       {
         label: "Risk methodology",
-        href: "https://github.com/TheSoftNode/riskrail/blob/main/documentation/10-risk-engine-methodology.md",
+        href: "https://github.com/TheSoftNode/rivisk/blob/main/documentation/10-risk-engine-methodology.md",
       },
-      { label: "GitHub", href: "https://github.com/TheSoftNode/riskrail" },
+      { label: "GitHub", href: "https://github.com/TheSoftNode/rivisk" },
     ],
   },
   {
@@ -31,15 +32,15 @@ const COLUMNS = [
     links: [
       {
         label: "Security policy",
-        href: "https://github.com/TheSoftNode/riskrail/blob/main/SECURITY.md",
+        href: "https://github.com/TheSoftNode/rivisk/blob/main/SECURITY.md",
       },
       {
         label: "Contributing",
-        href: "https://github.com/TheSoftNode/riskrail/blob/main/CONTRIBUTING.md",
+        href: "https://github.com/TheSoftNode/rivisk/blob/main/CONTRIBUTING.md",
       },
       {
         label: "Roadmap",
-        href: "https://github.com/TheSoftNode/riskrail/blob/main/documentation/23-roadmap.md",
+        href: "https://github.com/TheSoftNode/rivisk/blob/main/documentation/23-roadmap.md",
       },
     ],
   },
@@ -61,7 +62,7 @@ export function SiteFooter() {
           <span className="text-border">/</span>
           <span>Stacks mainnet + testnet</span>
           <span className="text-border">·</span>
-          <span>Methodology riskrail-v1.2</span>
+          <span>Methodology rivisk-v1.2</span>
           <span className="text-border">·</span>
           <span>Non-custodial · read-only</span>
           <span className="ml-auto">MIT</span>
@@ -71,7 +72,7 @@ export function SiteFooter() {
       <div className="rr-shell py-14">
         <div className="grid gap-10 [&>*]:min-w-0 lg:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
           <div>
-            <Link href="/" aria-label="RiskRail home">
+            <Link href="/" aria-label="Rivisk home">
               <Logo />
             </Link>
             <p className="mt-4 max-w-xs text-[0.8125rem] leading-relaxed text-muted-foreground">
@@ -106,10 +107,10 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[0.75rem] text-muted-foreground">
-            © {new Date().getFullYear()} RiskRail. Licensed under MIT.
+            © {new Date().getFullYear()} Rivisk. Licensed under MIT.
           </p>
           <p className="max-w-lg text-[0.75rem] leading-relaxed text-muted-foreground">
-            RiskRail provides analytics, not financial advice. Metrics are
+            Rivisk provides analytics, not financial advice. Metrics are
             estimates derived from on-chain state and external price sources.
           </p>
         </div>

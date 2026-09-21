@@ -11,14 +11,14 @@ import { explorerTxUrl, writeRiskPolicy, type PolicyInput } from "@/lib/policy";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 import { formatBps, formatHealth, shorten } from "@/lib/format";
 
 export function PolicyPanel({ address }: { address: string }) {
   const queryClient = useQueryClient();
   const policy = useQuery({
     queryKey: ["policy", address],
-    queryFn: () => riskrailApi.policy(address),
+    queryFn: () => riviskApi.policy(address),
   });
 
   const [editing, setEditing] = useState(false);
@@ -92,7 +92,7 @@ export function PolicyPanel({ address }: { address: string }) {
 
         <p className="mt-3 text-[0.875rem] leading-relaxed text-muted-foreground">
           Thresholds live in <code className="font-mono text-[0.8125rem] text-brand-text">risk-policy.clar</code>,
-          owned by the wallet rather than by RiskRail. The worker reads them
+          owned by the wallet rather than by Rivisk. The worker reads them
           after every risk snapshot and records a breach independently of local
           alert rules.
         </p>
@@ -107,7 +107,7 @@ export function PolicyPanel({ address }: { address: string }) {
           <p className="mt-5 rounded-lg border border-dashed border-border px-4 py-6 text-[0.8125rem] leading-relaxed text-muted-foreground">
             The API has no{" "}
             <code className="font-mono">RISK_POLICY_CONTRACT</code> configured.
-            Deploy the RiskRail policy contract and set that variable to start
+            Deploy the Rivisk policy contract and set that variable to start
             evaluating wallet-owned policies.
           </p>
         ) : value ? (
@@ -140,7 +140,7 @@ export function PolicyPanel({ address }: { address: string }) {
           </>
         ) : (
           <p className="mt-5 rounded-lg border border-dashed border-border px-4 py-6 text-[0.8125rem] leading-relaxed text-muted-foreground">
-            No policy is stored on-chain for this wallet yet. RiskRail keeps
+            No policy is stored on-chain for this wallet yet. Rivisk keeps
             using local alert rules until the wallet writes one.
           </p>
         )}
@@ -157,7 +157,7 @@ export function PolicyPanel({ address }: { address: string }) {
                 <p className="text-[0.75rem] leading-relaxed text-muted-foreground">
                   This writes to <code className="font-mono">risk-policy.clar</code>{" "}
                   from your wallet. The contract keys on the signing address, so
-                  the limits belong to you, not to RiskRail. A network fee applies.
+                  the limits belong to you, not to Rivisk. A network fee applies.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Button

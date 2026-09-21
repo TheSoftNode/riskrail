@@ -52,7 +52,7 @@ export function DashboardShell({
       {/* Sidebar */}
       <aside className="sticky top-0 z-40 border-b border-border bg-sidebar/90 backdrop-blur-xl lg:h-svh lg:border-r lg:border-b-0">
         <div className="flex h-16 items-center gap-3 px-4 lg:h-auto lg:px-5 lg:pt-6">
-          <Link href="/" aria-label="RiskRail home">
+          <Link href="/" aria-label="Rivisk home">
             <Logo />
           </Link>
           <Button

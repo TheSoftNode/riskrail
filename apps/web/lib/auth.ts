@@ -1,11 +1,11 @@
 "use client";
 
 import { request } from "@stacks/connect";
-import { connectRiskRailWallet, restoreRiskRailWallet } from "@/lib/wallet";
+import { connectRiviskWallet, restoreRiviskWallet } from "@/lib/wallet";
 
-const ACCESS = "riskrail_access_token";
-const REFRESH = "riskrail_refresh_token";
-const ADDRESS = "riskrail_session_address";
+const ACCESS = "rivisk_access_token";
+const REFRESH = "rivisk_refresh_token";
+const ADDRESS = "rivisk_session_address";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1"
@@ -57,12 +57,12 @@ async function post<T>(path: string, body: unknown, token?: string): Promise<T> 
 }
 
 /**
- * Wallet sign-in. The wallet signs a server-issued challenge; RiskRail never
+ * Wallet sign-in. The wallet signs a server-issued challenge; Rivisk never
  * touches a private key and the signature authorises read-only analytics and
  * alert settings, not a transaction.
  */
 export async function signIn(): Promise<Session> {
-  const address = (await restoreRiskRailWallet()) ?? (await connectRiskRailWallet());
+  const address = (await restoreRiviskWallet()) ?? (await connectRiviskWallet());
 
   const challenge = await post<{ message: string }>("/auth/challenge", { address });
 

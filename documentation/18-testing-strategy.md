@@ -1,6 +1,6 @@
 # Testing Strategy
 
-RiskRail needs more than one kind of test because different failures matter at different layers.
+Rivisk needs more than one kind of test because different failures matter at different layers.
 
 ## 1. Pure unit tests
 

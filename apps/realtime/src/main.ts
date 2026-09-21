@@ -1,9 +1,9 @@
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
-import { createLogger } from '@riskrail/logger';
-import { createRedisConnection, RealtimeChannel, type RealtimeEvent } from '@riskrail/queue';
+import { createLogger } from '@rivisk/logger';
+import { createRedisConnection, RealtimeChannel, type RealtimeEvent } from '@rivisk/queue';
 
-const log = createLogger('riskrail-realtime');
+const log = createLogger('rivisk-realtime');
 const httpServer = createServer((req, res) => {
   if (req.url === '/health') {
     res.writeHead(200, { 'content-type': 'application/json' });
@@ -38,7 +38,7 @@ subscriber.on('message', (channel, payload) => {
   try {
     const message = JSON.parse(payload) as RealtimeEvent;
     if (!message.address || !message.event) return;
-    io.to(`portfolio:${message.address}`).emit('riskrail:event', message);
+    io.to(`portfolio:${message.address}`).emit('rivisk:event', message);
   } catch (error) {
     log.warn({ error }, 'ignored invalid realtime message');
   }

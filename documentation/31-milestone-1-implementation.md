@@ -1,8 +1,8 @@
 # Milestone 1 Implementation Notes
 
-This document explains what changed in the first real implementation pass after the initial RiskRail scaffold. It is written as a handoff note for anyone opening the repository and asking, "what actually works now?"
+This document explains what changed in the first real implementation pass after the initial Rivisk scaffold. It is written as a handoff note for anyone opening the repository and asking, "what actually works now?"
 
-The short version is that RiskRail now has a complete first data path:
+The short version is that Rivisk now has a complete first data path:
 
 ```text
 wallet address
@@ -53,21 +53,21 @@ The first scaffold used the older combined v1 address-balance endpoint because i
 
 FT results are cursor-paginated, so the client follows the cursor until the full wallet token list is available.
 
-There is still a v1 fallback. This is not the primary path; it only keeps RiskRail usable with an infrastructure provider that has not exposed v3 yet.
+There is still a v1 fallback. This is not the primary path; it only keeps Rivisk usable with an infrastructure provider that has not exposed v3 yet.
 
 ## Token metadata is resolved before valuation
 
 A raw Stacks FT balance gives an asset identifier and atomic balance. That is not enough to correctly display or value the token because decimals are token-specific.
 
-RiskRail now looks up SIP-010 metadata using Hiro's token metadata API. The normalized asset contains the resolved symbol and decimal precision.
+Rivisk now looks up SIP-010 metadata using Hiro's token metadata API. The normalized asset contains the resolved symbol and decimal precision.
 
-sBTC has a safe fallback to eight decimals if the metadata endpoint is temporarily unavailable. For an arbitrary unknown token, RiskRail does not invent precision. It marks the metadata/position as not fully exact and does not pretend an incorrect value is trustworthy.
+sBTC has a safe fallback to eight decimals if the metadata endpoint is temporarily unavailable. For an arbitrary unknown token, Rivisk does not invent precision. It marks the metadata/position as not fully exact and does not pretend an incorrect value is trustworthy.
 
 That rule is important throughout this project: missing data is better than false precision.
 
 ## The BitPay adapter now reads the actual contract interface
 
-The first adapter already knew how to turn a BitPay stream into a RiskRail position, but it needed a `BitPayReader` implementation.
+The first adapter already knew how to turn a BitPay stream into a Rivisk position, but it needed a `BitPayReader` implementation.
 
 `StacksBitPayReader` now implements that interface with Stacks read-only contract calls.
 
@@ -81,7 +81,7 @@ The IDs are deduplicated, then each stream is loaded using:
 - `get-stream`
 - `get-vested-amount`
 
-From that state RiskRail calculates:
+From that state Rivisk calculates:
 
 ```text
 outstanding = total amount - already withdrawn
@@ -89,7 +89,7 @@ withdrawable now = vested amount - already withdrawn
 accessibility = withdrawable now / outstanding
 ```
 
-This gives BitPay a useful risk meaning instead of treating a stream as a generic token balance. A user may own economic value that is not completely accessible today, and RiskRail exposes that distinction.
+This gives BitPay a useful risk meaning instead of treating a stream as a generic token balance. A user may own economic value that is not completely accessible today, and Rivisk exposes that distinction.
 
 The next improvement is to cache these stream updates from Chainhook events rather than making all read-only calls during every refresh.
 
@@ -110,7 +110,7 @@ The portfolio engine applies those prices with Decimal.js. It produces:
 - totals by asset;
 - valuation coverage.
 
-Valuation coverage matters because a wallet may hold a SIP-010 token for which RiskRail has no trustworthy price source yet. The API should say that clearly instead of silently treating the portfolio as fully valued.
+Valuation coverage matters because a wallet may hold a SIP-010 token for which Rivisk has no trustworthy price source yet. The API should say that clearly instead of silently treating the portfolio as fully valued.
 
 ## Current-position state and history are both kept
 
@@ -156,7 +156,7 @@ The score is deliberately documented and secondary. It currently weights:
 - protocol concentration risk at 30%;
 - capital accessibility risk at 30%.
 
-If there is no collateral position, RiskRail does not invent a health factor. The health component contributes no penalty and the report retains the underlying metrics so a consumer can see exactly what data existed.
+If there is no collateral position, Rivisk does not invent a health factor. The health component contributes no penalty and the report retains the underlying metrics so a consumer can see exactly what data existed.
 
 The current liquidity score is a capital-accessibility proxy. It is labelled that way in the risk report. It should be replaced/augmented by market-depth and expected-price-impact calculations when DEX/liquidity adapters are introduced.
 
@@ -173,7 +173,7 @@ A risk report contains:
 - position summary;
 - notes describing provisional methodology.
 
-Before hashing, object keys are sorted recursively. This gives RiskRail one repeatable JSON representation rather than relying on whatever object-property insertion order happened to occur in a process.
+Before hashing, object keys are sorted recursively. This gives Rivisk one repeatable JSON representation rather than relying on whatever object-property insertion order happened to occur in a process.
 
 The canonical JSON is SHA-256 hashed and both the full report and the hash are saved.
 
@@ -181,7 +181,7 @@ This is the evidence that the on-chain attestation commits to.
 
 ## On-chain publishing is isolated from the API
 
-The API never receives the RiskRail publisher private key.
+The API never receives the Rivisk publisher private key.
 
 When publishing is enabled, the risk worker queues a separate attestation job after the report is persisted. The contracts package constructs the `publish-risk-snapshot` call to `risk-registry.clar` and broadcasts it with Stacks.js.
 
@@ -193,7 +193,7 @@ RISK_PUBLISHER_ENABLED=false
 
 To enable it on testnet we still need to:
 
-1. deploy the RiskRail contracts;
+1. deploy the Rivisk contracts;
 2. set `RISK_REGISTRY_CONTRACT`;
 3. create/fund a dedicated publisher principal;
 4. authorize that principal using `set-publisher` from the contract owner;
@@ -226,7 +226,7 @@ After installing dependencies and starting PostgreSQL/Redis, generate the Prisma
 ```bash
 pnpm install
 pnpm db:generate
-pnpm --filter @riskrail/database exec prisma migrate dev --schema prisma/schema.prisma --name milestone1_indexing
+pnpm --filter @rivisk/database exec prisma migrate dev --schema prisma/schema.prisma --name milestone1_indexing
 ```
 
 Then start the workspace:
@@ -269,6 +269,6 @@ That pass should add:
 6. dashboard views for the portfolio and risk report;
 7. Chainhook events for incremental updates instead of full reads only.
 
-Once that is working, RiskRail stops being primarily an indexing/attestation foundation and starts demonstrating the full market-risk use case described in the grant proposal.
+Once that is working, Rivisk stops being primarily an indexing/attestation foundation and starts demonstrating the full market-risk use case described in the grant proposal.
 
 > **Follow-up:** the lending adapter, collateral/debt normalization, shared health/liquidation calculations and simulation API described above were started in the next implementation pass. See [32 — Zest V2 lending and stress engine](./32-zest-v2-lending-and-stress-engine.md) for the current state.

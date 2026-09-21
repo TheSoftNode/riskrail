@@ -42,6 +42,25 @@ export interface RiskAttestationJob {
   requestedAt: string;
 }
 
+/**
+ * Builds a BullMQ custom job id.
+ *
+ * BullMQ rejects `:` in custom ids -- it uses that character as its own Redis
+ * key separator, and `queue.add` throws `Custom Id cannot contain :` at
+ * runtime. Every job id here was colon-delimited, which meant no job could be
+ * enqueued at all: no indexing, no alerts, no webhook deliveries. Unit tests
+ * missed it because they mock the queue; only a real Redis surfaces it.
+ *
+ * Empty and nullish parts are dropped so an optional block height or attempt
+ * number does not leave a trailing separator.
+ */
+export function jobId(...parts: Array<string | number | null | undefined>): string {
+  return parts
+    .filter((part) => part !== null && part !== undefined && part !== '')
+    .map((part) => String(part).replace(/:/g, '-'))
+    .join('-');
+}
+
 export function createRedisConnection(url = process.env.REDIS_URL ?? 'redis://localhost:6379') {
   return new Redis(url, {
     maxRetriesPerRequest: null,
@@ -68,14 +87,14 @@ export interface RealtimeEvent {
   timestamp: string;
 }
 
-export const RealtimeChannel = 'riskrail.realtime';
+export const RealtimeChannel = 'rivisk.realtime';
 
 export const QueueName = {
-  Portfolio: 'riskrail.portfolio',
-  Risk: 'riskrail.risk',
-  Alerts: 'riskrail.alerts',
-  Attestations: 'riskrail.attestations',
-  Webhooks: 'riskrail.webhooks',
+  Portfolio: 'rivisk.portfolio',
+  Risk: 'rivisk.risk',
+  Alerts: 'rivisk.alerts',
+  Attestations: 'rivisk.attestations',
+  Webhooks: 'rivisk.webhooks',
 } as const;
 
 export const JobName = {

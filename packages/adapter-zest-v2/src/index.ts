@@ -5,8 +5,8 @@ import type {
   PositionAsset,
   ProtocolAdapter,
   ProtocolMetadata,
-} from '@riskrail/adapter-core';
-import { StacksClient } from '@riskrail/stacks';
+} from '@rivisk/adapter-core';
+import { StacksClient, unwrapClarity, unwrapClarityResponse } from '@rivisk/stacks';
 import { principalCV, uintCV } from '@stacks/transactions';
 
 const MAX_U128 = 340282366920938463463374607431768211455n;
@@ -15,7 +15,7 @@ const INDEX_PRECISION = 1_000_000_000_000n;
 /**
  * Current Zest V2 market deployment used by the adapter when mainnet mode is
  * explicitly enabled. Every address can be overridden through environment
- * variables so RiskRail does not hard-code a protocol upgrade into application
+ * variables so Rivisk does not hard-code a protocol upgrade into application
  * logic.
  */
 export const ZEST_V2_MAINNET_DEPLOYER = 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7';
@@ -364,37 +364,13 @@ function canonicalAssetId(symbol: string, contractId: string): string {
   return contractId;
 }
 
-interface ResponseValue {
-  ok: boolean;
-  value: unknown;
-}
-
-function unwrapResponse(input: unknown): ResponseValue {
-  if (!isRecord(input)) return { ok: true, value: input };
-  const type = String(input['type'] ?? '').toLowerCase();
-  if (type.includes('response')) {
-    const success = input['success'];
-    return { ok: success !== false, value: unwrapNode(input['value']) };
-  }
-  return { ok: true, value: unwrapNode(input) };
-}
-
-function unwrapNode(input: unknown): unknown {
-  if (input === null || input === undefined) return input;
-  if (Array.isArray(input)) return input.map(unwrapNode);
-  if (typeof input !== 'object') return input;
-
-  const node = input as Record<string, unknown>;
-  const type = typeof node['type'] === 'string' ? node['type'].toLowerCase() : '';
-  if (type.includes('optional') && (node['value'] === null || type.includes('none'))) return null;
-  if (type.includes('response')) return unwrapNode(node['value']);
-  if (type.includes('optional') || type.includes('list') || type.includes('tuple')) return unwrapNode(node['value']);
-  if (type.includes('uint') || type.includes('int') || type.includes('principal') || type.includes('string') || type.includes('bool') || type.includes('buffer')) {
-    return unwrapNode(node['value']);
-  }
-  if ('value' in node && Object.keys(node).length <= 3) return unwrapNode(node['value']);
-  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, unwrapNode(value)]));
-}
+/**
+ * Clarity decoding lives in `@rivisk/stacks` so that every adapter shares one
+ * implementation — these used to be per-package copies that all carried the
+ * same nested-type-signature bug.
+ */
+const unwrapNode = unwrapClarity;
+const unwrapResponse = unwrapClarityResponse;
 
 function asRecord(value: unknown): Record<string, unknown> {
   const unwrapped = unwrapNode(value);

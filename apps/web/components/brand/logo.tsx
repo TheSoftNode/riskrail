@@ -6,7 +6,11 @@ const MARK_W = 1273;
 const MARK_H = 944;
 
 /**
- * Brand lockup: the RiskRail mark plus "Risk" in text ink and "Rail" in cyan.
+ * Brand lockup: the Rivisk mark plus the wordmark.
+ *
+ * The wordmark is one colour. The old name split cleanly into two words, which
+ * is what the two-tone treatment followed; "Rivisk" has no such seam, and
+ * colouring an arbitrary half reads as a typo. The mark carries the cyan.
  *
  * The supplied artwork draws the outer R in near-white, which disappears on a
  * light surface — so there are two files and CSS picks one. Both are rendered
@@ -27,7 +31,7 @@ export function Logo({
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <Image
-        src="/riskrail-mark-light.png"
+        src="/rivisk-mark-light.png"
         alt=""
         width={MARK_W}
         height={MARK_H}
@@ -35,7 +39,7 @@ export function Logo({
         className={cn(mark, "block dark:hidden")}
       />
       <Image
-        src="/riskrail-mark-dark.png"
+        src="/rivisk-mark-dark.png"
         alt=""
         width={MARK_W}
         height={MARK_H}
@@ -43,12 +47,11 @@ export function Logo({
         className={cn(mark, "hidden dark:block")}
       />
       {showWordmark ? (
-        <span className="text-[1.0625rem] font-semibold tracking-tight">
-          <span className="text-foreground">Risk</span>
-          <span className="text-brand-text">Rail</span>
+        <span className="text-[1.0625rem] font-semibold tracking-tight text-foreground">
+          Rivisk
         </span>
       ) : (
-        <span className="sr-only">RiskRail</span>
+        <span className="sr-only">Rivisk</span>
       )}
     </span>
   );

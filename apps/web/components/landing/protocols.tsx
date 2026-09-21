@@ -159,7 +159,7 @@ export function Protocols() {
                 </h3>
                 <p className="mt-2 text-[0.8125rem] leading-relaxed text-muted-foreground">
                   An adapter produces normalized collateral and debt assets plus
-                  the protocol&apos;s own thresholds. RiskRail reuses the same
+                  the protocol&apos;s own thresholds. Rivisk reuses the same
                   LTV, health-factor and liquidation arithmetic for all of them.
                 </p>
               </div>

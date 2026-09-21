@@ -1,5 +1,5 @@
-import type { AdapterContext, NormalizedPosition, ProtocolAdapter, ProtocolMetadata } from '@riskrail/adapter-core';
-import { StacksClient } from '@riskrail/stacks';
+import type { AdapterContext, NormalizedPosition, ProtocolAdapter, ProtocolMetadata } from '@rivisk/adapter-core';
+import { StacksClient, unwrapClarity } from '@rivisk/stacks';
 import { principalCV, uintCV } from '@stacks/transactions';
 
 export interface BitPayStream {
@@ -23,7 +23,7 @@ export interface BitPayReader {
  *
  * The reader intentionally keeps contract access outside the adapter mapping logic.
  * That makes it straightforward to replace direct reads with indexed Chainhook state
- * later without changing RiskRail's normalized position model.
+ * later without changing Rivisk's normalized position model.
  */
 export class StacksBitPayReader implements BitPayReader {
   private readonly client: StacksClient;
@@ -153,26 +153,9 @@ export class BitPayAdapter implements ProtocolAdapter {
   }
 }
 
-// cvToJSON has changed slightly across Stacks.js releases. These decoders accept
-// both the typed { type, value } shape and already-unwrapped primitive structures.
-function unwrapNode(input: unknown): unknown {
-  if (input === null || input === undefined) return input;
-  if (Array.isArray(input)) return input.map(unwrapNode);
-  if (typeof input !== 'object') return input;
-
-  const node = input as Record<string, unknown>;
-  const type = typeof node['type'] === 'string' ? node['type'].toLowerCase() : '';
-  if (type.includes('optional') && (node['value'] === null || type.includes('none'))) return null;
-  if (type.includes('response') || type.includes('optional') || type.includes('list') || type.includes('tuple')) {
-    return unwrapNode(node['value']);
-  }
-  if (type.includes('uint') || type.includes('int') || type.includes('principal') || type.includes('string') || type.includes('bool')) {
-    return unwrapNode(node['value']);
-  }
-
-  if ('value' in node && Object.keys(node).length <= 3) return unwrapNode(node['value']);
-  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, unwrapNode(value)]));
-}
+// Clarity decoding is shared via `@rivisk/stacks`; see the note there about
+// why type signatures cannot be matched with `includes()`.
+const unwrapNode = unwrapClarity;
 
 function decodeUintList(input: unknown): number[] {
   const value = unwrapNode(input);

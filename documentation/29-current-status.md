@@ -1,8 +1,62 @@
 # Current Implementation Status
 
-This page is intentionally conservative. It says what is in the repository today, what is usable now, and what still needs work. RiskRail has moved beyond the original scaffold and now has a real indexing/risk path, but the project is not being presented as production-complete before it has been validated in a hosted environment.
+This page is intentionally conservative. It says what is in the repository today, what is usable now, and what still needs work. Rivisk has moved beyond the original scaffold and now has a real indexing/risk path, but the project is not being presented as production-complete before it has been validated in a hosted environment.
 
-Last reviewed during the Milestone 2 dashboard, realtime alert and policy-evaluation pass.
+Last reviewed 2026-09-20, after the authentication, API-key, webhook, email and
+Chainhook pass, the first live validation of the Zest adapter, and the
+Contracts v1 design pass that made the trait an external-consumer interface.
+
+## Status at a glance
+
+Five labels, applied strictly:
+
+| Label | Means |
+| --- | --- |
+| **IMPLEMENTED** | The code exists and typechecks. Nothing more is claimed. |
+| **TESTED** | Covered by automated tests that run in CI. |
+| **DEPLOYED** | Running somewhere other than a developer machine. |
+| **LIVE-VALIDATED** | Checked against real chain or protocol state, with the comparison written down. |
+| **PLANNED** | Not built. |
+
+| Capability | Status |
+| --- | --- |
+| Stacks data access (balances, FT, read-only calls) | LIVE-VALIDATED |
+| Native wallet adapter | TESTED |
+| BitPay stream adapter | TESTED |
+| Zest V2 lending adapter | LIVE-VALIDATED — see [validation/zest-v2](../docs/validation/zest-v2.md) |
+| Clarity value decoding | TESTED · LIVE-VALIDATED |
+| Portfolio engine and normalization | LIVE-VALIDATED (indexed a real mainnet wallet end to end) |
+| Risk engine (LTV, health factor, liquidation distance, concentration) | LIVE-VALIDATED (health factor matched Zest's own threshold maths) |
+| Stress engine | TESTED |
+| Risk report canonicalization and SHA-256 | TESTED |
+| Wallet-signature authentication (challenge, nonce, JWT) | IMPLEMENTED |
+| API keys | IMPLEMENTED |
+| Signed webhooks (encrypt at rest, HMAC, retry) | TESTED |
+| Email notifications | TESTED |
+| Alert evaluation (edge-triggered) | TESTED |
+| Alert ownership enforcement | IMPLEMENTED |
+| Rate limiting on public refresh | IMPLEMENTED |
+| Chainhook incremental indexing | TESTED (job enqueue fixed; receiver not yet driven by a real Chainhook) |
+| Chainhook Zest predicate | LIVE-VALIDATED (contract and events verified on mainnet) |
+| Database schema | TESTED (migrations apply and drift-check in CI) |
+| SDK | PUBLISHED — `@rivisk/sdk@0.1.0` on npm, verified by a clean install from the public registry |
+| SDK webhook signature verification | TESTED (WebCrypto, runs on edge runtimes) |
+| Dashboard, landing page, developer surface | IMPLEMENTED |
+| On-chain policy write from the browser | IMPLEMENTED |
+| Clarity contracts (v1 external interface) | TESTED (simnet, 51 tests; `clarinet check` clean, 0 warnings) |
+| On-chain consumer integration path | LIVE-VALIDATED — example consumer approved from snapshot #1 on testnet (tx `0xb4bb63a6…`) |
+| Contract deployment to testnet | DEPLOYED — block 451066, deployer `ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7`; see `contracts/deployments/testnet.json` |
+| On-chain risk attestations end to end | LIVE-VALIDATED — worker published snapshot #1 to testnet (tx `0x0877e7b2…`), report hash matches the API |
+| Hosted beta | PLANNED |
+| Market-depth liquidity analysis | PLANNED |
+| Email address verification | PLANNED |
+| Usage metrics and evidence capture | PLANNED |
+
+The indexer, worker and API have now been run together against a real Postgres,
+Redis and mainnet, producing a risk snapshot from a live wallet. Nothing has run
+outside a developer machine.
+No part of the authenticated stack has been exercised against a live Postgres or
+Redis by a real browser session.
 
 ## Repository foundation — present
 
@@ -37,17 +91,17 @@ The native wallet adapter uses this information to create a normalized wallet po
 
 ## BitPay adapter — direct contract reader present
 
-RiskRail has a concrete `StacksBitPayReader` rather than only an abstract interface.
+Rivisk has a concrete `StacksBitPayReader` rather than only an abstract interface.
 
 It reads the existing BitPay core contract directly, queries sender and recipient stream IDs, loads stream state and current vested amounts, and passes the results through the BitPay adapter.
 
-The normalized stream positions contain outstanding, withdrawn, vested and currently withdrawable sBTC along with the block range and cancellation state. This gives RiskRail a real example of capital that belongs to a wallet economically but is not simply sitting in the wallet balance.
+The normalized stream positions contain outstanding, withdrawn, vested and currently withdrawable sBTC along with the block range and cancellation state. This gives Rivisk a real example of capital that belongs to a wallet economically but is not simply sitting in the wallet balance.
 
 Direct contract reads are the first implementation. Chainhook-backed cached state is still the better long-term path for high-volume indexing.
 
 ## Zest V2 lending adapter — first external lending integration present
 
-RiskRail now contains `packages/adapter-zest-v2`, the first external lending/collateral adapter.
+Rivisk now contains `packages/adapter-zest-v2`, the first external lending/collateral adapter.
 
 The adapter is built around the current public Zest V2 contract model. It reads a wallet's obligation from the market vault, resolves collateral/debt asset information, converts zToken collateral to underlying exposure, converts scaled debt using the relevant vault borrow index, and reads the egroup risk parameters that apply to the position.
 
@@ -55,7 +109,17 @@ Those protocol parameters are normalized into shared `LendingRiskParameters`, in
 
 The adapter is disabled by default and must be enabled explicitly. Mainnet defaults exist for the currently published Zest V2 deployment; non-mainnet environments require contract overrides.
 
-This is an integration foundation, not a claim that every live Zest position has already been cross-checked. Before calling it production-ready we still need to run it against known mainnet obligations and compare the normalized output field-by-field with current protocol state.
+The adapter has now been run against a live mainnet obligation and compared
+field-by-field with Zest's own on-chain figures. Rivisk reproduces the
+protocol's debt accounting to eight significant figures once the USDC oracle
+price is accounted for, and reads the position's risk parameters rather than
+assuming them. The full comparison, including the decoding bug that first run
+exposed, is in [docs/validation/zest-v2.md](../docs/validation/zest-v2.md).
+
+That is one position with one asset pair. Multi-collateral positions, other
+assets and positions in liquidation have not been checked against live data, and
+Rivisk marks to its own oracle rather than Zest's, so USD figures and
+liquidation distances will not match Zest's screen exactly.
 
 ## Price and valuation layer — implemented for the current MVP path
 
@@ -69,7 +133,7 @@ The portfolio engine values normalized assets, computes position equity, aggrega
 
 Unknown tokens are left unvalued rather than guessed.
 
-One important limitation remains: Zest itself uses its protocol oracle system for execution-time health/liquidation checks, while the current RiskRail MVP uses its own mark-to-market price source for portfolio analytics. Zest thresholds come from contract state, but RiskRail does not yet claim exact oracle-price parity with a Zest transaction at the same instant.
+One important limitation remains: Zest itself uses its protocol oracle system for execution-time health/liquidation checks, while the current Rivisk MVP uses its own mark-to-market price source for portfolio analytics. Zest thresholds come from contract state, but Rivisk does not yet claim exact oracle-price parity with a Zest transaction at the same instant.
 
 ## Lending metrics — shared calculation path present
 
@@ -100,7 +164,7 @@ Built-in presets include:
 
 Custom scenarios can contain multiple asset shocks. The engine applies shocks to a copy of the latest normalized positions, recalculates USD values and lending metrics, and reports before/after health and liquidation distance. It flags a position when a scenario moves it across the partial-liquidation threshold.
 
-The background worker includes the standard scenarios in each canonical risk report. The methodology version is now `riskrail-v1.2`.
+The background worker includes the standard scenarios in each canonical risk report. The methodology version is now `rivisk-v1.2`.
 
 ## Simulation API — implemented
 
@@ -137,7 +201,7 @@ For each wallet it validates the principal, reads the current block height, runs
 
 The native Stacks adapter is always enabled. BitPay is enabled when its core contract is configured. Zest V2 is enabled when `ZEST_V2_ENABLED=true` and the network/contract configuration is valid.
 
-If the external price source is unavailable, RiskRail still preserves exact on-chain quantities and lowers valuation coverage instead of failing the whole index.
+If the external price source is unavailable, Rivisk still preserves exact on-chain quantities and lowers valuation coverage instead of failing the whole index.
 
 ## API — connected to indexed data
 
@@ -229,7 +293,7 @@ The dashboard is wired to the same API used by the rest of the system. It is not
 
 ## Realtime, policies and alerts — working beta path
 
-The realtime service now subscribes to the Redis `riskrail.realtime` channel and broadcasts events into address-scoped Socket.IO rooms. The indexer publishes portfolio updates; the risk worker publishes risk updates; the alert worker publishes local-alert and on-chain-policy breach events. The web client invalidates only the relevant React Query data when those events arrive.
+The realtime service now subscribes to the Redis `rivisk.realtime` channel and broadcasts events into address-scoped Socket.IO rooms. The indexer publishes portfolio updates; the risk worker publishes risk updates; the alert worker publishes local-alert and on-chain-policy breach events. The web client invalidates only the relevant React Query data when those events arrive.
 
 The API now exposes address-scoped in-app alert rules and read-only on-chain policy lookup. Alert evaluation is edge-triggered: a rule fires when a metric crosses into the breached side rather than on every subsequent snapshot while the breach remains active.
 
@@ -246,7 +310,7 @@ Still remaining:
 
 ## What "enterprise-ready" means right now
 
-RiskRail now has a real multi-adapter data path and the first lending stress model. Enterprise-ready still does not mean "finished".
+Rivisk now has a real multi-adapter data path and the first lending stress model. Enterprise-ready still does not mean "finished".
 
 Before a public/mainnet launch we still need at least:
 

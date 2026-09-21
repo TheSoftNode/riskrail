@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/risk-engine",
+  "name": "@rivisk/risk-engine",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,14 +14,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.shared.ts --passWithNoTests",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/shared-types": "workspace:*",
+    "@rivisk/adapter-core": "workspace:*",
+    "@rivisk/shared-types": "workspace:*",
     "decimal.js": "10.6.0",
-    "@riskrail/portfolio-engine": "workspace:*"
+    "@rivisk/portfolio-engine": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^5.0.1"

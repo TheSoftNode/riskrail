@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import type { NormalizedPosition } from '@riskrail/adapter-core';
-import { getCurrentPortfolio } from '@riskrail/database';
+import type { NormalizedPosition } from '@rivisk/adapter-core';
+import { getCurrentPortfolio } from '@rivisk/database';
 import {
   DEFAULT_STRESS_SCENARIOS,
   runStressScenario,
   type StressScenario,
-} from '@riskrail/risk-engine';
-import { isStacksPrincipal } from '@riskrail/stacks';
+} from '@rivisk/risk-engine';
+import { isStacksPrincipal } from '@rivisk/stacks';
 import type { RunSimulationDto } from './simulations.dto.js';
 
 @Injectable()

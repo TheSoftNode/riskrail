@@ -22,14 +22,14 @@ export interface PositionAsset {
   decimals: number;
   valueUsd?: string;
   role: 'asset' | 'collateral' | 'debt' | 'reward' | 'locked';
-  /** Optional protocol-native asset identifier when RiskRail normalizes to an underlying asset. */
+  /** Optional protocol-native asset identifier when Rivisk normalizes to an underlying asset. */
   protocolAssetId?: string;
 }
 
 /**
  * Lending parameters attached by a protocol adapter.
  *
- * These are protocol facts, not RiskRail opinions. The portfolio engine uses them
+ * These are protocol facts, not Rivisk opinions. The portfolio engine uses them
  * after pricing to derive health factor, LTV and liquidation distance.
  */
 export interface LendingRiskParameters {

@@ -1,6 +1,6 @@
 # Security Policy
 
-RiskRail handles public blockchain data and risk analytics. It must never request or store wallet seed phrases or private keys.
+Rivisk handles public blockchain data and risk analytics. It must never request or store wallet seed phrases or private keys.
 
 ## Reporting a vulnerability
 

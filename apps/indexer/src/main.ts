@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import { Worker } from 'bullmq';
-import type { ProtocolAdapter } from '@riskrail/adapter-core';
-import { BitPayAdapter, StacksBitPayReader } from '@riskrail/adapter-bitpay';
-import { NativeStacksAdapter } from '@riskrail/adapter-native-stacks';
-import { StacksZestV2Reader, ZestV2Adapter, zestV2ContractsFromEnv } from '@riskrail/adapter-zest-v2';
-import { failIndexingRun, persistPortfolio, planDeliveries, prisma } from '@riskrail/database';
-import { createLogger } from '@riskrail/logger';
-import { CoinGeckoPriceOracle } from '@riskrail/oracle';
-import { buildPortfolio, valuePositions } from '@riskrail/portfolio-engine';
-import { buildEvent } from '@riskrail/webhooks';
+import type { ProtocolAdapter } from '@rivisk/adapter-core';
+import { BitPayAdapter, StacksBitPayReader } from '@rivisk/adapter-bitpay';
+import { NativeStacksAdapter } from '@rivisk/adapter-native-stacks';
+import { StacksZestV2Reader, ZestV2Adapter, zestV2ContractsFromEnv } from '@rivisk/adapter-zest-v2';
+import { failIndexingRun, persistPortfolio, planDeliveries, prisma } from '@rivisk/database';
+import { createLogger } from '@rivisk/logger';
+import { CoinGeckoPriceOracle } from '@rivisk/oracle';
+import { buildPortfolio, valuePositions } from '@rivisk/portfolio-engine';
+import { buildEvent } from '@rivisk/webhooks';
 import {
   createQueue,
   createRedisConnection,
@@ -18,10 +18,11 @@ import {
   type PortfolioRefreshJob,
   type RiskRecalculateJob,
   RealtimeChannel,
-} from '@riskrail/queue';
-import { StacksClient, isStacksPrincipal } from '@riskrail/stacks';
+  jobId,
+} from '@rivisk/queue';
+import { StacksClient, isStacksPrincipal } from '@rivisk/stacks';
 
-const log = createLogger('riskrail-indexer');
+const log = createLogger('rivisk-indexer');
 const apiUrl = process.env.STACKS_API_URL ?? 'https://api.testnet.hiro.so';
 const stacksApiKey = process.env.STACKS_API_KEY || undefined;
 const stacks = new StacksClient(apiUrl, stacksApiKey);
@@ -110,7 +111,7 @@ async function indexWallet(job: PortfolioRefreshJob) {
         await webhookQueue.add(
           JobName.WebhookDeliver,
           { endpointId: target.endpointId, event: built, attempt: 1 },
-          { jobId: `wh:${built.id}:${target.endpointId}` },
+          { jobId: jobId('wh', built.id, target.endpointId) },
         );
       }
     } catch (error) {
@@ -125,7 +126,7 @@ async function indexWallet(job: PortfolioRefreshJob) {
         sourceBlock: blockHeight,
         requestedAt: new Date().toISOString(),
       },
-      { jobId: `risk:${correlationId}` },
+      { jobId: jobId('risk', correlationId) },
     );
 
     log.info({
@@ -173,7 +174,7 @@ if (bootstrapAddresses.length > 0) {
       address,
       correlationId,
       requestedAt: new Date().toISOString(),
-    }, { jobId: `bootstrap:${address}:${correlationId}` });
+    }, { jobId: jobId('bootstrap', address, correlationId) });
   }
 }
 

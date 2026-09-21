@@ -2,11 +2,11 @@
 
 ## Adapter
 
-A package that understands one protocol and converts its native state into RiskRail's normalized position format.
+A package that understands one protocol and converts its native state into Rivisk's normalized position format.
 
 ## Attestation
 
-A compact on-chain record containing summary risk metrics, source block and a hash of a full off-chain RiskRail report.
+A compact on-chain record containing summary risk metrics, source block and a hash of a full off-chain Rivisk report.
 
 ## Basis points (bps)
 
@@ -14,7 +14,7 @@ Integer percentage representation. 10,000 bps = 100%, 100 bps = 1%.
 
 ## BitPay
 
-An earlier Stacks/sBTC project used by RiskRail as a source of reusable engineering patterns and as an initial protocol adapter for streaming positions.
+An earlier Stacks/sBTC project used by Rivisk as a source of reusable engineering patterns and as an initial protocol adapter for streaming positions.
 
 ## Capital accessibility
 
@@ -22,11 +22,11 @@ The share of a position or portfolio that is immediately available versus locked
 
 ## Chainhook
 
-Stacks event-monitoring infrastructure used to deliver selected blockchain/contract events to RiskRail.
+Stacks event-monitoring infrastructure used to deliver selected blockchain/contract events to Rivisk.
 
 ## Clarity
 
-The smart contract language used on Stacks and by RiskRail's on-chain registry/policy contracts.
+The smart contract language used on Stacks and by Rivisk's on-chain registry/policy contracts.
 
 ## Health factor E4
 
@@ -42,11 +42,11 @@ A measure of how far a supported collateralized position is from the protocol's 
 
 ## Normalized position
 
-RiskRail's protocol-independent representation of one wallet/protocol position.
+Rivisk's protocol-independent representation of one wallet/protocol position.
 
 ## Oracle / price source
 
-The system/source used to associate a market price with an asset. RiskRail records source and freshness because risk calculations depend on it.
+The system/source used to associate a market price with an asset. Rivisk records source and freshness because risk calculations depend on it.
 
 ## Portfolio
 
@@ -74,7 +74,7 @@ A persisted summary of risk metrics at a particular source state. It may or may 
 
 ## sBTC
 
-Bitcoin-backed asset used in the Stacks ecosystem. RiskRail treats it as a key asset exposure but still identifies it by configured contract/network metadata rather than name alone in production.
+Bitcoin-backed asset used in the Stacks ecosystem. Rivisk treats it as a key asset exposure but still identifies it by configured contract/network metadata rather than name alone in production.
 
 ## Source block
 
@@ -86,8 +86,8 @@ A deterministic what-if change to prices or other supported inputs. It is a simu
 
 ## Valuation coverage
 
-The share of discovered portfolio positions/assets for which RiskRail has reliable valuation data.
+The share of discovered portfolio positions/assets for which Rivisk has reliable valuation data.
 
 ## Webhook
 
-An HTTP callback RiskRail sends to an external developer endpoint when selected events occur. RiskRail webhooks are signed and retried.
+An HTTP callback Rivisk sends to an external developer endpoint when selected events occur. Rivisk webhooks are signed and retried.

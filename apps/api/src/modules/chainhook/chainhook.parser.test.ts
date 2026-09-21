@@ -89,3 +89,78 @@ describe('extractAffected', () => {
     expect(result.blockHeight).toBe(184233);
   });
 });
+
+/**
+ * Captured from Stacks mainnet tx 0x3d62373075… (a Zest `borrow` at block
+ * 9031697), reshaped into the envelope Chainhook posts. It is here because the
+ * predicate this feeds was previously watching a read-only function and could
+ * never have fired — a hand-written fixture would not have caught that, since
+ * the parser was never the broken part.
+ */
+const VAULT = 'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-market-vault';
+const BORROWER = 'SP10GK6MG2GM7BCVYV7XBHK1JVJDHFDMNBENNBRC3';
+
+describe('real Zest vault print event', () => {
+  const payload = {
+    apply: [
+      {
+        block_identifier: { index: 9031697, hash: '0x00' },
+        transactions: [
+          {
+            transaction_identifier: {
+              hash: '0x3d62373075fe0252b9ea6320ca34774604dfd138607f666595dab1370a1fa19a',
+            },
+            metadata: {
+              kind: {
+                type: 'ContractCall',
+                data: {
+                  contract_identifier:
+                    'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-8-market',
+                  method: 'borrow',
+                },
+              },
+              sender: BORROWER,
+              success: true,
+              receipt: {
+                events: [
+                  {
+                    type: 'SmartContractEvent',
+                    data: {
+                      contract_identifier: VAULT,
+                      topic: 'print',
+                      value: {
+                        action: 'debt-add-scaled',
+                        caller:
+                          'SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-8-market',
+                        data: {
+                          account: BORROWER,
+                          'asset-id': 6,
+                          'scaled-amount': 9894517453,
+                          'updated-scaled-debt': 175245193737,
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  it('finds the borrower so their portfolio can be re-indexed', () => {
+    expect(extractAffected(payload).addresses).toContain(BORROWER);
+  });
+
+  it('reads the block height the position changed at', () => {
+    expect(extractAffected(payload).blockHeight).toBe(9031697);
+  });
+
+  it('keeps the deployer account but never a contract identifier', () => {
+    const { addresses } = extractAffected(payload);
+    expect(addresses).toContain('SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7');
+    expect(addresses.some((a) => a.includes('.'))).toBe(false);
+  });
+});

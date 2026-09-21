@@ -21,12 +21,12 @@ import { StressPanel } from "@/components/dashboard/stress-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRealtime } from "@/hooks/use-realtime";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 import { shorten } from "@/lib/format";
 import {
-  connectRiskRailWallet,
-  disconnectRiskRailWallet,
-  restoreRiskRailWallet,
+  connectRiviskWallet,
+  disconnectRiviskWallet,
+  restoreRiviskWallet,
 } from "@/lib/wallet";
 import type { RealtimeMessage } from "@/lib/types";
 
@@ -53,12 +53,12 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
   const { connected } = useRealtime(address || null, onRealtime);
 
   useEffect(() => {
-    void restoreRiskRailWallet().then(setConnectedAddress);
+    void restoreRiviskWallet().then(setConnectedAddress);
   }, []);
 
   const portfolio = useQuery({
     queryKey: ["portfolio", address],
-    queryFn: () => riskrailApi.portfolio(address),
+    queryFn: () => riviskApi.portfolio(address),
     enabled: Boolean(address),
     refetchInterval: (query) => {
       const status = query.state.data?.status;
@@ -103,7 +103,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
 
   const risk = useQuery({
     queryKey: ["risk", address],
-    queryFn: () => riskrailApi.risk(address),
+    queryFn: () => riviskApi.risk(address),
     enabled: Boolean(address) && hasSnapshot,
     retry: false,
     refetchInterval: (query) =>
@@ -111,7 +111,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
   });
 
   const refresh = useMutation({
-    mutationFn: () => riskrailApi.refresh(address),
+    mutationFn: () => riviskApi.refresh(address),
     onSuccess: async () => {
       setIndexingSince(Date.now());
       await queryClient.invalidateQueries({ queryKey: ["portfolio", address] });
@@ -121,7 +121,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
 
   async function connectWallet() {
     try {
-      const wallet = await connectRiskRailWallet();
+      const wallet = await connectRiviskWallet();
       setConnectedAddress(wallet);
       setAddressInput(wallet);
       router.push(`/dashboard?address=${encodeURIComponent(wallet)}`);
@@ -191,7 +191,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
             size="sm"
             variant="ghost"
             className="h-9 font-mono text-[0.75rem]"
-            onClick={() => void disconnectRiskRailWallet().then(() => setConnectedAddress(null))}
+            onClick={() => void disconnectRiviskWallet().then(() => setConnectedAddress(null))}
           >
             {shorten(connectedAddress)}
           </Button>

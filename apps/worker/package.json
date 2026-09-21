@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/worker",
+  "name": "@rivisk/worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,19 +8,19 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --config ../../vitest.shared.ts",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
-    "@riskrail/adapter-core": "workspace:*",
-    "@riskrail/database": "workspace:*",
-    "@riskrail/logger": "workspace:*",
-    "@riskrail/notifications": "workspace:*",
-    "@riskrail/queue": "workspace:*",
-    "@riskrail/risk-engine": "workspace:*",
-    "@riskrail/riskrail-contracts": "workspace:*",
-    "@riskrail/webhooks": "workspace:*",
+    "@rivisk/adapter-core": "workspace:*",
+    "@rivisk/database": "workspace:*",
+    "@rivisk/logger": "workspace:*",
+    "@rivisk/notifications": "workspace:*",
+    "@rivisk/queue": "workspace:*",
+    "@rivisk/risk-engine": "workspace:*",
+    "@rivisk/rivisk-contracts": "workspace:*",
+    "@rivisk/webhooks": "workspace:*",
     "bullmq": "6.3.6"
   },
   "devDependencies": {

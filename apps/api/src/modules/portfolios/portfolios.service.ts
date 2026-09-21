@@ -5,15 +5,16 @@ import {
   NotFoundException,
   OnModuleDestroy,
 } from '@nestjs/common';
-import { getCurrentPortfolio, prisma } from '@riskrail/database';
+import { getCurrentPortfolio, prisma } from '@rivisk/database';
 import {
   createQueue,
   createRedisConnection,
   JobName,
   QueueName,
   type PortfolioRefreshJob,
-} from '@riskrail/queue';
-import { isStacksPrincipal } from '@riskrail/stacks';
+  jobId,
+} from '@rivisk/queue';
+import { isStacksPrincipal } from '@rivisk/stacks';
 
 @Injectable()
 export class PortfoliosService implements OnModuleDestroy {
@@ -113,7 +114,7 @@ export class PortfoliosService implements OnModuleDestroy {
         correlationId,
         requestedAt: new Date().toISOString(),
       },
-      { jobId: `portfolio:${correlationId}` },
+      { jobId: jobId('portfolio', correlationId) },
     );
     return {
       accepted: true,

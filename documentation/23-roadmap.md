@@ -74,7 +74,7 @@ Potential categories:
 
 ## Phase 6 — Market-wide risk intelligence
 
-If enough wallets/protocols are indexed and privacy considerations are handled well, RiskRail can publish aggregate ecosystem health metrics.
+If enough wallets/protocols are indexed and privacy considerations are handled well, Rivisk can publish aggregate ecosystem health metrics.
 
 Examples:
 

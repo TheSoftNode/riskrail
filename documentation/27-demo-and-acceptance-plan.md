@@ -15,7 +15,7 @@ If no single address has both, use a prepared testnet flow to create one.
 
 ### Walkthrough
 
-1. Open RiskRail.
+1. Open Rivisk.
 2. Enter the Stacks address.
 3. Show the source block and indexing status.
 4. Show native wallet assets.
@@ -60,7 +60,7 @@ Walkthrough:
 8. Change testnet state or use a deterministic test fixture that crosses the threshold.
 9. Show the saved `AlertEvent`.
 10. Show email/realtime notification.
-11. Confirm no asset-moving transaction was executed by RiskRail.
+11. Confirm no asset-moving transaction was executed by Rivisk.
 
 ## Milestone 3 demo
 

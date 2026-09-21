@@ -1,7 +1,7 @@
 import { Decimal } from 'decimal.js';
-import type { NormalizedPosition } from '@riskrail/adapter-core';
-import type { RiskLevel } from '@riskrail/shared-types';
-import { deriveLendingMetrics } from '@riskrail/portfolio-engine';
+import type { NormalizedPosition } from '@rivisk/adapter-core';
+import type { RiskLevel } from '@rivisk/shared-types';
+import { deriveLendingMetrics } from '@rivisk/portfolio-engine';
 
 export interface ConcentrationEntry { key: string; valueUsd: string; }
 export interface ConcentrationResult { topKey?: string; topShareBps: number; totalUsd: string; }
@@ -77,7 +77,7 @@ export function capitalAccessibilityBps(positions: NormalizedPosition[]): number
 }
 
 export interface PriceShock {
-  /** Either a RiskRail assetId or a symbol. Matching is case-insensitive. */
+  /** Either a Rivisk assetId or a symbol. Matching is case-insensitive. */
   assetId?: string;
   symbol?: string;
   /** -2000 = -20%, +500 = +5%. */
@@ -109,7 +109,7 @@ export interface PortfolioRiskSummary {
 }
 
 /**
- * RiskRail v1.1 keeps the composite score intentionally simple and public.
+ * Rivisk v1.1 keeps the composite score intentionally simple and public.
  * The score is a presentation aid; individual metrics remain the source of truth.
  *
  * - 40% collateral/health risk (when health-factor data exists)

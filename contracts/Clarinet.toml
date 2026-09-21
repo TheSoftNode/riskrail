@@ -1,7 +1,7 @@
 [project]
-name = "riskrail-contracts"
-description = "On-chain risk attestations, user risk policies, and supported protocol registry for RiskRail"
-authors = ["RiskRail contributors"]
+name = "rivisk-contracts"
+description = "On-chain risk attestations, user risk policies, and supported protocol registry for Rivisk"
+authors = ["Rivisk contributors"]
 telemetry = false
 cache_dir = "./.cache"
 requirements = []
@@ -23,6 +23,11 @@ epoch = 3.4
 
 [contracts.protocol-registry]
 path = "contracts/protocol-registry.clar"
+clarity_version = 5
+epoch = 3.4
+
+[contracts.risk-consumer-example]
+path = "contracts/examples/risk-consumer-example.clar"
 clarity_version = 5
 epoch = 3.4
 

@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { prisma } from '@riskrail/database';
-import { encryptSecret } from '@riskrail/webhooks';
+import { prisma } from '@rivisk/database';
+import { encryptSecret } from '@rivisk/webhooks';
 
 export const WEBHOOK_EVENTS = [
   'portfolio.updated',

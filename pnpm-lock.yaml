@@ -44,25 +44,25 @@ importers:
       '@nestjs/swagger':
         specifier: ^11.0.0
         version: 11.4.7(@nestjs/common@11.2.5(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.5)(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../../packages/adapter-core
-      '@riskrail/database':
+      '@rivisk/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@riskrail/queue':
+      '@rivisk/queue':
         specifier: workspace:*
         version: link:../../packages/queue
-      '@riskrail/risk-engine':
+      '@rivisk/risk-engine':
         specifier: workspace:*
         version: link:../../packages/risk-engine
-      '@riskrail/riskrail-contracts':
+      '@rivisk/rivisk-contracts':
         specifier: workspace:*
-        version: link:../../packages/riskrail-contracts
-      '@riskrail/stacks':
+        version: link:../../packages/rivisk-contracts
+      '@rivisk/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
-      '@riskrail/webhooks':
+      '@rivisk/webhooks':
         specifier: workspace:*
         version: link:../../packages/webhooks
       '@stacks/encryption':
@@ -99,6 +99,9 @@ importers:
       '@nestjs/testing':
         specifier: ^11.2.5
         version: 11.2.5(@nestjs/common@11.2.5(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.5)(@nestjs/platform-express@11.2.5)
+      '@rivisk/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.6
@@ -111,37 +114,37 @@ importers:
 
   apps/indexer:
     dependencies:
-      '@riskrail/adapter-bitpay':
+      '@rivisk/adapter-bitpay':
         specifier: workspace:*
         version: link:../../packages/adapter-bitpay
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../../packages/adapter-core
-      '@riskrail/adapter-native-stacks':
+      '@rivisk/adapter-native-stacks':
         specifier: workspace:*
         version: link:../../packages/adapter-native-stacks
-      '@riskrail/adapter-zest-v2':
+      '@rivisk/adapter-zest-v2':
         specifier: workspace:*
         version: link:../../packages/adapter-zest-v2
-      '@riskrail/database':
+      '@rivisk/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@riskrail/logger':
+      '@rivisk/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@riskrail/oracle':
+      '@rivisk/oracle':
         specifier: workspace:*
         version: link:../../packages/oracle
-      '@riskrail/portfolio-engine':
+      '@rivisk/portfolio-engine':
         specifier: workspace:*
         version: link:../../packages/portfolio-engine
-      '@riskrail/queue':
+      '@rivisk/queue':
         specifier: workspace:*
         version: link:../../packages/queue
-      '@riskrail/stacks':
+      '@rivisk/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
-      '@riskrail/webhooks':
+      '@rivisk/webhooks':
         specifier: workspace:*
         version: link:../../packages/webhooks
       bullmq:
@@ -157,10 +160,10 @@ importers:
 
   apps/realtime:
     dependencies:
-      '@riskrail/logger':
+      '@rivisk/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@riskrail/queue':
+      '@rivisk/queue':
         specifier: workspace:*
         version: link:../../packages/queue
       socket.io:
@@ -179,28 +182,28 @@ importers:
       '@prisma/client':
         specifier: 6.19.3
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../../packages/adapter-core
-      '@riskrail/database':
+      '@rivisk/database':
         specifier: workspace:*
         version: link:../../packages/database
-      '@riskrail/logger':
+      '@rivisk/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@riskrail/notifications':
+      '@rivisk/notifications':
         specifier: workspace:*
         version: link:../../packages/notifications
-      '@riskrail/queue':
+      '@rivisk/queue':
         specifier: workspace:*
         version: link:../../packages/queue
-      '@riskrail/risk-engine':
+      '@rivisk/risk-engine':
         specifier: workspace:*
         version: link:../../packages/risk-engine
-      '@riskrail/riskrail-contracts':
+      '@rivisk/rivisk-contracts':
         specifier: workspace:*
-        version: link:../../packages/riskrail-contracts
-      '@riskrail/webhooks':
+        version: link:../../packages/rivisk-contracts
+      '@rivisk/webhooks':
         specifier: workspace:*
         version: link:../../packages/webhooks
       bullmq:
@@ -225,6 +228,9 @@ importers:
       '@stacks/transactions':
         specifier: ^7.6.0
         version: 7.6.0
+      '@stacks/wallet-sdk':
+        specifier: ^7.6.0
+        version: 7.6.0
       '@types/node':
         specifier: ^22.18.0
         version: 22.20.3
@@ -240,10 +246,10 @@ importers:
 
   packages/adapter-bitpay:
     dependencies:
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../adapter-core
-      '@riskrail/stacks':
+      '@rivisk/stacks':
         specifier: workspace:*
         version: link:../stacks
       '@stacks/transactions':
@@ -256,25 +262,25 @@ importers:
 
   packages/adapter-core:
     dependencies:
-      '@riskrail/shared-types':
+      '@rivisk/shared-types':
         specifier: workspace:*
         version: link:../shared-types
 
   packages/adapter-native-stacks:
     dependencies:
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../adapter-core
-      '@riskrail/stacks':
+      '@rivisk/stacks':
         specifier: workspace:*
         version: link:../stacks
 
   packages/adapter-zest-v2:
     dependencies:
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../adapter-core
-      '@riskrail/stacks':
+      '@rivisk/stacks':
         specifier: workspace:*
         version: link:../stacks
       '@stacks/transactions':
@@ -290,10 +296,10 @@ importers:
       '@prisma/client':
         specifier: 6.19.3
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../adapter-core
-      '@riskrail/portfolio-engine':
+      '@rivisk/portfolio-engine':
         specifier: workspace:*
         version: link:../portfolio-engine
     devDependencies:
@@ -349,7 +355,7 @@ importers:
 
   packages/portfolio-engine:
     dependencies:
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../adapter-core
       decimal.js:
@@ -372,16 +378,19 @@ importers:
       '@types/node':
         specifier: ^22.18.0
         version: 22.20.3
+      vitest:
+        specifier: ^5.0.1
+        version: 5.0.1(@types/node@22.20.3)(vite@7.3.6(@types/node@22.20.3)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13))
 
   packages/risk-engine:
     dependencies:
-      '@riskrail/adapter-core':
+      '@rivisk/adapter-core':
         specifier: workspace:*
         version: link:../adapter-core
-      '@riskrail/portfolio-engine':
+      '@rivisk/portfolio-engine':
         specifier: workspace:*
         version: link:../portfolio-engine
-      '@riskrail/shared-types':
+      '@rivisk/shared-types':
         specifier: workspace:*
         version: link:../shared-types
       decimal.js:
@@ -392,9 +401,9 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(@types/node@22.20.3)(vite@7.3.6(@types/node@22.20.3)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13))
 
-  packages/riskrail-contracts:
+  packages/rivisk-contracts:
     dependencies:
-      '@riskrail/stacks':
+      '@rivisk/stacks':
         specifier: workspace:*
         version: link:../stacks
       '@stacks/transactions':
@@ -410,9 +419,9 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@riskrail/shared-types':
-        specifier: workspace:*
-        version: link:../shared-types
+      socket.io-client:
+        specifier: ^4.0.0
+        version: 4.8.3
     devDependencies:
       vitest:
         specifier: ^5.0.1
@@ -1193,11 +1202,17 @@ packages:
   '@scure/base@1.1.9':
     resolution: {integrity: sha512-8YKhl8GHiNI/pU2VMaofa2Tor7PJRAjwQLBBuilkJ9L5+13yVbC7JO/wS7piioAvPSwR3JKM1IJ/u4xQzbcXKg==}
 
+  '@scure/bip32@1.1.3':
+    resolution: {integrity: sha512-dSH3+LCWONlSNQuF34xZrG6Xas7tp2jSSqHb/pMfXWM0vKE4JZOtK3uJfoWouUVW5IGlls75HkXmYLldZ8ySgQ==}
+
   '@scure/bip39@1.1.0':
     resolution: {integrity: sha512-pwrPOS16VeTKg98dYXQyIjJEcWfz7/1YJIwxUEPFfQPtc86Ym/1sVgQ2RLoD43AazMk2l/unK4ITySSpW2+82w==}
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+
+  '@stacks/auth@7.6.0':
+    resolution: {integrity: sha512-uxhoX0ITDdxxRAWx7KE0WdQKLansoBSBLuVjGbrs/CKsrkNpwPerdw+9RFlP3U0mK53HLyKZlCX37DWqthG1SA==}
 
   '@stacks/clarinet-sdk-wasm@3.23.1':
     resolution: {integrity: sha512-XWTKhSdMEM1QsnjQpsU3+zEiwjaGhY/rUf0hCW9cGdxBy+rImxyUacxr6Flq1XdVwZJSO0oidC5wxx4gDGjt0A==}
@@ -1215,11 +1230,20 @@ packages:
   '@stacks/network@7.6.0':
     resolution: {integrity: sha512-Blm85nsEbvJoFIFaDp0QE9WMC0Hf+o3Yb0oIDwWu3PPgpVSdndb/bJQUeT6eJTs0ibS26A2E/5d5L0fb4Ff/lA==}
 
+  '@stacks/profile@7.6.0':
+    resolution: {integrity: sha512-gFXKl3eLi1vWiCcZ3F5QFBq/X+vYn3TKSbe1iHRW4VdhIB+WFedpJ4h2WrqTzRepRNQzd2z6kl2pKuyD1x+fuA==}
+
+  '@stacks/storage@7.6.0':
+    resolution: {integrity: sha512-gNJEwqDzP0Wwfuocy98GjMEn2bnKJYGYbTxJ3uK04v7gks+M58I0cTMzC38CkJWLaVO1xRtNZ3VfVi5zybabkQ==}
+
   '@stacks/transactions@7.4.0':
     resolution: {integrity: sha512-scsQO3rSNNKcPHp56Wy5OeZiIpQNmmZOORz8bkQKWjzvzycAodtSWmAoHiMFAKSleR1NyeRIz642fReqlZU9tw==}
 
   '@stacks/transactions@7.6.0':
     resolution: {integrity: sha512-s7F7eJtQVnZoB79j8pY9SLKhlvvdYZZD1NSDRWrFjzSJTDmxptL8c50S563WFja6KOhFOgg1jd+p0XWTxFAVyA==}
+
+  '@stacks/wallet-sdk@7.6.0':
+    resolution: {integrity: sha512-NsvGOBB/AlpZEIGsjH7ltc2XrmiHw6jzvtR+fkxQAmOxsu6EaZzdnaq4S9jRcxUOzMmQWCYB0Q26FZyY298XJQ==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -1562,6 +1586,9 @@ packages:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
 
+  async@2.6.4:
+    resolution: {integrity: sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==}
+
   atomic-sleep@1.0.0:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
@@ -1897,6 +1924,9 @@ packages:
   encodeurl@2.0.0:
     resolution: {integrity: sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==}
     engines: {node: '>= 0.8'}
+
+  engine.io-client@6.6.6:
+    resolution: {integrity: sha512-iY6QdftLQ9pyiPoX082bpf/u1UewnOaJrtJIF9T0++QB34lZrj0uP+Q/bj8AlUsAxqhnkTV2BS8SBZSxOmoV5Q==}
 
   engine.io-parser@5.2.3:
     resolution: {integrity: sha512-HqD3yTBfnBxIrbnM1DoD6Pcq8NECnh8d4As1Qgh0z5Gg3jRRIqijury0CL3ghu/edArpUYiYqQiDUQBIs4np3Q==}
@@ -2289,6 +2319,9 @@ packages:
 
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
+
+  jsontokens@4.0.1:
+    resolution: {integrity: sha512-+MO415LEN6M+3FGsRz4wU20g7N2JA+2j9d9+pGaNJHviG4L8N0qzavGyENw6fJqsq9CcrHOIL6iWX5yeTZ86+Q==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -2722,6 +2755,9 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
+  schema-inspector@2.1.0:
+    resolution: {integrity: sha512-3bmQVhbA01/EW8cZin4vIpqlpNU2SIy4BhKCfCgogJ3T/L76dLx3QAE+++4o+dNT33sa+SN9vOJL7iHiHFjiNg==}
+
   schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}
     engines: {node: '>= 10.13.0'}
@@ -2785,6 +2821,10 @@ packages:
 
   socket.io-adapter@2.5.8:
     resolution: {integrity: sha512-6Oy52pbg+kvdCVvjcN+FnY7BvxZ7cIHNScbvztT/It5d0vbwoJoVZmF2gjJmnV0/4WlXRfG15zc45ySk9Ah8bw==}
+
+  socket.io-client@4.8.3:
+    resolution: {integrity: sha512-uP0bpjWrjQmUt5DTHq9RuoCBdFJF10cdX9X+a368j/Ft0wmaVgxlrjvK3kjvgCODOMMOz9lcaRzxmso0bTWZ/g==}
+    engines: {node: '>=10.0.0'}
 
   socket.io-parser@4.2.7:
     resolution: {integrity: sha512-IH/iSeO9T6gz1KkFleGDWkG9N3dl4jXVYUtMhIqH10Md0ttMer8nUNWiP1DKuNrybD2xBrixLJdCC9J6ECoYkg==}
@@ -3268,6 +3308,10 @@ packages:
       utf-8-validate:
         optional: true
 
+  xmlhttprequest-ssl@2.1.2:
+    resolution: {integrity: sha512-TEU+nJVUUnA4CYJFLvK5X9AOeH4KvDvhIfm0vV1GaQRtchnG0hgK5p8hw/xjv8cunWYCsiPCSDzObPyhEwq3KQ==}
+    engines: {node: '>=0.4.0'}
+
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
@@ -3294,6 +3338,10 @@ packages:
 
   zod@4.6.5:
     resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+
+  zone-file@2.0.0-beta.3:
+    resolution: {integrity: sha512-6tE3PSRcpN5lbTTLlkLez40WkNPc9vw/u1J2j6DBiy0jcVX48nCkWrx2EC+bWHqC2SLp069Xw4AdnYn/qp/W5g==}
+    engines: {node: '>=10'}
 
 snapshots:
 
@@ -3930,12 +3978,30 @@ snapshots:
 
   '@scure/base@1.1.9': {}
 
+  '@scure/bip32@1.1.3':
+    dependencies:
+      '@noble/hashes': 1.1.5
+      '@noble/secp256k1': 1.7.1
+      '@scure/base': 1.1.9
+
   '@scure/bip39@1.1.0':
     dependencies:
       '@noble/hashes': 1.1.5
       '@scure/base': 1.1.9
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@stacks/auth@7.6.0':
+    dependencies:
+      '@noble/secp256k1': 1.7.1
+      '@stacks/common': 7.6.0
+      '@stacks/encryption': 7.6.0
+      '@stacks/network': 7.6.0
+      '@stacks/profile': 7.6.0
+      cross-fetch: 3.2.0
+      jsontokens: 4.0.1
+    transitivePeerDependencies:
+      - encoding
 
   '@stacks/clarinet-sdk-wasm@3.23.1': {}
 
@@ -3969,6 +4035,28 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
+  '@stacks/profile@7.6.0':
+    dependencies:
+      '@stacks/common': 7.6.0
+      '@stacks/network': 7.6.0
+      '@stacks/transactions': 7.6.0
+      jsontokens: 4.0.1
+      schema-inspector: 2.1.0
+      zone-file: 2.0.0-beta.3
+    transitivePeerDependencies:
+      - encoding
+
+  '@stacks/storage@7.6.0':
+    dependencies:
+      '@stacks/auth': 7.6.0
+      '@stacks/common': 7.6.0
+      '@stacks/encryption': 7.6.0
+      '@stacks/network': 7.6.0
+      base64-js: 1.5.1
+      jsontokens: 4.0.1
+    transitivePeerDependencies:
+      - encoding
+
   '@stacks/transactions@7.4.0':
     dependencies:
       '@noble/hashes': 1.1.5
@@ -3988,6 +4076,23 @@ snapshots:
       '@stacks/network': 7.6.0
       c32check: 2.0.0
       lodash.clonedeep: 4.5.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@stacks/wallet-sdk@7.6.0':
+    dependencies:
+      '@scure/bip32': 1.1.3
+      '@scure/bip39': 1.1.0
+      '@stacks/auth': 7.6.0
+      '@stacks/common': 7.6.0
+      '@stacks/encryption': 7.6.0
+      '@stacks/network': 7.6.0
+      '@stacks/profile': 7.6.0
+      '@stacks/storage': 7.6.0
+      '@stacks/transactions': 7.6.0
+      c32check: 2.0.0
+      jsontokens: 4.0.1
+      zone-file: 2.0.0-beta.3
     transitivePeerDependencies:
       - encoding
 
@@ -4400,6 +4505,10 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
+  async@2.6.4:
+    dependencies:
+      lodash: 4.18.1
+
   atomic-sleep@1.0.0: {}
 
   balanced-match@1.0.2: {}
@@ -4700,6 +4809,18 @@ snapshots:
   empathic@2.0.0: {}
 
   encodeurl@2.0.0: {}
+
+  engine.io-client@6.6.6:
+    dependencies:
+      '@socket.io/component-emitter': 3.1.2
+      debug: 4.4.3
+      engine.io-parser: 5.2.3
+      ws: 8.21.3
+      xmlhttprequest-ssl: 2.1.2
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   engine.io-parser@5.2.3: {}
 
@@ -5149,6 +5270,12 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
+  jsontokens@4.0.1:
+    dependencies:
+      '@noble/hashes': 1.1.5
+      '@noble/secp256k1': 1.7.1
+      base64-js: 1.5.1
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -5567,6 +5694,10 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
+  schema-inspector@2.1.0:
+    dependencies:
+      async: 2.6.4
+
   schema-utils@3.3.0:
     dependencies:
       '@types/json-schema': 7.0.15
@@ -5655,6 +5786,17 @@ snapshots:
     dependencies:
       debug: 4.4.3
       ws: 8.21.3
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  socket.io-client@4.8.3:
+    dependencies:
+      '@socket.io/component-emitter': 3.1.2
+      debug: 4.4.3
+      engine.io-client: 6.6.6
+      socket.io-parser: 4.2.7
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -6097,6 +6239,8 @@ snapshots:
 
   ws@8.21.3: {}
 
+  xmlhttprequest-ssl@2.1.2: {}
+
   y18n@5.0.8: {}
 
   yargs-parser@21.1.1: {}
@@ -6117,3 +6261,5 @@ snapshots:
   yoctocolors-cjs@2.1.3: {}
 
   zod@4.6.5: {}
+
+  zone-file@2.0.0-beta.3: {}

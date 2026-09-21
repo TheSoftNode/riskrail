@@ -1,5 +1,6 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RateLimit, RateLimitGuard } from '../../common/guards/rate-limit.guard.js';
 import { PortfoliosService } from './portfolios.service.js';
 
 @ApiTags('portfolios')
@@ -20,10 +21,18 @@ export class PortfoliosController {
     return this.portfolios.getRisk(address);
   }
 
+  /**
+   * Public, because anyone should be able to scan an address without an account
+   * — but rate limited, because unlike the GETs this one queues real indexing
+   * work against the Stacks API for every call.
+   */
   @Post(':address/refresh')
   @HttpCode(HttpStatus.ACCEPTED)
+  @UseGuards(RateLimitGuard)
+  @RateLimit({ limit: 10, windowSeconds: 60 })
   @ApiOperation({ summary: 'Queue a fresh on-chain portfolio index for this address' })
   @ApiResponse({ status: 202, description: 'Refresh accepted' })
+  @ApiResponse({ status: 429, description: 'Rate limit exceeded' })
   refresh(@Param('address') address: string) {
     return this.portfolios.requestRefresh(address);
   }

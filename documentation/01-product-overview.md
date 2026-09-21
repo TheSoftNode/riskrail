@@ -1,12 +1,12 @@
 # Product Overview
 
-## What RiskRail is
+## What Rivisk is
 
-RiskRail is a non-custodial risk intelligence layer for Bitcoin capital used on Stacks.
+Rivisk is a non-custodial risk intelligence layer for Bitcoin capital used on Stacks.
 
 The simple idea is that a wallet should not have to visit five different applications to understand where its capital is, how much of that capital is immediately accessible, which protocols it depends on, how close a collateralized position is to liquidation, or what a sharp BTC move could do to the portfolio.
 
-RiskRail reads public on-chain state, normalizes positions from supported protocols, values those positions using clearly identified market data, calculates deterministic risk metrics, and presents the result through a dashboard and an API. It can also commit compact risk attestations to Clarity contracts so a report can be verified later and consumed by other Stacks applications.
+Rivisk reads public on-chain state, normalizes positions from supported protocols, values those positions using clearly identified market data, calculates deterministic risk metrics, and presents the result through a dashboard and an API. It can also commit compact risk attestations to Clarity contracts so a report can be verified later and consumed by other Stacks applications.
 
 The product does **not** need custody of user funds to do this work. That is a deliberate boundary.
 
@@ -34,7 +34,7 @@ A lending application can tell a user about its health factor. A streaming contr
 - Is the displayed USD value actually exit-able without large price impact?
 - Has my risk profile changed since the last block or since yesterday?
 
-RiskRail is built around those questions.
+Rivisk is built around those questions.
 
 ## The core product loop
 
@@ -55,7 +55,7 @@ flowchart LR
 
 That pipeline is more important than any individual UI screen. The dashboard, SDK, webhook system and smart contracts all sit around the same normalized source of truth.
 
-## What makes RiskRail different from another dashboard
+## What makes Rivisk different from another dashboard
 
 The project is intentionally not framed as a prettier wallet portfolio page.
 
@@ -71,7 +71,7 @@ Risk calculations are ordinary, testable code with explicit inputs and outputs. 
 
 ### 3. Verifiable on-chain attestations
 
-The complete report stays off-chain, where it can contain rich detail. RiskRail can hash that report and publish compact metrics plus the hash on Stacks. That gives the report a verifiable anchor without trying to run the entire analytics system inside Clarity.
+The complete report stays off-chain, where it can contain rich detail. Rivisk can hash that report and publish compact metrics plus the hash on Stacks. That gives the report a verifiable anchor without trying to run the entire analytics system inside Clarity.
 
 ## Who the product is for
 
@@ -83,13 +83,13 @@ The first users are expected to be:
 - DeFi applications that want portfolio-level context;
 - developers who want normalized Stacks positions through an API or SDK.
 
-The retail dashboard is useful, but the developer layer is important to the long-term product. RiskRail becomes more valuable when other applications use the same risk information.
+The retail dashboard is useful, but the developer layer is important to the long-term product. Rivisk becomes more valuable when other applications use the same risk information.
 
 ## Product principles
 
 ### Non-custodial by default
 
-RiskRail observes and explains. It does not need to move user assets for the MVP.
+Rivisk observes and explains. It does not need to move user assets for the MVP.
 
 ### Deterministic before intelligent
 
@@ -101,7 +101,7 @@ For important values, we should know the block height, protocol, pricing source 
 
 ### Prefer "unavailable" to a made-up estimate
 
-If a protocol does not expose enough information to calculate an exit price or liquidation threshold reliably, RiskRail should say so. A false sense of precision is worse than an empty field.
+If a protocol does not expose enough information to calculate an exit price or liquidation threshold reliably, Rivisk should say so. A false sense of precision is worse than an empty field.
 
 ### Build for extension
 
@@ -115,4 +115,4 @@ We are not using Kafka, Kubernetes or a service mesh merely to look enterprise. 
 
 By the end of the initial delivery period, a user should be able to enter or connect a Stacks address and see a real portfolio assembled from more than one source. They should be able to understand protocol concentration, capital accessibility and supported collateral risk, run a BTC stress scenario, configure an alert, and verify a published risk snapshot on-chain.
 
-A developer should be able to retrieve the same data through a documented API or SDK without reproducing RiskRail's indexing and normalization work.
+A developer should be able to retrieve the same data through a documented API or SDK without reproducing Rivisk's indexing and normalization work.

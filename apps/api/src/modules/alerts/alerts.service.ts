@@ -1,6 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { prisma } from '@riskrail/database';
-import { isStacksPrincipal } from '@riskrail/stacks';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { prisma } from '@rivisk/database';
+import { isStacksPrincipal } from '@rivisk/stacks';
 import type { CreateAlertDto, UpdateAlertStatusDto } from './alerts.dto.js';
 
 @Injectable()
@@ -33,13 +38,15 @@ export class AlertsService {
     };
   }
 
-  async create(address: string, input: CreateAlertDto) {
+  async create(userId: string, address: string, input: CreateAlertDto) {
     this.assertAddress(address);
     const numericThreshold = Number(input.threshold);
     if (!Number.isFinite(numericThreshold) || numericThreshold < 0) {
       throw new BadRequestException('Alert threshold must be a non-negative number');
     }
-    const wallet = await prisma.wallet.upsert({ where: { address }, update: {}, create: { address } });
+
+    const wallet = await this.assertOwnedWallet(userId, address);
+
     return prisma.alertRule.create({
       data: {
         walletId: wallet.id,
@@ -51,10 +58,32 @@ export class AlertsService {
     });
   }
 
-  async updateStatus(id: string, input: UpdateAlertStatusDto) {
-    const existing = await prisma.alertRule.findUnique({ where: { id } });
+  async updateStatus(userId: string, id: string, input: UpdateAlertStatusDto) {
+    const existing = await prisma.alertRule.findUnique({
+      where: { id },
+      include: { wallet: { select: { userId: true } } },
+    });
     if (!existing) throw new NotFoundException('Alert rule not found');
+    if (existing.wallet.userId !== userId) {
+      throw new ForbiddenException('This alert rule belongs to another account');
+    }
     return prisma.alertRule.update({ where: { id }, data: { status: input.status } });
+  }
+
+  /**
+   * A wallet row is created by any public scan, so its existence proves nothing.
+   * Ownership is only established when someone signs a challenge with that
+   * address, which is what sets `userId` — so that is what we check here. An
+   * unclaimed wallet is deliberately *not* claimable through this path.
+   */
+  private async assertOwnedWallet(userId: string, address: string) {
+    const wallet = await prisma.wallet.findUnique({ where: { address } });
+    if (!wallet || wallet.userId !== userId) {
+      throw new ForbiddenException(
+        'Sign in with this address before creating alerts for it',
+      );
+    }
+    return wallet;
   }
 
   private assertAddress(address: string) {

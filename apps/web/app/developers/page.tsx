@@ -13,7 +13,7 @@ export default function DevelopersPage() {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-10 sm:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/" aria-label="RiskRail home">
+        <Link href="/" aria-label="Rivisk home">
           <Logo />
         </Link>
         <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/dashboard" />}>

@@ -2,11 +2,11 @@
 
 ## Document purpose
 
-This is the working PRD for the first production-shaped version of RiskRail. It is intentionally more detailed than the grant application will be. The grant form should contain a focused version of these requirements; the repository should contain the full thinking so implementation decisions remain consistent after the application is submitted.
+This is the working PRD for the first production-shaped version of Rivisk. It is intentionally more detailed than the grant application will be. The grant form should contain a focused version of these requirements; the repository should contain the full thinking so implementation decisions remain consistent after the application is submitted.
 
 ## Product statement
 
-RiskRail gives Stacks users, treasuries and applications a unified view of financial exposure across supported protocols. It discovers positions from a Stacks address, normalizes them into a common model, calculates explainable risk metrics, runs market stress scenarios, supports configurable alerts, and optionally publishes verifiable risk attestations on-chain.
+Rivisk gives Stacks users, treasuries and applications a unified view of financial exposure across supported protocols. It discovers positions from a Stacks address, normalizes them into a common model, calculates explainable risk metrics, runs market stress scenarios, supports configurable alerts, and optionally publishes verifiable risk attestations on-chain.
 
 ## Objectives
 
@@ -17,19 +17,19 @@ The MVP has six practical objectives:
 3. calculate deterministic portfolio and position risk;
 4. let a user explore adverse market scenarios without executing a transaction;
 5. notify a user or integration when a configured threshold is crossed;
-6. make the resulting data useful outside the RiskRail web application through an API, SDK, webhooks and Clarity read-only functions.
+6. make the resulting data useful outside the Rivisk web application through an API, SDK, webhooks and Clarity read-only functions.
 
 ## Functional requirements
 
 ### FR-01 — Public address analysis
 
-A user must be able to submit a valid Stacks principal for analysis without giving RiskRail a private key or seed phrase.
+A user must be able to submit a valid Stacks principal for analysis without giving Rivisk a private key or seed phrase.
 
 For public read-only analysis, a wallet connection is optional. A connected wallet becomes useful when the user wants to save preferences, sign an on-chain risk policy, or associate multiple monitored addresses with an account.
 
 ### FR-02 — Native balance discovery
 
-RiskRail must retrieve the address's STX balance and fungible token balances from a supported Stacks data source. The native adapter must preserve atomic values rather than converting everything to JavaScript floating-point numbers.
+Rivisk must retrieve the address's STX balance and fungible token balances from a supported Stacks data source. The native adapter must preserve atomic values rather than converting everything to JavaScript floating-point numbers.
 
 Token metadata resolution is required before a non-known token can be valued reliably. Unknown decimals must not be silently guessed.
 
@@ -62,7 +62,7 @@ Every adapter must return the shared `NormalizedPosition` structure. The structu
 
 ### FR-05 — Portfolio aggregation
 
-RiskRail must aggregate normalized positions into one portfolio view for an address.
+Rivisk must aggregate normalized positions into one portfolio view for an address.
 
 At minimum, the portfolio must expose:
 
@@ -85,13 +85,13 @@ The engine should calculate exposure by asset when reliable valuation data exist
 
 ### FR-08 — Capital accessibility
 
-RiskRail must distinguish between capital that is visible in the portfolio and capital that is currently available to move.
+Rivisk must distinguish between capital that is visible in the portfolio and capital that is currently available to move.
 
 For example, a BitPay stream can contain value that belongs to the user economically but has not fully vested. The normalized model already includes an `accessibility.liquidBps` field for this purpose.
 
 ### FR-09 — Collateral health
 
-For protocols that expose enough information, RiskRail must calculate or faithfully map:
+For protocols that expose enough information, Rivisk must calculate or faithfully map:
 
 - collateral value;
 - debt value;
@@ -103,7 +103,7 @@ The implementation must use protocol-specific rules rather than applying one gen
 
 ### FR-10 — Liquidation classification
 
-The initial engine may classify a supported health factor using transparent thresholds, but the UI must make clear that these categories are RiskRail presentation labels rather than protocol guarantees.
+The initial engine may classify a supported health factor using transparent thresholds, but the UI must make clear that these categories are Rivisk presentation labels rather than protocol guarantees.
 
 The scaffold currently uses the following starting categories:
 
@@ -123,7 +123,7 @@ The architecture must also support custom shocks and multiple asset shocks. A sc
 
 ### FR-12 — Liquidity analysis
 
-When sufficient pool and market data exists, RiskRail should estimate:
+When sufficient pool and market data exists, Rivisk should estimate:
 
 - available market depth;
 - position size relative to market liquidity;
@@ -146,7 +146,7 @@ A user must be able to configure threshold-based alerts for supported metrics. I
 
 A user should be able to store a small set of personal thresholds in `risk-policy.clar` using their own wallet. The policy belongs to the wallet and can be enabled or disabled by that wallet.
 
-The contract does not send notifications. RiskRail's off-chain workers read/evaluate the policy and deliver email, realtime or webhook alerts.
+The contract does not send notifications. Rivisk's off-chain workers read/evaluate the policy and deliver email, realtime or webhook alerts.
 
 ### FR-15 — Risk report creation
 
@@ -167,17 +167,17 @@ The report should include at least:
 
 ### FR-16 — On-chain attestation
 
-When publishing is enabled, RiskRail should hash the canonical report and submit a compact snapshot to `risk-registry.clar`.
+When publishing is enabled, Rivisk should hash the canonical report and submit a compact snapshot to `risk-registry.clar`.
 
 The contract stores important summary metrics, source block, report hash and publication block. The full report stays off-chain.
 
 ### FR-17 — Protocol registry
 
-Supported protocol contracts and adapter versions can be represented by `protocol-registry.clar`. The registry provides a public reference for which contract principal and adapter version RiskRail recognizes for an integration.
+Supported protocol contracts and adapter versions can be represented by `protocol-registry.clar`. The registry provides a public reference for which contract principal and adapter version Rivisk recognizes for an integration.
 
 ### FR-18 — Versioned REST API
 
-RiskRail must expose a stable `/api/v1` API. Initial resources should include:
+Rivisk must expose a stable `/api/v1` API. Initial resources should include:
 
 - wallets;
 - portfolios;
@@ -211,7 +211,7 @@ The web application should receive relevant portfolio and risk updates over Sock
 
 ### FR-22 — Historical snapshots
 
-RiskRail should retain portfolio, position and risk snapshots so a user can see how exposure changed over time and so published attestations can be connected back to the underlying report state.
+Rivisk should retain portfolio, position and risk snapshots so a user can see how exposure changed over time and so published attestations can be connected back to the underlying report state.
 
 ## Non-functional requirements
 
@@ -229,7 +229,7 @@ Risk calculations must avoid binary floating-point arithmetic for monetary value
 
 ### Security
 
-RiskRail must never request, log or store seed phrases or raw private keys from end users. A service publisher key, if used for attestations, must be isolated from the general API process and stored in a proper secret manager in production.
+Rivisk must never request, log or store seed phrases or raw private keys from end users. A service publisher key, if used for attestations, must be isolated from the general API process and stored in a proper secret manager in production.
 
 ### Explainability
 

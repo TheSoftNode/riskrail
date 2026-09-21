@@ -31,4 +31,4 @@ Risk Engine -> canonical report -> SHA-256 -> publisher worker -> risk-registry.
 
 ## Scaling path
 
-The grant MVP uses PostgreSQL + Redis/BullMQ. If event volume later requires Kafka, the event schemas in `@riskrail/events` become the compatibility boundary. Applications should not publish arbitrary queue payloads outside those schemas.
+The grant MVP uses PostgreSQL + Redis/BullMQ. If event volume later requires Kafka, the event schemas in `@rivisk/events` become the compatibility boundary. Applications should not publish arbitrary queue payloads outside those schemas.

@@ -1,6 +1,6 @@
 # API, SDK and Webhooks
 
-RiskRail is meant to be useful as infrastructure, not only as a website. The API and SDK therefore need to be treated as product surfaces from the beginning.
+Rivisk is meant to be useful as infrastructure, not only as a website. The API and SDK therefore need to be treated as product surfaces from the beginning.
 
 ## Versioning
 
@@ -100,8 +100,8 @@ Wallet challenge/nonce authentication for saved alerts, preferences and account-
 Keys should have an identifiable prefix, for example:
 
 ```text
-rr_test_...
-rr_live_...
+rv_test_...
+rv_live_...
 ```
 
 Only a hash of the secret portion is stored. The complete key is shown once.
@@ -127,11 +127,11 @@ Examples need to use realistic Stacks addresses and units.
 The SDK should be a thin typed client, roughly:
 
 ```ts
-const riskrail = new RiskRail({ apiKey: process.env.RISKRAIL_API_KEY });
+const rivisk = new Rivisk({ apiKey: process.env.RIVISK_API_KEY });
 
-const portfolio = await riskrail.portfolios.get('SP...');
-const risk = await riskrail.risk.get('SP...');
-const simulation = await riskrail.simulations.run('SP...', {
+const portfolio = await rivisk.portfolios.get('SP...');
+const risk = await rivisk.risk.get('SP...');
+const simulation = await rivisk.simulations.run('SP...', {
   shocks: [{ assetId: 'BTC', changeBps: -2000 }]
 });
 ```
@@ -164,9 +164,9 @@ Payloads should include event version, unique event id and creation time.
 A delivery can include headers such as:
 
 ```text
-X-RiskRail-Event-Id
-X-RiskRail-Timestamp
-X-RiskRail-Signature
+X-Rivisk-Event-Id
+X-Rivisk-Timestamp
+X-Rivisk-Signature
 ```
 
 The signature can be an HMAC over a defined byte string using the endpoint secret.

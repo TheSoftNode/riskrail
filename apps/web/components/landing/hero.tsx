@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { connectRiskRailWallet, restoreRiskRailWallet } from "@/lib/wallet";
+import { connectRiviskWallet, restoreRiviskWallet } from "@/lib/wallet";
 import { HeroBackdrop } from "./hero-backdrop";
 import { RiskInstrument } from "./risk-instrument";
 
@@ -17,7 +17,7 @@ export function Hero() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    void restoreRiskRailWallet().then(setWallet);
+    void restoreRiviskWallet().then(setWallet);
   }, []);
 
   function inspect(event: FormEvent) {
@@ -36,7 +36,7 @@ export function Hero() {
     try {
       setError(null);
       setConnecting(true);
-      const value = await connectRiskRailWallet();
+      const value = await connectRiviskWallet();
       setWallet(value);
       router.push(`/dashboard?address=${encodeURIComponent(value)}`);
     } catch (err) {
@@ -60,7 +60,7 @@ export function Hero() {
           <p className="mt-8 max-w-2xl xl:mt-10 text-pretty text-base leading-[1.85] text-muted-foreground">
             Your sBTC sits in a wallet, a lending market and a payment stream at
             the same time — and every protocol only shows you its own slice.
-            RiskRail reads all of them, normalizes the positions, and turns them
+            Rivisk reads all of them, normalizes the positions, and turns them
             into one explainable risk picture you can stress and verify.
           </p>
 
@@ -99,7 +99,7 @@ export function Hero() {
             </Button>
             <span className="inline-flex items-center gap-1.5 text-[0.75rem] text-muted-foreground">
               <Lock className="size-3.5" />
-              Read-only. RiskRail never takes custody or asks for a seed phrase.
+              Read-only. Rivisk never takes custody or asks for a seed phrase.
             </span>
           </div>
 

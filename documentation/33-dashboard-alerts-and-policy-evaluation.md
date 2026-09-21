@@ -1,6 +1,6 @@
 # Dashboard, realtime alerts and on-chain policy evaluation
 
-This pass turns RiskRail from a backend-heavy proof of architecture into something that can actually be used and demonstrated from the browser. The important point is that the interface is not a separate mock. It is wired to the same portfolio, risk and simulation endpoints that the worker and indexer already use.
+This pass turns Rivisk from a backend-heavy proof of architecture into something that can actually be used and demonstrated from the browser. The important point is that the interface is not a separate mock. It is wired to the same portfolio, risk and simulation endpoints that the worker and indexer already use.
 
 ## What changed
 
@@ -19,11 +19,11 @@ The dashboard shows:
 - the wallet's policy from `risk-policy.clar` when the contract is configured;
 - report hash and on-chain attestation state when available.
 
-The interface deliberately does not tell somebody to buy, sell or rebalance. It shows what RiskRail can observe and what happens under a requested scenario.
+The interface deliberately does not tell somebody to buy, sell or rebalance. It shows what Rivisk can observe and what happens under a requested scenario.
 
 ## Wallet connection is convenience, not custody
 
-The wallet button uses the same modern `@stacks/connect` connection style already used in earlier Stacks work. Connecting the wallet gives RiskRail the public Stacks address to inspect. It does not give the application a seed phrase or private key.
+The wallet button uses the same modern `@stacks/connect` connection style already used in earlier Stacks work. Connecting the wallet gives Rivisk the public Stacks address to inspect. It does not give the application a seed phrase or private key.
 
 A public address can also be entered manually. This matters because the core risk product should remain useful to treasuries, analysts and developers who are monitoring an address they do not control.
 
@@ -38,7 +38,7 @@ Indexer / risk worker / alert worker
              |
              v
       Redis pub/sub channel
-        riskrail.realtime
+        rivisk.realtime
              |
              v
        realtime service
@@ -82,7 +82,7 @@ For the current public beta, only the `in_app` channel is accepted. This is inte
 
 The existing `risk-policy.clar` contract stores four wallet-owned guardrails:
 
-- maximum RiskRail score;
+- maximum Rivisk score;
 - minimum health factor;
 - maximum protocol concentration;
 - minimum liquidity score.
@@ -141,7 +141,7 @@ A Prisma migration still needs to be generated in a dependency-installed clone i
 
 ## Methodology version
 
-The risk report methodology version is now `riskrail-v1.2` because the report lifecycle now has a defined downstream policy/alert evaluation step. The risk formulas themselves did not suddenly become predictive; this version mainly records the product-level behavior around how new snapshots are consumed.
+The risk report methodology version is now `rivisk-v1.2` because the report lifecycle now has a defined downstream policy/alert evaluation step. The risk formulas themselves did not suddenly become predictive; this version mainly records the product-level behavior around how new snapshots are consumed.
 
 ## What is still intentionally unfinished
 

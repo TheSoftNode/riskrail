@@ -8,7 +8,7 @@ The grant delivery plan is designed around three milestones over roughly ten wee
 
 ### Goal
 
-Prove that RiskRail can take a Stacks address, discover more than one kind of position, normalize those positions, calculate initial deterministic metrics, and anchor a report hash on Stacks testnet.
+Prove that Rivisk can take a Stacks address, discover more than one kind of position, normalize those positions, calculate initial deterministic metrics, and anchor a report hash on Stacks testnet.
 
 ### Work included
 
@@ -179,7 +179,7 @@ Milestone 2 is complete when:
 
 ### Goal
 
-Make RiskRail usable by people outside the core team and demonstrate that the same infrastructure can be consumed programmatically.
+Make Rivisk usable by people outside the core team and demonstrate that the same infrastructure can be consumed programmatically.
 
 ### Work included
 

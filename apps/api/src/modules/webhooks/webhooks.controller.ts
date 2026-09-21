@@ -2,12 +2,13 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WebhooksService } from './webhooks.service.js';
 import { CreateWebhookDto, SetWebhookEnabledDto } from './webhooks.dto.js';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
+import { AccountAuthGuard } from '../../common/guards/account-auth.guard.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 
 @ApiTags('webhooks')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+// Session or API key: registering an endpoint is a normal server-side task.
+@UseGuards(AccountAuthGuard)
 @Controller('webhooks')
 export class WebhooksController {
   constructor(private readonly webhooks: WebhooksService) {}

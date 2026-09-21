@@ -25,7 +25,7 @@ const PRINCIPLES = [
   {
     code: "04",
     title: "Protocol-neutral",
-    body: "RiskRail analyses venues without steering capital toward any of them.",
+    body: "Rivisk analyses venues without steering capital toward any of them.",
   },
 ];
 
@@ -79,7 +79,7 @@ export function ClosingCta() {
                 nativeButton={false}
                 render={
                   <a
-                    href="https://github.com/TheSoftNode/riskrail"
+                    href="https://github.com/TheSoftNode/rivisk"
                     target="_blank"
                     rel="noreferrer"
                   />

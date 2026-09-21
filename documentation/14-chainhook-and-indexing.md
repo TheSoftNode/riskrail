@@ -1,6 +1,6 @@
 # Chainhook and Indexing
 
-RiskRail needs both pull-based reads and event-driven indexing.
+Rivisk needs both pull-based reads and event-driven indexing.
 
 The Stacks API is useful for current balances and direct reads. Chainhook is useful when we know which contract events should trigger a refresh.
 
@@ -11,7 +11,7 @@ Polling every monitored wallet and every supported contract at a very short inte
 A better model is:
 
 - Chainhook tells us that something relevant happened;
-- RiskRail determines which position/wallet is affected;
+- Rivisk determines which position/wallet is affected;
 - the indexer performs authoritative reads as needed;
 - a job recalculates the portfolio and risk.
 
@@ -58,7 +58,7 @@ Useful behaviors include:
 
 ## Backfills
 
-When a new adapter is added, RiskRail may need to discover existing positions rather than waiting for the next event.
+When a new adapter is added, Rivisk may need to discover existing positions rather than waiting for the next event.
 
 Backfill jobs should be separate from live indexing so they can run at controlled concurrency and not starve realtime events.
 

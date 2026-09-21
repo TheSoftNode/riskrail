@@ -1,15 +1,15 @@
 import { createHash } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import { Worker } from 'bullmq';
-import type { NormalizedPosition } from '@riskrail/adapter-core';
+import type { NormalizedPosition } from '@rivisk/adapter-core';
 import {
   getCurrentPortfolio,
   markRiskSnapshotPublished,
   persistRiskSnapshot,
   planDeliveries,
   prisma,
-} from '@riskrail/database';
-import { createLogger } from '@riskrail/logger';
+} from '@rivisk/database';
+import { createLogger } from '@rivisk/logger';
 import {
   createQueue,
   createRedisConnection,
@@ -20,16 +20,17 @@ import {
   type AlertEvaluateJob,
   type RiskAttestationJob,
   type RiskRecalculateJob,
-} from '@riskrail/queue';
-import { calculatePortfolioRisk, runDefaultStressScenarios } from '@riskrail/risk-engine';
-import { RiskPolicyReader, RiskRegistryPublisher } from '@riskrail/riskrail-contracts';
-import { createMailer, dedupeKey, renderAlertEmail } from '@riskrail/notifications';
-import { buildEvent } from '@riskrail/webhooks';
+  jobId,
+} from '@rivisk/queue';
+import { calculatePortfolioRisk, runDefaultStressScenarios } from '@rivisk/risk-engine';
+import { RiskPolicyReader, RiskRegistryPublisher } from '@rivisk/rivisk-contracts';
+import { createMailer, dedupeKey, renderAlertEmail } from '@rivisk/notifications';
+import { buildEvent } from '@rivisk/webhooks';
 import { crossedIntoBreach, metricValue, policyChecks, type MetricSnapshot } from './alert-evaluator.js';
 import { deliver } from './webhook-delivery.js';
 
-const METHODOLOGY_VERSION = 'riskrail-v1.2';
-const log = createLogger('riskrail-worker');
+const METHODOLOGY_VERSION = 'rivisk-v1.2';
+const log = createLogger('rivisk-worker');
 const connection = createRedisConnection();
 const realtimePublisher = createRedisConnection();
 const attestationQueue = createQueue<RiskAttestationJob>(QueueName.Attestations, connection);
@@ -112,8 +113,20 @@ const riskWorker = new Worker<RiskRecalculateJob>(
         sourceBlock,
         requestedAt: new Date().toISOString(),
       },
-      { jobId: `alerts:${snapshot.id}` },
+      { jobId: jobId('alerts', snapshot.id) },
     );
+
+    // Say why nothing is being attested. Silence here is indistinguishable from
+    // a broken publisher, and the likeliest post-deployment mistake is leaving
+    // RISK_PUBLISHER_ENABLED false after the contracts go live.
+    if (process.env.RISK_PUBLISHER_ENABLED !== 'true') {
+      log.debug({ address, riskSnapshotId: snapshot.id }, 'attestation skipped: RISK_PUBLISHER_ENABLED is not true');
+    } else if (!process.env.RISK_REGISTRY_CONTRACT) {
+      log.warn(
+        { address, riskSnapshotId: snapshot.id },
+        'attestation skipped: RISK_PUBLISHER_ENABLED is true but RISK_REGISTRY_CONTRACT is empty',
+      );
+    }
 
     if (process.env.RISK_PUBLISHER_ENABLED === 'true' && process.env.RISK_REGISTRY_CONTRACT) {
       await attestationQueue.add(
@@ -124,7 +137,7 @@ const riskWorker = new Worker<RiskRecalculateJob>(
           correlationId,
           requestedAt: new Date().toISOString(),
         },
-        { jobId: `attestation:${snapshot.id}` },
+        { jobId: jobId('attestation', snapshot.id) },
       );
     }
 
@@ -397,7 +410,7 @@ async function emit(
       await webhookQueue.add(
         JobName.WebhookDeliver,
         { endpointId: target.endpointId, event: built, attempt: 1 },
-        { jobId: `wh:${built.id}:${target.endpointId}` },
+        { jobId: jobId('wh', built.id, target.endpointId) },
       );
     }
   } catch (error) {
@@ -419,7 +432,7 @@ const webhookWorker = new Worker<WebhookDeliverJob>(
       await webhookQueue.add(
         JobName.WebhookDeliver,
         { ...job, attempt: job.attempt + 1 },
-        { delay: outcome.retryInSeconds * 1000, jobId: `wh:${job.event.id}:${job.endpointId}:${job.attempt + 1}` },
+        { delay: outcome.retryInSeconds * 1000, jobId: jobId('wh', job.event.id, job.endpointId, job.attempt + 1) },
       );
       log.warn({ endpointId: job.endpointId, attempt: job.attempt, retryInSeconds: outcome.retryInSeconds }, 'webhook retry scheduled');
     } else {

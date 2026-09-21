@@ -27,7 +27,7 @@ export function NotIndexedCard({
           This address has not been indexed yet.
         </h2>
         <p className="mt-2.5 text-[0.875rem] leading-relaxed text-muted-foreground">
-          RiskRail will read the wallet, every enabled protocol adapter and the
+          Rivisk will read the wallet, every enabled protocol adapter and the
           resulting risk state. It is a read-only scan — no transaction is
           signed and no funds are moved.
         </p>

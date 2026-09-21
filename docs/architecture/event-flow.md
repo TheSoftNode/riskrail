@@ -1,6 +1,6 @@
 # Event flow
 
-Canonical event names live in `@riskrail/events`.
+Canonical event names live in `@rivisk/events`.
 
 ```text
 chain.position.changed

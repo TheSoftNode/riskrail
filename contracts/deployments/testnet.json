@@ -1,0 +1,102 @@
+{
+  "network": "testnet",
+  "deployedAt": "2026-09-21",
+  "block": 451066,
+  "deployer": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7",
+  "publisher": "ST3YFXHB07XYK0XZWE43JCDBEYFKTR7SXEK41TJ75",
+  "clarinet": "3.24.0",
+  "contracts": {
+    "risk-provider-trait": {
+      "id": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-provider-trait",
+      "tx": "0x2741ae553e1ac9f1583bb6d2e970a9412de56cbbc92f3e79af60d85d7e4b44a4"
+    },
+    "risk-registry": {
+      "id": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry",
+      "tx": "0xdc84a6068b60d391395c71ab3766be66273ac690ba8b2e879a6412a92c2271bb"
+    },
+    "risk-policy": {
+      "id": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-policy",
+      "tx": "0x4edfdd1f184cddf0ee41f1fe40875bf8ef1729202309c1948a313bd820f1c937"
+    },
+    "protocol-registry": {
+      "id": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.protocol-registry",
+      "tx": "0x2f73c647568bb7b807c0812bef47e0c68e7f16b104f9ea555138e254a19e664a"
+    },
+    "risk-consumer-example": {
+      "id": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-consumer-example",
+      "tx": "0x83581fb90bf6f57c3937d9492df0e5a16bdcf4223772946512ef2a8f795ee4b7"
+    }
+  },
+  "adminCalls": [
+    {
+      "call": "risk-registry.set-publisher",
+      "args": [
+        "ST1CVR0A9BVS85CN862DEF36M3GB0RANBT2S00CK2",
+        "true"
+      ],
+      "block": 451152,
+      "tx": "0x28225eee2394cd20f46cefbfe311efa33e2957d264ad6d164d851b52c9d08291",
+      "result": "(ok true)"
+    },
+    {
+      "call": "protocol-registry.register-protocol",
+      "args": [
+        "u1",
+        "Zest Protocol V2",
+        "lending",
+        "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-8-market",
+        "u1",
+        "0x503bcef1dccaa87cb7169c1c5dc0c5aba39e0f477c3b23893e74ae7b6b69fc84"
+      ],
+      "metadataDescriptor": "deployments/zest-v2.descriptor.json",
+      "block": 451176,
+      "tx": "0x087753236131840e6f570103c5db7092f226a7357f5ad15fb8c798b7a657a479",
+      "result": "(ok true)"
+    },
+    {
+      "call": "stx-transfer",
+      "args": [
+        "ST3YFXHB07XYK0XZWE43JCDBEYFKTR7SXEK41TJ75",
+        "5000000"
+      ],
+      "tx": "0xa994b6960c7b2e543c9ff8b0c147b405212e2e681874c21936794f3469983a6d"
+    },
+    {
+      "call": "risk-registry.set-publisher",
+      "args": [
+        "ST3YFXHB07XYK0XZWE43JCDBEYFKTR7SXEK41TJ75",
+        "true"
+      ],
+      "tx": "0x1eae413b1f6fdb765bdfdc3519bfdc9a826a9192467c3434252954836ac7d26f"
+    },
+    {
+      "call": "risk-registry.set-publisher",
+      "args": [
+        "ST1CVR0A9BVS85CN862DEF36M3GB0RANBT2S00CK2",
+        "false"
+      ],
+      "tx": "0x00e0d46d22ea32297993cbaed6b5b68db8fc56417bb2f3cd9080b638290e9b5e"
+    }
+  ],
+  "publisherNote": "Account index 1 of the deployer seed. ST1CVR0A9BVS85CN862DEF36M3GB0RANBT2S00CK2 was authorised first but belongs to a different seed, so it was revoked.",
+  "firstAttestation": {
+    "wallet": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7",
+    "publisher": "ST3YFXHB07XYK0XZWE43JCDBEYFKTR7SXEK41TJ75",
+    "sourceBlock": 454752,
+    "publishedAt": 454753,
+    "snapshotId": 1,
+    "reportHash": "0x8f8efef4a4ea552a8ac0e431ed8e1e823a7b1020a7e5d803d0ab8230ae731943",
+    "tx": "0x0877e7b2a15bbea25fba100f14bea0321d2cfdab3c2278b627026cba93981e55",
+    "note": "Written by the worker from a live index; report hash matches the API. No-debt wallet published the unbounded health-factor sentinel, not zero."
+  },
+  "firstConsumerRead": {
+    "contract": "risk-consumer-example",
+    "function": "open-position",
+    "provider": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry",
+    "user": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7",
+    "block": 454810,
+    "tx": "0xb4bb63a603dc64264a060ede3f5f3f9f4ce95874c10accfa9bf8d5c4a901d911",
+    "result": "(ok u1)",
+    "note": "An external contract read snapshot #1 through risk-provider-trait via get-risk-if-fresh, approved, and recorded the report hash it decided from."
+  }
+}

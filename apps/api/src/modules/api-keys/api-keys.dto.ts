@@ -7,7 +7,7 @@ export class CreateApiKeyDto {
   @Length(1, 60)
   name!: string;
 
-  @ApiPropertyOptional({ description: 'Issue an rr_live_ key instead of rr_test_' })
+  @ApiPropertyOptional({ description: 'Issue an rv_live_ key instead of rv_test_' })
   @IsOptional()
   @IsBoolean()
   live?: boolean;

@@ -1,6 +1,6 @@
 # Data Model
 
-The Prisma schema is designed around history, not only current state. That is important because a risk product needs to answer both "what is the position now?" and "what did RiskRail know when it produced this earlier snapshot?"
+The Prisma schema is designed around history, not only current state. That is important because a risk product needs to answer both "what is the position now?" and "what did Rivisk know when it produced this earlier snapshot?"
 
 ## Core relationships
 
@@ -22,7 +22,7 @@ erDiagram
 
 ## `User`
 
-A RiskRail account. Public address analysis does not require a user row, so wallets can exist without a user association.
+A Rivisk account. Public address analysis does not require a user row, so wallets can exist without a user association.
 
 A user owns developer API keys and webhook endpoints.
 
@@ -63,7 +63,7 @@ The row deliberately contains both structured columns and `raw` JSON:
 - structured values are used for indexing/querying;
 - `raw` preserves adapter-specific context useful for debugging and reprocessing.
 
-`exact` is important. RiskRail should distinguish a value read directly from reliable chain state from one reconstructed or estimated from incomplete data.
+`exact` is important. Rivisk should distinguish a value read directly from reliable chain state from one reconstructed or estimated from incomplete data.
 
 ## `PositionAsset`
 
@@ -91,7 +91,7 @@ As the product grows, this model may gain explicit valuation coverage fields so 
 
 ## `RiskSnapshot`
 
-A persisted summary of a RiskRail calculation.
+A persisted summary of a Rivisk calculation.
 
 Current fields include:
 
@@ -147,7 +147,7 @@ Audit logs should be append-only at the application level.
 
 ## Data we should not store
 
-RiskRail should not store:
+Rivisk should not store:
 
 - user seed phrases;
 - end-user private keys;
@@ -170,4 +170,4 @@ During the grant phase, retaining all snapshots is simplest. If volume grows sig
 
 On-chain policy breaches are stored separately from ordinary `AlertEvent` rows because they come from wallet-owned Clarity policy state rather than a locally-created alert rule. A policy breach records the wallet, metric, comparison operator, threshold, observed value, source block, copied policy metadata and trigger time.
 
-Keeping the two event types separate makes it easy to answer two different questions later: "which rules did the RiskRail account configure?" and "which rules did the wallet itself commit on-chain?"
+Keeping the two event types separate makes it easy to answer two different questions later: "which rules did the Rivisk account configure?" and "which rules did the wallet itself commit on-chain?"

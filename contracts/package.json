@@ -1,18 +1,22 @@
 {
-  "name": "@riskrail/contracts",
+  "name": "@rivisk/contracts",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "clarinet check"
+    "check": "clarinet check",
+    "plan:testnet": "clarinet deployments generate --testnet --low-cost",
+    "deploy:testnet": "clarinet deployments apply --testnet",
+    "verify:testnet": "node scripts/verify-deployment.mjs"
   },
   "devDependencies": {
     "@stacks/clarinet-sdk": "3.23.1",
     "@stacks/transactions": "^7.6.0",
+    "@stacks/wallet-sdk": "^7.6.0",
     "@types/node": "^22.18.0",
+    "typescript": "^5.9.2",
     "vitest": "^3.2.4",
-    "vitest-environment-clarinet": "3.0.2",
-    "typescript": "^5.9.2"
+    "vitest-environment-clarinet": "3.0.2"
   }
 }

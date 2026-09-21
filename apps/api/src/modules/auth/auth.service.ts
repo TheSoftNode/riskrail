@@ -4,9 +4,9 @@ import {
   OnModuleDestroy,
   UnauthorizedException,
 } from '@nestjs/common';
-import { prisma } from '@riskrail/database';
-import { createRedisConnection } from '@riskrail/queue';
-import { isStacksPrincipal } from '@riskrail/stacks';
+import { prisma } from '@rivisk/database';
+import { createRedisConnection } from '@rivisk/queue';
+import { isStacksPrincipal } from '@rivisk/stacks';
 import { verifyMessageSignatureRsv } from '@stacks/encryption';
 import { publicKeyToAddress } from '@stacks/transactions';
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
@@ -22,7 +22,7 @@ export interface AuthTokens {
 }
 
 /**
- * Wallet-signature login. RiskRail never sees a private key: the browser signs a
+ * Wallet-signature login. Rivisk never sees a private key: the browser signs a
  * one-time challenge, and the API checks that the signature came from the public
  * key that hashes to the claimed address.
  *
@@ -43,7 +43,7 @@ export class AuthService implements OnModuleDestroy {
   }
 
   private key(address: string) {
-    return `riskrail:auth:nonce:${address}`;
+    return `rivisk:auth:nonce:${address}`;
   }
 
   /** Issues the exact string the wallet must sign. */
@@ -54,7 +54,7 @@ export class AuthService implements OnModuleDestroy {
     const domain = process.env.WEB_URL ?? 'http://localhost:3000';
 
     const message = [
-      'RiskRail sign-in',
+      'Rivisk sign-in',
       '',
       `Domain: ${domain}`,
       `Address: ${address}`,
@@ -118,8 +118,8 @@ export class AuthService implements OnModuleDestroy {
   async decode(token: string): Promise<JWTPayload & { typ?: string }> {
     try {
       const { payload } = await jwtVerify(token, this.secret(), {
-        issuer: 'riskrail',
-        audience: 'riskrail-api',
+        issuer: 'rivisk',
+        audience: 'rivisk-api',
       });
       return payload;
     } catch {
@@ -149,8 +149,8 @@ export class AuthService implements OnModuleDestroy {
       new SignJWT({})
         .setProtectedHeader({ alg: 'HS256' })
         .setSubject(userId)
-        .setIssuer('riskrail')
-        .setAudience('riskrail-api')
+        .setIssuer('rivisk')
+        .setAudience('rivisk-api')
         .setIssuedAt();
 
     const accessToken = await base()
@@ -159,8 +159,8 @@ export class AuthService implements OnModuleDestroy {
     const refreshToken = await new SignJWT({ typ: 'refresh' })
       .setProtectedHeader({ alg: 'HS256' })
       .setSubject(userId)
-      .setIssuer('riskrail')
-      .setAudience('riskrail-api')
+      .setIssuer('rivisk')
+      .setAudience('rivisk-api')
       .setIssuedAt()
       .setExpirationTime(REFRESH_TTL)
       .sign(this.secret());

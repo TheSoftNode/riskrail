@@ -327,7 +327,7 @@ export function RiskInstrument() {
             {hash}…
           </span>
           <span className="ml-auto shrink-0 font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground">
-            riskrail-v1.2
+            rivisk-v1.2
           </span>
         </div>
       </div>

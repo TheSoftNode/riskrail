@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 import { hasSession, sessionAddress, signIn } from "@/lib/auth";
 import { shorten } from "@/lib/format";
 import {
@@ -29,7 +29,7 @@ export function AlertsPanel({ address }: { address: string }) {
   const queryClient = useQueryClient();
   const alerts = useQuery({
     queryKey: ["alerts", address],
-    queryFn: () => riskrailApi.alerts(address),
+    queryFn: () => riviskApi.alerts(address),
   });
 
   const [metric, setMetric] = useState<AlertMetric>("healthFactorE4");
@@ -68,7 +68,7 @@ export function AlertsPanel({ address }: { address: string }) {
 
   const create = useMutation({
     mutationFn: () =>
-      riskrailApi.createAlert(address, {
+      riviskApi.createAlert(address, {
         metric,
         operator,
         threshold: toStoredThreshold(metric, threshold),
@@ -84,7 +84,7 @@ export function AlertsPanel({ address }: { address: string }) {
     }: {
       id: string;
       next: "ACTIVE" | "PAUSED" | "ARCHIVED";
-    }) => riskrailApi.setAlertStatus(id, next),
+    }) => riviskApi.setAlertStatus(id, next),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["alerts", address] }),
   });

@@ -128,10 +128,10 @@ The exact Clarinet commands can evolve with the installed CLI version, but both 
 Run a workspace directly:
 
 ```bash
-pnpm --filter @riskrail/api dev
-pnpm --filter @riskrail/web dev
-pnpm --filter @riskrail/risk-engine test
-pnpm --filter @riskrail/contracts test
+pnpm --filter @rivisk/api dev
+pnpm --filter @rivisk/web dev
+pnpm --filter @rivisk/risk-engine test
+pnpm --filter @rivisk/contracts test
 ```
 
 ## Reset local infrastructure

@@ -1,11 +1,11 @@
 # Repository Structure
 
-RiskRail is a pnpm/Turborepo monorepo. The structure is meant to answer a simple question quickly: "where should this code live?"
+Rivisk is a pnpm/Turborepo monorepo. The structure is meant to answer a simple question quickly: "where should this code live?"
 
 ## Top level
 
 ```text
-riskrail/
+rivisk/
 ├── apps/                 Deployable application processes
 ├── packages/             Shared domain and infrastructure libraries
 ├── contracts/            Clarinet project and Clarity contracts
@@ -128,7 +128,7 @@ Changing these types should be treated as a deliberate domain change because sev
 
 ## `packages/adapter-native-stacks`
 
-The native wallet adapter. It already fetches STX/fungible token balances through `@riskrail/stacks` and converts them into a normalized wallet position.
+The native wallet adapter. It already fetches STX/fungible token balances through `@rivisk/stacks` and converts them into a normalized wallet position.
 
 The next important work here is token metadata resolution so decimals and symbols for arbitrary SIP-010 assets are not guessed.
 
@@ -184,9 +184,9 @@ Shared BullMQ connection and queue helpers.
 
 Price-provider abstractions, aggregation and source metadata. Price reliability matters enough that this logic should not be hidden inside an adapter.
 
-## `packages/riskrail-contracts`
+## `packages/rivisk-contracts`
 
-The TypeScript client for RiskRail's own Clarity contracts. This is separate from `contracts/`, which contains the Clarity source code.
+The TypeScript client for Rivisk's own Clarity contracts. This is separate from `contracts/`, which contains the Clarity source code.
 
 Application code should use this package rather than recreating Stacks transaction arguments in several services.
 

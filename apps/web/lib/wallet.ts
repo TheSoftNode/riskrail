@@ -2,7 +2,7 @@
 
 import { connect, disconnect, getLocalStorage, isConnected } from '@stacks/connect';
 
-const EXPLICIT_CONNECTION_KEY = 'riskrail_wallet_explicitly_connected';
+const EXPLICIT_CONNECTION_KEY = 'rivisk_wallet_explicitly_connected';
 
 function getStacksAddress(value: unknown): string | null {
   if (!value || typeof value !== 'object') return null;
@@ -21,7 +21,7 @@ function getStacksAddress(value: unknown): string | null {
   return null;
 }
 
-export async function connectRiskRailWallet(): Promise<string> {
+export async function connectRiviskWallet(): Promise<string> {
   await connect();
   const address = getStacksAddress(getLocalStorage());
   if (!address) throw new Error('The wallet connected, but no Stacks address was returned.');
@@ -29,14 +29,14 @@ export async function connectRiskRailWallet(): Promise<string> {
   return address;
 }
 
-export async function restoreRiskRailWallet(): Promise<string | null> {
+export async function restoreRiviskWallet(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
   if (localStorage.getItem(EXPLICIT_CONNECTION_KEY) !== 'true') return null;
   if (!isConnected()) return null;
   return getStacksAddress(getLocalStorage());
 }
 
-export async function disconnectRiskRailWallet() {
+export async function disconnectRiviskWallet() {
   await disconnect();
   if (typeof window !== 'undefined') localStorage.removeItem(EXPLICIT_CONNECTION_KEY);
 }

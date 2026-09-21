@@ -22,8 +22,8 @@ const NAV = [
 ];
 
 /**
- * Three sections answer the same question from different sides -- what RiskRail
- * reads, who reads RiskRail, and how you call it -- so they collapse into one
+ * Three sections answer the same question from different sides -- what Rivisk
+ * reads, who reads Rivisk, and how you call it -- so they collapse into one
  * nav entry rather than three that a reader has to tell apart. The hints are
  * what make the grouping legible; without them "Protocols" and "Integrations"
  * sitting together is a guess.
@@ -31,7 +31,7 @@ const NAV = [
 const INTEGRATIONS = {
   label: "Integrations",
   items: [
-    { href: "#protocols", label: "Protocol adapters", hint: "What RiskRail reads" },
+    { href: "#protocols", label: "Protocol adapters", hint: "What Rivisk reads" },
     { href: "#consumers", label: "Who consumes it", hint: "Products built on top" },
     { href: "#developers", label: "API, SDK and Clarity", hint: "How to call it" },
   ],
@@ -71,7 +71,7 @@ export function SiteHeader() {
       )}
     >
       <div className="rr-shell flex h-16 items-center gap-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
-        <Link href="/" aria-label="RiskRail home">
+        <Link href="/" aria-label="Rivisk home">
           <Logo />
         </Link>
 
@@ -111,6 +111,13 @@ export function SiteHeader() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Link
+            href="/docs"
+            className="rounded-lg px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Docs
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5 lg:ml-0 lg:justify-self-end">
@@ -161,6 +168,13 @@ export function SiteHeader() {
                 {item.label}
               </a>
             ))}
+            <Link
+              href="/docs"
+              onClick={() => setOpen(false)}
+              className="mt-2 rounded-lg px-2 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              Documentation
+            </Link>
             <OpenDashboardButton
               render="anchor"
               onNavigate={() => setOpen(false)}

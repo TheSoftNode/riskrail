@@ -11,18 +11,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SecretReveal } from "@/components/dashboard/secret-reveal";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 
 export function ApiKeysPanel() {
   const queryClient = useQueryClient();
-  const keys = useQuery({ queryKey: ["api-keys"], queryFn: () => riskrailApi.apiKeys() });
+  const keys = useQuery({ queryKey: ["api-keys"], queryFn: () => riviskApi.apiKeys() });
 
   const [name, setName] = useState("");
   const [live, setLive] = useState(false);
   const [issued, setIssued] = useState<string | null>(null);
 
   const create = useMutation({
-    mutationFn: () => riskrailApi.createApiKey(name.trim(), live),
+    mutationFn: () => riviskApi.createApiKey(name.trim(), live),
     onSuccess: async (result) => {
       setIssued(result.token);
       setName("");
@@ -32,7 +32,7 @@ export function ApiKeysPanel() {
   });
 
   const revoke = useMutation({
-    mutationFn: (id: string) => riskrailApi.revokeApiKey(id),
+    mutationFn: (id: string) => riviskApi.revokeApiKey(id),
     onSuccess: async () => {
       toast.success("Key revoked");
       await queryClient.invalidateQueries({ queryKey: ["api-keys"] });
@@ -56,7 +56,7 @@ export function ApiKeysPanel() {
         </div>
 
         <p className="mt-3 max-w-3xl text-[0.875rem] leading-relaxed text-muted-foreground">
-          Keys authenticate server-to-server calls. RiskRail stores only a
+          Keys authenticate server-to-server calls. Rivisk stores only a
           peppered hash, so a key cannot be recovered after it is issued — revoke
           and replace it instead.
         </p>
@@ -84,8 +84,8 @@ export function ApiKeysPanel() {
               onChange={(e) => setLive(e.target.value === "live")}
               className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
             >
-              <option value="test">rr_test_</option>
-              <option value="live">rr_live_</option>
+              <option value="test">rv_test_</option>
+              <option value="live">rv_live_</option>
             </select>
           </div>
           <Button

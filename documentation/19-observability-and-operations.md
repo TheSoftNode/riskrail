@@ -1,6 +1,6 @@
 # Observability and Operations
 
-RiskRail is a monitoring product, so it would be ironic if the platform itself were hard to monitor.
+Rivisk is a monitoring product, so it would be ironic if the platform itself were hard to monitor.
 
 ## Structured logging
 
@@ -10,7 +10,7 @@ Example:
 
 ```json
 {
-  "service": "riskrail-indexer",
+  "service": "rivisk-indexer",
   "level": "info",
   "wallet": "SP...",
   "protocol": "bitpay",
@@ -91,7 +91,7 @@ risk job
 
 Not every span needs to be retained forever; the main goal is making intermittent latency/failure understandable.
 
-## Alerting on RiskRail itself
+## Alerting on Rivisk itself
 
 Operational alerts should include:
 
@@ -122,7 +122,7 @@ A runbook should say how to detect the issue, what is safe to restart, what data
 
 ## Data freshness monitoring
 
-Because RiskRail presents financial state, "service is up" is not enough.
+Because Rivisk presents financial state, "service is up" is not enough.
 
 We also need to know:
 

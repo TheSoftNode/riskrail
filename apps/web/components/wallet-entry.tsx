@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { connectRiskRailWallet } from "@/lib/wallet";
+import { connectRiviskWallet } from "@/lib/wallet";
 
 /**
  * The two ways into the dashboard: connect a wallet, or paste a public address
@@ -50,7 +50,7 @@ export function WalletEntry({
     try {
       setError(null);
       setConnecting(true);
-      go(await connectRiskRailWallet());
+      go(await connectRiviskWallet());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Wallet connection failed.");
     } finally {
@@ -117,7 +117,7 @@ export function WalletEntry({
 
       <p className="mt-4 flex items-start gap-2 text-[0.75rem] leading-relaxed text-muted-foreground">
         <Lock className="mt-0.5 size-3.5 shrink-0" />
-        Read-only. RiskRail never takes custody, moves funds, or asks for a seed
+        Read-only. Rivisk never takes custody, moves funds, or asks for a seed
         phrase.
       </p>
     </div>

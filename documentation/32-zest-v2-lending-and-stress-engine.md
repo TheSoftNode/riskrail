@@ -1,10 +1,10 @@
 # Zest V2 lending integration and the first real stress engine
 
-This note records the first external lending integration in RiskRail and the reasoning behind it. It is deliberately more practical than the general architecture documents. The goal is to leave enough context that somebody can open the repository months from now and understand what the Zest adapter is doing, which parts are protocol facts, which parts are RiskRail calculations, and where the implementation still needs live-network validation.
+This note records the first external lending integration in Rivisk and the reasoning behind it. It is deliberately more practical than the general architecture documents. The goal is to leave enough context that somebody can open the repository months from now and understand what the Zest adapter is doing, which parts are protocol facts, which parts are Rivisk calculations, and where the implementation still needs live-network validation.
 
 ## Why Zest V2 is the first lending integration
 
-RiskRail became useful as soon as it could combine a native wallet position with BitPay stream positions, but that still did not exercise the part of the product that matters most for market-risk monitoring: collateral and debt.
+Rivisk became useful as soon as it could combine a native wallet position with BitPay stream positions, but that still did not exercise the part of the product that matters most for market-risk monitoring: collateral and debt.
 
 A lending market gives us the data needed to answer questions such as:
 
@@ -14,7 +14,7 @@ A lending market gives us the data needed to answer questions such as:
 - how much room remains before a protocol liquidation threshold is reached;
 - what happens to the account if BTC or another collateral asset falls sharply.
 
-Zest V2 is a good first target because its current Stacks contracts are public, its position storage is readable on-chain, and its risk parameters are part of the protocol state rather than numbers RiskRail has to invent.
+Zest V2 is a good first target because its current Stacks contracts are public, its position storage is readable on-chain, and its risk parameters are part of the protocol state rather than numbers Rivisk has to invent.
 
 The adapter lives at `packages/adapter-zest-v2`.
 
@@ -32,11 +32,11 @@ The mainnet deployment address and contract names are kept in one place in the a
 
 When Zest support is enabled on mainnet, the adapter can use the currently published contract set. On testnet or another network, the contracts must be supplied explicitly.
 
-## How an account becomes a RiskRail position
+## How an account becomes a Rivisk position
 
 The read starts with `get-position` on the Zest market vault. Zest stores a user's lending state as an obligation. The returned state contains a mask, collateral entries and scaled debt entries.
 
-RiskRail does not persist that shape directly as its public portfolio format. Instead, the Zest adapter translates it into a `NormalizedPosition`.
+Rivisk does not persist that shape directly as its public portfolio format. Instead, the Zest adapter translates it into a `NormalizedPosition`.
 
 The flow is:
 
@@ -66,7 +66,7 @@ Zest egroup.resolve(mask)
     +--> liquidation penalty bounds
     |
     v
-RiskRail NormalizedPosition
+Rivisk NormalizedPosition
 ```
 
 At this point the portfolio engine no longer needs Zest-specific branches. It sees collateral assets, debt assets and protocol-supplied lending parameters through the same domain model that another lending adapter can use later.
@@ -85,7 +85,7 @@ This distinction matters because the portfolio engine should calculate exposure 
 
 Zest stores debt in scaled form. The scaled amount is deliberately stable while the borrow index changes as interest accrues.
 
-RiskRail therefore does not treat the stored scaled number as the user's current debt. The adapter reads the vault's next borrow index and computes the current amount using Zest's index precision:
+Rivisk therefore does not treat the stored scaled number as the user's current debt. The adapter reads the vault's next borrow index and computes the current amount using Zest's index precision:
 
 ```text
 actual debt = ceil(scaled debt * next borrow index / 1e12)
@@ -97,7 +97,7 @@ The original scaled amount is retained in adapter metadata alongside the normali
 
 ## Where the LTV thresholds come from
 
-RiskRail does not hard-code a generic 75% or 80% liquidation threshold for Zest.
+Rivisk does not hard-code a generic 75% or 80% liquidation threshold for Zest.
 
 The adapter resolves the account's obligation mask through the Zest egroup registry and reads the parameters that apply to that combination of assets. Those values include:
 
@@ -110,9 +110,9 @@ Those values are protocol facts. They are attached to the normalized position as
 
 The portfolio engine then performs the protocol-independent arithmetic.
 
-## RiskRail's lending calculations
+## Rivisk's lending calculations
 
-Once collateral and debt have USD values, RiskRail derives a few common metrics.
+Once collateral and debt have USD values, Rivisk derives a few common metrics.
 
 ### Current LTV
 
@@ -132,9 +132,9 @@ health factor = partial liquidation LTV / current LTV
 
 It is stored as E4 fixed point. A health factor of `1.2500` is stored as `12500`.
 
-A value above 1 means the current debt/collateral relationship is still on the non-liquidatable side of that threshold. A value below 1 means the position has crossed it under the prices used by RiskRail.
+A value above 1 means the current debt/collateral relationship is still on the non-liquidatable side of that threshold. A value below 1 means the position has crossed it under the prices used by Rivisk.
 
-This number is a RiskRail representation of protocol parameters; it should not be described as an official Zest UI metric unless the protocol itself exposes the same label and formula.
+This number is a Rivisk representation of protocol parameters; it should not be described as an official Zest UI metric unless the protocol itself exposes the same label and formula.
 
 ### Distance to liquidation
 
@@ -144,7 +144,7 @@ The first implementation estimates the percentage collateral-price decline requi
 distance = 1 - (current LTV / partial liquidation LTV)
 ```
 
-For a single-collateral position, the same relationship can be used to estimate a liquidation price. For multi-collateral positions, RiskRail labels the result as a portfolio approximation rather than pretending there is one exact liquidation price for every asset.
+For a single-collateral position, the same relationship can be used to estimate a liquidation price. For multi-collateral positions, Rivisk labels the result as a portfolio approximation rather than pretending there is one exact liquidation price for every asset.
 
 ### Borrow headroom
 
@@ -152,16 +152,16 @@ When a borrow LTV is available, the engine also exposes the difference between t
 
 ## Pricing: an important distinction
 
-Zest's protocol contracts use their own on-chain oracle system for protocol health and liquidation decisions. RiskRail's current MVP valuation layer uses its own external mark-to-market price abstraction for portfolio analytics.
+Zest's protocol contracts use their own on-chain oracle system for protocol health and liquidation decisions. Rivisk's current MVP valuation layer uses its own external mark-to-market price abstraction for portfolio analytics.
 
 That means two things:
 
 1. the LTV and liquidation *thresholds* are read from Zest contract state;
-2. the USD prices used by the current RiskRail portfolio calculation are not being claimed as the exact oracle values Zest would use in a transaction at the same instant.
+2. the USD prices used by the current Rivisk portfolio calculation are not being claimed as the exact oracle values Zest would use in a transaction at the same instant.
 
 This is intentional for the first external adapter, but it must remain visible in the UI and documentation. A later Zest-specific price source can read or reconstruct the protocol's own oracle marks when we need closer execution-level parity.
 
-If a required asset does not have a supported RiskRail price, the engine leaves it unvalued and lowers valuation coverage. It does not guess a USD value.
+If a required asset does not have a supported Rivisk price, the engine leaves it unvalued and lowers valuation coverage. It does not guess a USD value.
 
 ## The stress engine
 
@@ -184,7 +184,7 @@ STX  -12%
 USDC  -2%
 ```
 
-For each scenario, RiskRail:
+For each scenario, Rivisk:
 
 1. copies the current normalized positions;
 2. applies the requested price shock to matching assets;
@@ -225,7 +225,7 @@ That has two useful consequences:
 - the API has a historical record of what the standard scenarios looked like at each risk snapshot;
 - an on-chain report hash commits to the same stress results that were shown off-chain for that snapshot.
 
-The methodology version was moved to `riskrail-v1.1` because adding lending normalization and scenario recalculation changes the content and interpretation of the risk report.
+The methodology version was moved to `rivisk-v1.1` because adding lending normalization and scenario recalculation changes the content and interpretation of the risk report.
 
 ## Enabling the adapter
 
@@ -261,7 +261,7 @@ The remaining validation is important: the adapter still needs to be exercised a
 
 ## What comes next
 
-This implementation gets RiskRail over an important line: the platform can now represent a real lending obligation and recompute its risk under price shocks.
+This implementation gets Rivisk over an important line: the platform can now represent a real lending obligation and recompute its risk under price shocks.
 
 The next work should focus on productization rather than adding a second lending protocol immediately:
 

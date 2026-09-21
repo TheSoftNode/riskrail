@@ -1,4 +1,4 @@
-import type { RiskPolicy } from '@riskrail/riskrail-contracts';
+import type { RiskPolicy } from '@rivisk/rivisk-contracts';
 
 export interface MetricSnapshot {
   riskScoreBps: number;

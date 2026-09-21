@@ -28,3 +28,44 @@ jobs:
         working-directory: apps/web
       - run: npm run build
         working-directory: apps/web
+
+  # Migrations are what production gets, so they are checked against a real
+  # Postgres rather than trusted because they were generated correctly once.
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: rivisk_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/rivisk_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: corepack prepare pnpm@10.17.1 --activate
+      - run: pnpm install --no-frozen-lockfile
+
+      - name: Apply migrations from empty
+        run: pnpm --filter @rivisk/database exec prisma migrate deploy --schema prisma/schema.prisma
+
+      # Catches the common mistake of editing schema.prisma without generating
+      # the matching migration: the code would work locally against a pushed
+      # schema and then fail on a deployed database. --exit-code makes any
+      # difference a build failure.
+      - name: Fail if schema.prisma has drifted from the migrations
+        run: >-
+          pnpm --filter @rivisk/database exec prisma migrate diff
+          --from-url "$DATABASE_URL"
+          --to-schema-datamodel prisma/schema.prisma
+          --exit-code

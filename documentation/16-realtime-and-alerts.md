@@ -1,6 +1,6 @@
 # Realtime Updates and Alerts
 
-RiskRail has two different concepts that are easy to mix up:
+Rivisk has two different concepts that are easy to mix up:
 
 - realtime delivery tells a connected client that new data exists;
 - alerts evaluate a rule and decide that a threshold has been crossed.
@@ -19,7 +19,7 @@ portfolio:{address}
 
 Portfolio, risk, local-alert and policy-breach events for the same address all use that room. We can split the room taxonomy later if protocol-level subscriptions become useful.
 
-The indexer and workers publish lightweight events into the Redis `riskrail.realtime` channel. The Socket.IO service subscribes to that channel and forwards the message to the address room. A risk update looks like:
+The indexer and workers publish lightweight events into the Redis `rivisk.realtime` channel. The Socket.IO service subscribes to that channel and forwards the message to the address room. A risk update looks like:
 
 ```json
 {
@@ -123,7 +123,7 @@ That is better than:
 
 > Danger! Your Bitcoin is about to be liquidated!
 
-RiskRail should stay factual and specific.
+Rivisk should stay factual and specific.
 
 
 ## Current event sources

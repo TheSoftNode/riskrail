@@ -1,6 +1,6 @@
 # Protocol adapters
 
-Every integration implements the `ProtocolAdapter` contract from `@riskrail/adapter-core`.
+Every integration implements the `ProtocolAdapter` contract from `@rivisk/adapter-core`.
 
 An adapter is responsible for protocol-specific reads and mapping only. It does not calculate portfolio-wide risk.
 

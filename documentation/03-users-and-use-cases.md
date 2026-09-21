@@ -1,6 +1,6 @@
 # Users and Use Cases
 
-RiskRail is easier to design when we keep the actual user questions in view. A technically elegant risk engine is not useful if the interface cannot answer the basic question somebody came with.
+Rivisk is easier to design when we keep the actual user questions in view. A technically elegant risk engine is not useful if the interface cannot answer the basic question somebody came with.
 
 ## Persona 1 — Active sBTC user
 
@@ -17,7 +17,7 @@ Typical questions:
 Primary flow:
 
 1. enter or connect a Stacks address;
-2. RiskRail indexes the address;
+2. Rivisk indexes the address;
 3. the overview shows direct balances and protocol positions;
 4. the user opens a position to see the source data and risk details;
 5. the user runs a stress scenario;
@@ -35,7 +35,7 @@ Typical questions:
 - Under a -10%, -20% or -30% BTC move, what does the position look like?
 - Has the position moved into a more dangerous range since I last checked?
 
-For this user, accuracy is more important than visual complexity. RiskRail should show the protocol-native parameters that went into the calculation and make it clear whether a value was read directly or calculated.
+For this user, accuracy is more important than visual complexity. Rivisk should show the protocol-native parameters that went into the calculation and make it clear whether a value was read directly or calculated.
 
 ## Persona 3 — Treasury operator
 
@@ -61,7 +61,7 @@ Typical needs:
 - display a small risk summary inside the wallet;
 - show which positions are locked or committed;
 - receive updates when risk changes materially;
-- link a user to a deeper RiskRail view when needed.
+- link a user to a deeper Rivisk view when needed.
 
 The SDK and webhooks exist primarily for this kind of integration.
 
@@ -69,7 +69,7 @@ The SDK and webhooks exist primarily for this kind of integration.
 
 A protocol may want portfolio-level context that it cannot observe from its own contract alone.
 
-For example, a lending application could eventually read a recent RiskRail attestation or call the API to understand cross-protocol concentration. We should be careful not to make RiskRail an oracle that protocols blindly trust for safety-critical decisions, but the data can still be useful as an additional signal.
+For example, a lending application could eventually read a recent Rivisk attestation or call the API to understand cross-protocol concentration. We should be careful not to make Rivisk an oracle that protocols blindly trust for safety-critical decisions, but the data can still be useful as an additional signal.
 
 ## Persona 6 — Analyst / ecosystem observer
 
@@ -87,7 +87,7 @@ This is not a milestone-one feature, but the snapshot model keeps the door open.
 
 ### Journey A — Analyze a wallet without logging in
 
-The user enters `SP...` or `ST...`. RiskRail validates the principal, returns a job/freshness state if indexing is needed, and then presents the normalized portfolio.
+The user enters `SP...` or `ST...`. Rivisk validates the principal, returns a job/freshness state if indexing is needed, and then presents the normalized portfolio.
 
 No signature is required for public blockchain analysis.
 
@@ -97,13 +97,13 @@ The user connects a supported Stacks wallet, signs an authentication challenge, 
 
 ### Journey C — Run a stress test
 
-The user opens the stress screen and selects a predefined scenario such as `BTC -20%`. RiskRail creates a simulated copy of relevant valuation inputs, recalculates supported metrics and returns the difference between current and stressed state.
+The user opens the stress screen and selects a predefined scenario such as `BTC -20%`. Rivisk creates a simulated copy of relevant valuation inputs, recalculates supported metrics and returns the difference between current and stressed state.
 
 No real transaction is created.
 
 ### Journey D — Configure an alert
 
-The user chooses a metric, operator, threshold and notification channel. RiskRail stores the off-chain rule, or the user can choose to publish a small policy through `risk-policy.clar` where supported.
+The user chooses a metric, operator, threshold and notification channel. Rivisk stores the off-chain rule, or the user can choose to publish a small policy through `risk-policy.clar` where supported.
 
 The alert worker evaluates the policy when new portfolio/risk data arrives.
 
@@ -118,10 +118,10 @@ A user opens a published snapshot and sees:
 - transaction id;
 - the full off-chain report.
 
-The interface canonicalizes and hashes the report again. A matching hash confirms that the report being shown corresponds to what RiskRail committed on-chain.
+The interface canonicalizes and hashes the report again. A matching hash confirms that the report being shown corresponds to what Rivisk committed on-chain.
 
 ### Journey F — Developer integration
 
-A developer creates an API key, uses `@riskrail/sdk`, calls the portfolio and risk endpoints, then registers a signed webhook for material updates.
+A developer creates an API key, uses `@rivisk/sdk`, calls the portfolio and risk endpoints, then registers a signed webhook for material updates.
 
-The developer should not need to understand Chainhook internals to use RiskRail.
+The developer should not need to understand Chainhook internals to use Rivisk.

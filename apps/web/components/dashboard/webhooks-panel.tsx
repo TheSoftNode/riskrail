@@ -11,12 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SecretReveal } from "@/components/dashboard/secret-reveal";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 import { WEBHOOK_EVENT_TYPES } from "@/lib/types";
 
 export function WebhooksPanel() {
   const queryClient = useQueryClient();
-  const hooks = useQuery({ queryKey: ["webhooks"], queryFn: () => riskrailApi.webhooks() });
+  const hooks = useQuery({ queryKey: ["webhooks"], queryFn: () => riviskApi.webhooks() });
 
   const [url, setUrl] = useState("");
   const [events, setEvents] = useState<string[]>(["risk.updated"]);
@@ -25,7 +25,7 @@ export function WebhooksPanel() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["webhooks"] });
 
   const create = useMutation({
-    mutationFn: () => riskrailApi.createWebhook(url.trim(), events),
+    mutationFn: () => riviskApi.createWebhook(url.trim(), events),
     onSuccess: async (result) => {
       setSecret(result.secret);
       setUrl("");
@@ -36,13 +36,13 @@ export function WebhooksPanel() {
 
   const toggle = useMutation({
     mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
-      riskrailApi.setWebhookEnabled(id, enabled),
+      riviskApi.setWebhookEnabled(id, enabled),
     onSuccess: invalidate,
     onError: (error) => toast.error(error.message),
   });
 
   const remove = useMutation({
-    mutationFn: (id: string) => riskrailApi.deleteWebhook(id),
+    mutationFn: (id: string) => riviskApi.deleteWebhook(id),
     onSuccess: async () => {
       toast.success("Endpoint deleted");
       await invalidate();
@@ -68,7 +68,7 @@ export function WebhooksPanel() {
         <p className="mt-3 max-w-3xl text-[0.875rem] leading-relaxed text-muted-foreground">
           Every payload is signed{" "}
           <code className="font-mono text-[0.8125rem] text-brand-text">
-            riskrail-signature: t=&lt;unix&gt;,v1=&lt;hmac&gt;
+            rivisk-signature: t=&lt;unix&gt;,v1=&lt;hmac&gt;
           </code>{" "}
           over <code className="font-mono text-[0.8125rem]">timestamp.body</code>.
           Verify it before trusting a delivery. Failed attempts retry at 30s, 2m,
@@ -83,7 +83,7 @@ export function WebhooksPanel() {
             <Input
               id="hook-url"
               value={url}
-              placeholder="https://example.com/riskrail"
+              placeholder="https://example.com/rivisk"
               onChange={(e) => setUrl(e.target.value)}
               className="h-9 font-mono text-[0.8125rem]"
             />

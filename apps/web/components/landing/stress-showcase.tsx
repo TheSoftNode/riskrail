@@ -90,7 +90,7 @@ export function StressShowcase() {
           <SectionHeading
             eyebrow="Stress testing"
             title="See how close a position is to breaking, before it does."
-            lede="Shocks are applied to the latest indexed positions and re-scored against each protocol's own liquidation thresholds. RiskRail marks positions with its own price source, so these are modeled estimates rather than a protocol's execution-time verdict. Nothing is executed and no funds move."
+            lede="Shocks are applied to the latest indexed positions and re-scored against each protocol's own liquidation thresholds. Rivisk marks positions with its own price source, so these are modeled estimates rather than a protocol's execution-time verdict. Nothing is executed and no funds move."
           />
         </Reveal>
 
@@ -210,7 +210,7 @@ export function StressShowcase() {
                 <TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-warning" />
                 A 35% BTC drawdown is estimated to take this position to
                 0.98 — across its modeled partial-liquidation threshold.
-                RiskRail raises that as a breach rather than leaving it in a
+                Rivisk raises that as a breach rather than leaving it in a
                 table.
               </p>
               </div>
@@ -221,7 +221,7 @@ export function StressShowcase() {
                 <span className="rr-tnum">block 184,233</span>
                 <span className="text-border">·</span>
                 <span className="rr-tnum">coverage 98.4%</span>
-                <span className="ml-auto">riskrail-v1.2</span>
+                <span className="ml-auto">rivisk-v1.2</span>
               </footer>
             </figure>
           </Reveal>

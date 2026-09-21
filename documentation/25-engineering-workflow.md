@@ -110,7 +110,7 @@ packages/database/prisma/
 
 ## Release/versioning
 
-Internal packages can move together early on. Public packages such as `@riskrail/sdk` need semantic versioning once external users depend on them.
+Internal packages can move together early on. Public packages such as `@rivisk/sdk` need semantic versioning once external users depend on them.
 
 Changesets can be introduced/used for package release notes as public package publishing starts.
 

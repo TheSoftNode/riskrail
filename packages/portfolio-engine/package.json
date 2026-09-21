@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/portfolio-engine",
+  "name": "@rivisk/portfolio-engine",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,11 +14,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --config ../../vitest.shared.ts",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@riskrail/adapter-core": "workspace:*",
+    "@rivisk/adapter-core": "workspace:*",
     "decimal.js": "^10.6.0"
   },
   "devDependencies": {

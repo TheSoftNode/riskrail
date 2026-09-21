@@ -19,4 +19,4 @@ jobs:
       - run: corepack enable
       - run: corepack prepare pnpm@10.17.1 --activate
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm --filter @riskrail/contracts test
+      - run: pnpm --filter @rivisk/contracts test

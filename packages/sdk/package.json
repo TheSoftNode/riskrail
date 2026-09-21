@@ -1,6 +1,27 @@
 {
-  "name": "@riskrail/sdk",
+  "name": "@rivisk/sdk",
   "version": "0.1.0",
+  "description": "Typed client for the Rivisk risk intelligence API.",
+  "keywords": [
+    "stacks",
+    "sbtc",
+    "bitcoin",
+    "defi",
+    "risk",
+    "liquidation",
+    "portfolio"
+  ],
+  "license": "MIT",
+  "author": "TheSoftNode",
+  "homepage": "https://github.com/TheSoftNode/rivisk/tree/main/packages/sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheSoftNode/rivisk.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/TheSoftNode/rivisk/issues"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,18 +31,34 @@
       "default": "./dist/index.js"
     }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "lint": "eslint src --ext .ts"
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
   },
-  "dependencies": {
-    "@riskrail/shared-types": "workspace:*"
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config ../../vitest.shared.ts",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "pnpm run build && pnpm run test"
+  },
+  "peerDependencies": {
+    "socket.io-client": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "socket.io-client": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "vitest": "^5.0.1"
   },
-  "description": "Typed client for the RiskRail risk intelligence API.",
-  "license": "MIT"
+  "publishConfig": {
+    "access": "public"
+  }
 }

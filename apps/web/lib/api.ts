@@ -52,7 +52,7 @@ async function authed<T>(path: string, init?: RequestInit): Promise<T> {
   });
 }
 
-export const riskrailApi = {
+export const riviskApi = {
   portfolio(address: string) {
     return request<PortfolioResponse>(`/portfolios/${encodeURIComponent(address)}`);
   },

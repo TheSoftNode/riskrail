@@ -2,7 +2,7 @@
 
 ## The architecture in one sentence
 
-RiskRail is a modular TypeScript monorepo where indexing, protocol interpretation, portfolio aggregation, risk calculation, delivery and on-chain attestation are separate responsibilities connected by typed domain contracts and asynchronous events.
+Rivisk is a modular TypeScript monorepo where indexing, protocol interpretation, portfolio aggregation, risk calculation, delivery and on-chain attestation are separate responsibilities connected by typed domain contracts and asynchronous events.
 
 ## High-level view
 
@@ -11,7 +11,7 @@ flowchart TB
     subgraph Chain[Stacks network]
         S1[Stacks API]
         S2[Protocol contracts]
-        S3[RiskRail Clarity contracts]
+        S3[Rivisk Clarity contracts]
     end
 
     subgraph Ingest[Ingestion]
@@ -70,7 +70,7 @@ flowchart TB
 
 The easiest way for a blockchain analytics project to become hard to maintain is to let chain calls, protocol parsing, business rules and API formatting leak into the same files.
 
-RiskRail avoids that by using a few firm boundaries.
+Rivisk avoids that by using a few firm boundaries.
 
 ### The indexer understands the chain, not risk
 
@@ -109,7 +109,7 @@ A normal wallet refresh looks like this:
 ```mermaid
 sequenceDiagram
     participant U as User/API client
-    participant API as RiskRail API
+    participant API as Rivisk API
     participant Q as Queue
     participant IDX as Indexer
     participant AD as Adapters
@@ -164,7 +164,7 @@ sequenceDiagram
 
 ## Smart-contract path
 
-RiskRail does not publish every calculation on-chain. An attestation is an explicit side effect that can run when the snapshot is meaningful enough to preserve.
+Rivisk does not publish every calculation on-chain. An attestation is an explicit side effect that can run when the snapshot is meaningful enough to preserve.
 
 ```mermaid
 flowchart LR

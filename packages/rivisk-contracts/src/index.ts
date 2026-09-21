@@ -4,7 +4,7 @@ import {
   Cl,
   makeContractCall,
 } from '@stacks/transactions';
-import { parseContractId, StacksClient, type StacksNetworkName } from '@riskrail/stacks';
+import { parseContractId, StacksClient, type StacksNetworkName, unwrapClarity } from '@rivisk/stacks';
 
 export interface CanonicalRiskReport {
   version: string;
@@ -36,12 +36,22 @@ export function hashRiskReport(report: unknown): string {
   return createHash('sha256').update(canonicalizeRiskReport(report)).digest('hex');
 }
 
-export interface RiskRailContractConfig {
+export interface RiviskContractConfig {
   riskRegistry: string;
   riskPolicy?: string;
   protocolRegistry?: string;
   network: Exclude<StacksNetworkName, 'devnet'>;
 }
+
+/**
+ * No-debt sentinels, mirroring the constants in `risk-registry.clar`.
+ *
+ * These are deliberately the safest representable values rather than zero, so
+ * that a consuming contract comparing against a threshold reaches the right
+ * conclusion for a wallet that simply has no borrowings.
+ */
+export const HEALTH_FACTOR_UNBOUNDED = 340282366920938463463374607431768211455n;
+export const LIQUIDATION_DISTANCE_MAX = 10_000;
 
 export interface RiskAttestationInput {
   wallet: string;
@@ -56,7 +66,7 @@ export interface RiskAttestationInput {
 
 export class RiskRegistryPublisher {
   constructor(
-    private readonly config: RiskRailContractConfig,
+    private readonly config: RiviskContractConfig,
     private readonly senderKey: string,
   ) {}
 
@@ -65,7 +75,7 @@ export class RiskRegistryPublisher {
       throw new Error('Risk report hash must be a 32-byte SHA-256 hex digest');
     }
     assertBps('riskScoreBps', input.riskScoreBps);
-    assertBps('liquidationDistanceBps', input.liquidationDistanceBps ?? 0);
+    assertBps('liquidationDistanceBps', input.liquidationDistanceBps ?? LIQUIDATION_DISTANCE_MAX);
     assertBps('protocolConcentrationBps', input.protocolConcentrationBps);
     assertBps('liquidityScoreBps', input.liquidityScoreBps);
 
@@ -77,9 +87,18 @@ export class RiskRegistryPublisher {
       functionArgs: [
         Cl.principal(input.wallet),
         Cl.uint(input.riskScoreBps),
-        // Contract v1 uses 0 as the explicit sentinel when a metric is unavailable.
-        Cl.uint(input.healthFactorE4 ?? 0),
-        Cl.uint(input.liquidationDistanceBps ?? 0),
+        // A wallet with no debt has no health factor and no distance to
+        // liquidation. These publish as the *safest* representable values, not
+        // as zero.
+        //
+        // Zero would be read by any consumer's natural check --
+        // `(>= health-factor threshold)`, `(>= distance threshold)` -- as the
+        // most dangerous possible position, so a debt-free wallet would be
+        // refused a loan or trip an agent's guardrail. The registry's
+        // HEALTH_FACTOR_UNBOUNDED / LIQUIDATION_DISTANCE_MAX exist so the naive
+        // comparison is the correct one.
+        Cl.uint(input.healthFactorE4 ?? HEALTH_FACTOR_UNBOUNDED),
+        Cl.uint(input.liquidationDistanceBps ?? LIQUIDATION_DISTANCE_MAX),
         Cl.uint(input.protocolConcentrationBps),
         Cl.uint(input.liquidityScoreBps),
         Cl.uint(input.sourceBlock),
@@ -110,7 +129,7 @@ export interface RiskPolicy {
 }
 
 /**
- * Read-only client for wallet-owned RiskRail policies. It deliberately keeps
+ * Read-only client for wallet-owned Rivisk policies. It deliberately keeps
  * policy reads separate from the API controller so the same logic can be used
  * by the alert worker and future SDK methods.
  */
@@ -146,32 +165,10 @@ export class RiskPolicyReader {
   }
 }
 
-function unwrapClarityJson(input: unknown): unknown {
-  if (input === null || input === undefined) return input;
-  if (Array.isArray(input)) return input.map(unwrapClarityJson);
-  if (typeof input !== 'object') return input;
-  const node = input as Record<string, unknown>;
-  const type = typeof node['type'] === 'string' ? node['type'].toLowerCase() : '';
-
-  if (type.includes('none')) return null;
-  if (type.includes('optional') && node['value'] === null) return null;
-  if (
-    type.includes('optional') ||
-    type.includes('tuple') ||
-    type.includes('list') ||
-    type.includes('uint') ||
-    type.includes('int') ||
-    type.includes('bool') ||
-    type.includes('principal') ||
-    type.includes('string') ||
-    type.includes('buffer') ||
-    type.includes('response')
-  ) {
-    return unwrapClarityJson(node['value']);
-  }
-  if ('value' in node && Object.keys(node).length <= 3) return unwrapClarityJson(node['value']);
-  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, unwrapClarityJson(value)]));
-}
+// Shared Clarity decoding; the previous local copy treated any type signature
+// containing the word "none" as an empty optional, which would null out a whole
+// risk-policy tuple holding one.
+const unwrapClarityJson = unwrapClarity;
 
 function toSafeNumber(input: unknown): number {
   const value = unwrapClarityJson(input);

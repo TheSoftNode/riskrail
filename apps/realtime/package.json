@@ -1,5 +1,5 @@
 {
-  "name": "@riskrail/realtime",
+  "name": "@rivisk/realtime",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,9 +12,9 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@riskrail/logger": "workspace:*",
+    "@rivisk/logger": "workspace:*",
     "socket.io": "^4.8.1",
-    "@riskrail/queue": "workspace:*"
+    "@rivisk/queue": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.20.5",

@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 
 export class PriceShockDto {
-  @ApiPropertyOptional({ example: 'sBTC', description: 'RiskRail asset identifier. Either assetId or symbol is required.' })
+  @ApiPropertyOptional({ example: 'sBTC', description: 'Rivisk asset identifier. Either assetId or symbol is required.' })
   @IsOptional()
   @IsString()
   assetId?: string;

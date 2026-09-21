@@ -65,7 +65,7 @@ Good scope protects this project from becoming five products at once.
 
 ### Custody
 
-RiskRail does not receive deposits and does not hold user funds.
+Rivisk does not receive deposits and does not hold user funds.
 
 ### Automated position management
 
@@ -75,11 +75,11 @@ This is important both for security and product clarity. Monitoring infrastructu
 
 ### Trading recommendations
 
-RiskRail describes risk conditions and scenarios. It does not issue buy/sell recommendations.
+Rivisk describes risk conditions and scenarios. It does not issue buy/sell recommendations.
 
 ### Predictive price models
 
-The first version is scenario-based, not a forecasting product. A -20% BTC stress test means "show me the portfolio if this input changes by -20%," not "RiskRail predicts BTC will fall 20%."
+The first version is scenario-based, not a forecasting product. A -20% BTC stress test means "show me the portfolio if this input changes by -20%," not "Rivisk predicts BTC will fall 20%."
 
 ### One universal risk score as the whole product
 

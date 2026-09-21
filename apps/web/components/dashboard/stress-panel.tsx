@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { riskrailApi } from "@/lib/api";
+import { riviskApi } from "@/lib/api";
 import { formatBps, formatHealth } from "@/lib/format";
 import { RISK_TONE } from "@/lib/risk";
 import type { SimulationResponse, StressScenario } from "@/lib/types";
@@ -29,7 +29,7 @@ const ASSETS = ["sBTC", "BTC", "STX", "USDC"];
 export function StressPanel({ address }: { address: string }) {
   const presets = useQuery({
     queryKey: ["stress-presets"],
-    queryFn: () => riskrailApi.presets(),
+    queryFn: () => riviskApi.presets(),
   });
   const [result, setResult] = useState<SimulationResponse | null>(null);
   const [asset, setAsset] = useState("sBTC");
@@ -37,7 +37,7 @@ export function StressPanel({ address }: { address: string }) {
 
   const simulation = useMutation({
     mutationFn: (scenario: StressScenario) =>
-      riskrailApi.simulate(address, scenario.name, scenario.shocks),
+      riviskApi.simulate(address, scenario.name, scenario.shocks),
     onSuccess: setResult,
   });
 

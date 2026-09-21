@@ -1,4 +1,4 @@
-# RiskRail grant delivery roadmap
+# Rivisk grant delivery roadmap
 
 ## Milestone 1 — Cross-protocol portfolio + contract foundation (Weeks 1–3)
 

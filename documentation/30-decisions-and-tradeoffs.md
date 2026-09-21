@@ -1,6 +1,6 @@
 # Architecture Decisions and Trade-offs
 
-This is a human-readable summary of the decisions behind the current shape of RiskRail. Formal ADRs live under `docs/adr/` when a decision needs a durable record.
+This is a human-readable summary of the decisions behind the current shape of Rivisk. Formal ADRs live under `docs/adr/` when a decision needs a durable record.
 
 ## TypeScript first
 
@@ -38,7 +38,7 @@ Use PostgreSQL as the main durable store.
 
 ### Why
 
-RiskRail has strong relationships, historical snapshots and a need for reliable querying/transactions.
+Rivisk has strong relationships, historical snapshots and a need for reliable querying/transactions.
 
 ### Trade-off
 
@@ -70,13 +70,13 @@ Cross-protocol data, market data and scenario math do not belong inside a smart 
 
 ### Trade-off
 
-Consumers still trust the RiskRail methodology/publisher. The report hash proves integrity, not universal correctness.
+Consumers still trust the Rivisk methodology/publisher. The report hash proves integrity, not universal correctness.
 
 ## No custody in the MVP
 
 ### Decision
 
-RiskRail observes and alerts; it does not move user funds.
+Rivisk observes and alerts; it does not move user funds.
 
 ### Why
 
@@ -84,7 +84,7 @@ This keeps the product focused and drastically reduces attack surface.
 
 ### Trade-off
 
-RiskRail cannot automatically protect a position by repaying debt or moving collateral. That can be considered later as a separate security/product decision.
+Rivisk cannot automatically protect a position by repaying debt or moving collateral. That can be considered later as a separate security/product decision.
 
 ## REST before GraphQL
 

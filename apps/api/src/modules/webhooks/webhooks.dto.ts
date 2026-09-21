@@ -3,7 +3,7 @@ import { ArrayMinSize, IsArray, IsBoolean, IsString, IsUrl } from 'class-validat
 import { WEBHOOK_EVENTS } from './webhooks.service.js';
 
 export class CreateWebhookDto {
-  @ApiProperty({ example: 'https://example.com/riskrail' })
+  @ApiProperty({ example: 'https://example.com/rivisk' })
   @IsString()
   @IsUrl({ require_tld: false })
   url!: string;

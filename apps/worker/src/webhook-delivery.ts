@@ -1,10 +1,10 @@
-import { prisma } from '@riskrail/database';
+import { prisma } from '@rivisk/database';
 import {
   RETRY_BACKOFF_SECONDS,
   decryptSecret,
   signPayload,
   type WebhookEvent,
-} from '@riskrail/webhooks';
+} from '@rivisk/webhooks';
 
 const TIMEOUT_MS = 10_000;
 
@@ -59,10 +59,10 @@ export async function deliver(
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'riskrail-signature': signature,
-        'riskrail-event-id': job.event.id,
-        'riskrail-event-type': job.event.type,
-        'riskrail-delivery-attempt': String(job.attempt),
+        'rivisk-signature': signature,
+        'rivisk-event-id': job.event.id,
+        'rivisk-event-type': job.event.type,
+        'rivisk-delivery-attempt': String(job.attempt),
       },
       body,
       signal: controller.signal,

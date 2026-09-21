@@ -1,5 +1,5 @@
 import { Decimal } from 'decimal.js';
-import type { NormalizedPosition } from '@riskrail/adapter-core';
+import type { NormalizedPosition } from '@rivisk/adapter-core';
 
 export interface Portfolio {
   owner: string;

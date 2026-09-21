@@ -6,7 +6,7 @@ import { Reveal, SectionHeading } from "./primitives";
  * The consumer half of the story.
  *
  * Every other section on this page is written from the perspective of someone
- * inspecting their own portfolio. This one is about products that call RiskRail
+ * inspecting their own portfolio. This one is about products that call Rivisk
  * so they do not have to build risk themselves — which is the actual thesis.
  *
  * Categories, deliberately, not company names. Real Stacks products fitting
@@ -146,7 +146,7 @@ export function Consumers() {
         {/* Saying plainly what has and has not happened yet. */}
         <Reveal delay={0.4}>
           <p className="mt-6 max-w-3xl text-[0.8125rem] leading-relaxed text-muted-foreground">
-            These are the integration shapes RiskRail is built for. The API, SDK,
+            These are the integration shapes Rivisk is built for. The API, SDK,
             signed webhooks and the Clarity trait are implemented and tested; no
             third-party product is consuming them yet, and nothing here should be
             read as a partnership.
