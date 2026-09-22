@@ -2,26 +2,25 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, RefreshCw, Search, Wallet } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
-import { AlertsPanel } from "@/components/dashboard/alerts-panel";
+import { Logo } from "@/components/brand/logo";
+import { DashboardContext, type DashboardState } from "@/components/dashboard/dashboard-context";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { ExposurePanel } from "@/components/dashboard/exposure-panel";
 import {
   IndexFailedCard,
   IndexingCard,
   NotIndexedCard,
 } from "@/components/dashboard/index-status";
-import { OverviewCards } from "@/components/dashboard/overview-cards";
-import { PolicyPanel } from "@/components/dashboard/policy-panel";
-import { PositionsPanel } from "@/components/dashboard/positions-panel";
-import { RiskPanel } from "@/components/dashboard/risk-panel";
-import { StressPanel } from "@/components/dashboard/stress-panel";
+import { WalletEntry } from "@/components/wallet-entry";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useRealtime } from "@/hooks/use-realtime";
 import { riviskApi } from "@/lib/api";
+import { sectionForPath } from "@/lib/dashboard-sections";
 import { shorten } from "@/lib/format";
 import {
   connectRiviskWallet,
@@ -33,10 +32,23 @@ import type { RealtimeMessage } from "@/lib/types";
 /** Stop polling rather than hammering the API forever if a job never lands. */
 const INDEX_TIMEOUT_MS = 180_000;
 
-export function DashboardClient({ initialAddress }: { initialAddress: string }) {
+/** Wraps every /dashboard page. Reads `?address=` and owns the shared state. */
+export function DashboardFrame({ children }: { children: ReactNode }) {
+  const address = useSearchParams().get("address")?.trim() ?? "";
+  if (!address) return <NoAddress />;
+  // Keyed so a different wallet starts from clean indexing state.
+  return (
+    <WalletDashboard key={address} address={address}>
+      {children}
+    </WalletDashboard>
+  );
+}
+
+function WalletDashboard({ address, children }: { address: string; children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
-  const address = initialAddress.trim();
+  const section = sectionForPath(pathname);
 
   const [addressInput, setAddressInput] = useState(address);
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null);
@@ -50,7 +62,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
     if (message.event === "policy.breached") toast.error("On-chain policy breached");
   }, []);
 
-  const { connected } = useRealtime(address || null, onRealtime);
+  const { connected } = useRealtime(address, onRealtime);
 
   useEffect(() => {
     void restoreRiviskWallet().then(setConnectedAddress);
@@ -59,7 +71,6 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
   const portfolio = useQuery({
     queryKey: ["portfolio", address],
     queryFn: () => riviskApi.portfolio(address),
-    enabled: Boolean(address),
     refetchInterval: (query) => {
       const status = query.state.data?.status;
       if (status === "processing" || status === "queued") return 2_000;
@@ -104,7 +115,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
   const risk = useQuery({
     queryKey: ["risk", address],
     queryFn: () => riviskApi.risk(address),
-    enabled: Boolean(address) && hasSnapshot,
+    enabled: hasSnapshot,
     retry: false,
     refetchInterval: (query) =>
       query.state.data?.status === "risk-pending" ? 3_000 : false,
@@ -119,12 +130,15 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
     onError: (error) => toast.error(error.message),
   });
 
+  // Changing wallet keeps you on the page you are on.
+  const go = (next: string) => router.push(`${pathname}?address=${encodeURIComponent(next)}`);
+
   async function connectWallet() {
     try {
       const wallet = await connectRiviskWallet();
       setConnectedAddress(wallet);
       setAddressInput(wallet);
-      router.push(`/dashboard?address=${encodeURIComponent(wallet)}`);
+      go(wallet);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Wallet connection failed");
     }
@@ -133,16 +147,21 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
   function inspectAddress(event: FormEvent) {
     event.preventDefault();
     const next = addressInput.trim();
-    if (next && next !== address) {
-      router.push(`/dashboard?address=${encodeURIComponent(next)}`);
-    }
+    if (next && next !== address) go(next);
   }
 
-  const isIndexing = indexingSince !== null;
+  // Also covers a reload mid-index: the run is live server-side even though
+  // this tab never started it.
+  const isIndexing =
+    indexingSince !== null || ((status === "processing" || status === "queued") && !hasSnapshot);
   const isFailed = status === "failed" && !hasSnapshot && !isIndexing;
   const isNotIndexed = status === "not-indexed" && !isIndexing;
-  const showPortfolio = hasSnapshot;
   const firstLoad = portfolio.isLoading;
+
+  const state = useMemo<DashboardState>(
+    () => ({ address, portfolio, risk, firstLoad }),
+    [address, portfolio, risk, firstLoad],
+  );
 
   const topbar = (
     <>
@@ -176,7 +195,7 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
           size="sm"
           variant="outline"
           className="h-9"
-          disabled={refresh.isPending || isIndexing || !address}
+          disabled={refresh.isPending || isIndexing}
           onClick={() => refresh.mutate()}
         >
           {refresh.isPending || isIndexing ? (
@@ -210,63 +229,71 @@ export function DashboardClient({ initialAddress }: { initialAddress: string }) 
   );
 
   return (
-    <DashboardShell topbar={topbar}>
-      <section id="overview" className="scroll-mt-24">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Wallet intelligence
-            </p>
-            <h1 className="mt-1.5 truncate font-mono text-2xl font-semibold tracking-tight sm:text-3xl">
-              {shorten(address, 14, 8)}
-            </h1>
-          </div>
-        </div>
+    <DashboardShell topbar={topbar} address={address}>
+      <div className="mb-6 min-w-0">
+        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          {section.label}
+        </p>
+        <h1 className="mt-1.5 truncate font-mono text-2xl font-semibold tracking-tight sm:text-3xl">
+          {shorten(address, 14, 8)}
+        </h1>
+        <p className="mt-1.5 text-[0.8125rem] text-muted-foreground">{section.description}</p>
+      </div>
 
-        {portfolio.error ? (
-          <p className="mb-4 rounded-lg border border-high/30 bg-high/10 px-4 py-3 text-[0.8125rem] text-high">
-            Portfolio request failed: {portfolio.error.message}
-          </p>
-        ) : null}
-
-        {isIndexing ? (
-          <IndexingCard elapsedSeconds={elapsed} />
-        ) : isFailed ? (
-          <IndexFailedCard
-            onRetry={() => refresh.mutate()}
-            pending={refresh.isPending}
-            correlationId={refresh.data?.correlationId}
-          />
-        ) : isNotIndexed ? (
-          <NotIndexedCard
-            onIndex={() => refresh.mutate()}
-            pending={refresh.isPending}
-          />
-        ) : (
-          <div className="space-y-3">
-            <OverviewCards portfolio={portfolio.data} loading={firstLoad} />
-            <RiskPanel
-              risk={risk.data}
-              loading={firstLoad || (showPortfolio && risk.isLoading)}
-            />
-            <ExposurePanel portfolio={portfolio.data} loading={firstLoad} />
-          </div>
-        )}
-      </section>
-
-      {showPortfolio && !isIndexing ? (
-        <div className="mt-3 space-y-3">
-          <PositionsPanel
-            positions={portfolio.data?.positions ?? []}
-            loading={firstLoad}
-          />
-          <StressPanel address={address} />
-          <div className="grid gap-3 xl:grid-cols-2 xl:items-start">
-            <AlertsPanel address={address} />
-            <PolicyPanel address={address} />
-          </div>
-        </div>
+      {portfolio.error ? (
+        <p className="mb-4 rounded-lg border border-high/30 bg-high/10 px-4 py-3 text-[0.8125rem] text-high">
+          Portfolio request failed: {portfolio.error.message}
+        </p>
       ) : null}
+
+      {/* Every page needs an indexed wallet, so the pre-portfolio states are
+          handled once here instead of in each page. */}
+      {isIndexing ? (
+        <IndexingCard elapsedSeconds={elapsed} />
+      ) : isFailed ? (
+        <IndexFailedCard
+          onRetry={() => refresh.mutate()}
+          pending={refresh.isPending}
+          correlationId={refresh.data?.correlationId}
+        />
+      ) : isNotIndexed ? (
+        <NotIndexedCard onIndex={() => refresh.mutate()} pending={refresh.isPending} />
+      ) : (
+        <DashboardContext.Provider value={state}>{children}</DashboardContext.Provider>
+      )}
     </DashboardShell>
+  );
+}
+
+function NoAddress() {
+  return (
+    <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-14 sm:px-8">
+      <Link href="/" aria-label="Rivisk home">
+        <Logo />
+      </Link>
+      <Card className="mt-14">
+        <CardContent className="p-8">
+          <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            No address selected
+          </span>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+            Start with a Stacks address.
+          </h1>
+          <p className="mt-3 mb-8 text-[0.9375rem] leading-relaxed text-muted-foreground">
+            Connect a wallet to load your own portfolio, or paste any public
+            address to inspect it read-only.
+          </p>
+          {/* Offering the choice here rather than a link home: someone who
+              arrives at this URL directly should be able to finish from it. */}
+          <WalletEntry />
+        </CardContent>
+      </Card>
+
+      <p className="mt-6 text-center text-[0.8125rem] text-muted-foreground">
+        <Link href="/" className="underline underline-offset-4 hover:text-foreground">
+          Back to Rivisk
+        </Link>
+      </p>
+    </main>
   );
 }

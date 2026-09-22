@@ -1,51 +1,28 @@
 "use client";
 
-import { LayoutGrid, Layers, Waves, Bell, FileLock2, KeyRound, Menu, X } from "lucide-react";
+import { KeyRound, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { DASHBOARD_SECTIONS, sectionForPath, sectionHref } from "@/lib/dashboard-sections";
 import { cn } from "cn";
-
-const SECTIONS = [
-  { id: "overview", label: "Overview", icon: LayoutGrid },
-  { id: "positions", label: "Positions", icon: Layers },
-  { id: "stress", label: "Stress tests", icon: Waves },
-  { id: "alerts", label: "Alerts", icon: Bell },
-  { id: "policy", label: "Risk policy", icon: FileLock2 },
-];
 
 export function DashboardShell({
   topbar,
+  address,
   children,
 }: {
   topbar: ReactNode;
+  /** Carried into every section link so switching pages keeps the wallet. */
+  address: string;
   children: ReactNode;
 }) {
-  const [active, setActive] = useState("overview");
+  const pathname = usePathname();
+  const active = sectionForPath(pathname).segment;
   const [open, setOpen] = useState(false);
-
-  // Scroll-spy so the sidebar reflects where the reader actually is.
-  useEffect(() => {
-    const nodes = SECTIONS.map((s) => document.getElementById(s.id)).filter(
-      (n): n is HTMLElement => Boolean(n),
-    );
-    if (nodes.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (visible?.target.id) setActive(visible.target.id);
-      },
-      { rootMargin: "-88px 0px -55% 0px", threshold: 0 },
-    );
-
-    nodes.forEach((n) => observer.observe(n));
-    return () => observer.disconnect();
-  });
 
   return (
     <div className="flex min-h-svh flex-1 flex-col lg:grid lg:grid-cols-[16.25rem_minmax(0,1fr)]">
@@ -73,22 +50,22 @@ export function DashboardShell({
             open ? "flex" : "hidden",
           )}
         >
-          {SECTIONS.map((s) => (
-            <a
-              key={s.id}
-              href={`#${s.id}`}
+          {DASHBOARD_SECTIONS.map((s) => (
+            <Link
+              key={s.segment || "overview"}
+              href={sectionHref(s.segment, address)}
               onClick={() => setOpen(false)}
-              aria-current={active === s.id ? "true" : undefined}
+              aria-current={active === s.segment ? "page" : undefined}
               className={cn(
                 "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.8125rem] transition-colors",
-                active === s.id
+                active === s.segment
                   ? "bg-brand/10 font-medium text-brand-text"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <s.icon className="size-4" />
               {s.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
