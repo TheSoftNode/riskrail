@@ -27,6 +27,13 @@ free. The web app's traffic is Vercel's, not AWS's.
 > the right trade for proving the product works in public. Moving Postgres to RDS
 > and the apps to ECS is the path when real users depend on it.
 
+> **The running deployment (2026-09-22)** differs from the defaults below in
+> three ways, all covered in this runbook: the account is on the AWS free plan,
+> so it is a **t3.small** in `eu-north-1`; the image is **Amazon Linux 2023**
+> (user `ec2-user`); and images are **built on a laptop and shipped**
+> ([Building off the server](#building-off-the-server)). Elastic IP
+> `13.49.129.179`; web app `https://rivisk-lilac.vercel.app`.
+
 ## What you need
 
 | Item | Where |

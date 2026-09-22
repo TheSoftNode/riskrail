@@ -99,6 +99,8 @@ The normalized stream positions contain outstanding, withdrawn, vested and curre
 
 Direct contract reads are the first implementation. Chainhook-backed cached state is still the better long-term path for high-volume indexing.
 
+**Not live (checked 2026-09-22).** The adapter's four reads (`get-sender-streams`, `get-recipient-streams`, `get-stream`, `get-vested-amount`) match the `bitpay-core` source in `github.com/TheSoftNode/bitpay`. But the Stacks testnet node answers `NoSuchContract` for every `bitpay-core` version (v1–v5) under the documented deployer `ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7`; that deployer's history holds only Rivisk's contracts, and the testnet sBTC token BitPay depends on (`ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT.sbtc-token`) is also absent. The BitPay contracts were deployed in 2025; the evidence points to a testnet reset since. The beta therefore runs with `BITPAY_CORE_CONTRACT` unset. Enabling it needs BitPay redeployed against a token that exists on the current testnet.
+
 ## Zest V2 lending adapter — first external lending integration present
 
 Rivisk now contains `packages/adapter-zest-v2`, the first external lending/collateral adapter.

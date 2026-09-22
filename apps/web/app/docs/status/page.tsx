@@ -62,7 +62,7 @@ export default function Status() {
         rows={[
           ["Native Stacks balances", LIVE, "Read from mainnet"],
           ["Zest V2 lending", LIVE, "Debt reproduced to eight significant figures against Zest's own figures for a mainnet obligation"],
-          ["BitPay streams", TESTED, "Not yet compared against a live stream"],
+          ["BitPay streams", TESTED, "The adapter matches bitpay-core's interface, but no BitPay contract exists on the current testnet (checked 2026-09-22), so there is no live stream to read. Off in the beta"],
           ["Indexer → worker pipeline", LIVE, "A mainnet wallet indexed, scored and persisted end to end"],
           ["Risk engine", LIVE, "Its health factor for a live Zest position matched the protocol's own threshold maths"],
           ["Stress testing", TESTED, "Deterministic presets and custom shocks"],

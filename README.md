@@ -8,6 +8,18 @@ The project is being built for users who need more than a balance screen. A wall
 
 > Rivisk observes and explains risk. It does not hold user funds, execute trades, or make investment decisions for the user.
 
+## Live beta (Stacks testnet)
+
+| | |
+| --- | --- |
+| App and docs | https://rivisk-lilac.vercel.app · [/docs](https://rivisk-lilac.vercel.app/docs) |
+| REST API | https://api.13.49.129.179.sslip.io/api/v1 · [interactive reference](https://api.13.49.129.179.sslip.io/docs) |
+| Realtime | `wss://ws.13.49.129.179.sslip.io` |
+| Contracts | `ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7` · [`risk-registry`](https://explorer.hiro.so/txid/ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry?chain=testnet) (see `contracts/deployments/testnet.json`) |
+| SDK | [`@rivisk/sdk`](https://www.npmjs.com/package/@rivisk/sdk) on npm |
+
+Indexing a wallet publishes a risk attestation to the testnet registry (throttled to changes, or once per 120 blocks), and Chainhook confirms each one back into the API. What is and isn't proven is in [the status page](https://rivisk-lilac.vercel.app/docs/status). Hosting: [documentation/37-aws-beta-deployment.md](./documentation/37-aws-beta-deployment.md).
+
 ---
 
 ## Why Rivisk exists
