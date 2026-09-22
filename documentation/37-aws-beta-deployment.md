@@ -197,13 +197,13 @@ Done before configuring the server because the API has to know the site's URL
 On the server, in `~/rivisk/infrastructure/deploy`:
 
 ```bash
-./setup-env.sh api.<IP>.sslip.io ws.<IP>.sslip.io you@example.com https://rivisk.vercel.app
+./setup-env.sh api.<IP>.sslip.io ws.<IP>.sslip.io https://rivisk.vercel.app
 ```
 
 This writes `.env.production` (mode 600) with six fresh random secrets: the
 Postgres and Redis passwords, `JWT_SECRET`, `API_KEY_PEPPER`,
 `WEBHOOK_ENCRYPTION_KEY` and `CHAINHOOK_AUTH_TOKEN`. They are generated on the
-server and never printed. The email is only for Let's Encrypt expiry notices.
+server and never printed.
 
 It refuses to overwrite an existing file on purpose: a new `JWT_SECRET` signs
 everyone out, and a new `WEBHOOK_ENCRYPTION_KEY` makes every stored webhook

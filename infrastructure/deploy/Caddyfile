@@ -1,8 +1,6 @@
 # Caddy obtains and renews Let's Encrypt certificates for both hosts on its own.
-# Hosts come from .env.production (API_HOST, REALTIME_HOST).
-{
-	email {$ACME_EMAIL}
-}
+# Hosts come from .env.production (API_HOST, REALTIME_HOST). No ACME email is
+# needed: Let's Encrypt no longer sends expiry notices, and Caddy renews itself.
 
 {$API_HOST} {
 	encode zstd gzip

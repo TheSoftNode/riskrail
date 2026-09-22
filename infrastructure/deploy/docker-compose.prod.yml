@@ -118,7 +118,6 @@ services:
     environment:
       API_HOST: ${API_HOST:?set API_HOST in .env.production}
       REALTIME_HOST: ${REALTIME_HOST:?set REALTIME_HOST in .env.production}
-      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env.production}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data

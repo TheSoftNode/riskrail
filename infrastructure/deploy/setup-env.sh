@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Creates .env.production on the server with fresh random secrets.
 #
-#   ./setup-env.sh <api-host> <realtime-host> <acme-email> <web-url>
+#   ./setup-env.sh <api-host> <realtime-host> <web-url>
 #
 # Secrets are generated here and never printed, so they exist only on this
 # machine. Refuses to overwrite an existing file: replacing JWT_SECRET logs
@@ -10,8 +10,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-if [ $# -ne 4 ]; then
-  echo "usage: $0 <api-host> <realtime-host> <acme-email> <web-url>" >&2
+if [ $# -ne 3 ]; then
+  echo "usage: $0 <api-host> <realtime-host> <web-url>" >&2
   exit 1
 fi
 if [ -e .env.production ]; then
@@ -36,8 +36,7 @@ umask 077
 sed \
   -e "s#__API_HOST__#$1#g" \
   -e "s#__REALTIME_HOST__#$2#g" \
-  -e "s#__ACME_EMAIL__#$3#g" \
-  -e "s#__WEB_URL__#$4#g" \
+  -e "s#__WEB_URL__#$3#g" \
   env.production.template > .env.production.tmp
 
 # Hex keeps every secret safe inside a URL (the database and Redis passwords).

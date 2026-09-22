@@ -85,7 +85,7 @@ node apps/realtime/dist/main.js
         lang="bash"
         code={`
 cd infrastructure/deploy
-./setup-env.sh api.example.com ws.example.com you@example.com https://your-site.vercel.app
+./setup-env.sh api.example.com ws.example.com https://your-site.vercel.app
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 `}
       />
