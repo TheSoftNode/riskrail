@@ -1,13 +1,18 @@
 "use client";
 
-import { KeyRound, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { DASHBOARD_SECTIONS, sectionForPath, sectionHref } from "@/lib/dashboard-sections";
+import {
+  DASHBOARD_SECTIONS,
+  sectionForPath,
+  sectionHref,
+  type DashboardSection,
+} from "@/lib/dashboard-sections";
 import { cn } from "cn";
 
 export function DashboardShell({
@@ -45,40 +50,20 @@ export function DashboardShell({
         </div>
 
         <nav
+          aria-label="Dashboard"
           className={cn(
             "flex-col gap-0.5 px-3 pb-4 lg:mt-8 lg:flex lg:px-3",
             open ? "flex" : "hidden",
           )}
         >
-          {DASHBOARD_SECTIONS.map((s) => (
-            <Link
-              key={s.segment || "overview"}
-              href={sectionHref(s.segment, address)}
-              onClick={() => setOpen(false)}
-              aria-current={active === s.segment ? "page" : undefined}
-              className={cn(
-                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.8125rem] transition-colors",
-                active === s.segment
-                  ? "bg-brand/10 font-medium text-brand-text"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              )}
-            >
-              <s.icon className="size-4" />
-              {s.label}
-            </Link>
+          {DASHBOARD_SECTIONS.filter((s) => !s.account).map((s) => (
+            <SectionLink key={s.segment || "overview"} section={s} active={active} address={address} onNavigate={() => setOpen(false)} />
+          ))}
+          <div className="my-3 h-px bg-border" />
+          {DASHBOARD_SECTIONS.filter((s) => s.account).map((s) => (
+            <SectionLink key={s.segment} section={s} active={active} address={address} onNavigate={() => setOpen(false)} />
           ))}
         </nav>
-
-        <div className={cn("px-3 pb-4 lg:mt-2 lg:block", open ? "block" : "hidden")}>
-          <Link
-            href="/developers"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <KeyRound className="size-4" />
-            Developers
-          </Link>
-        </div>
 
         <div className="hidden items-center gap-2 px-5 pb-6 lg:absolute lg:bottom-0 lg:flex">
           <span className="size-1.5 rounded-full bg-brand" />
@@ -99,5 +84,35 @@ export function DashboardShell({
         <main className="mx-auto w-full min-w-0 max-w-[120rem] flex-1 px-5 pt-6 pb-24 sm:px-8 lg:px-10">{children}</main>
       </div>
     </div>
+  );
+}
+
+function SectionLink({
+  section,
+  active,
+  address,
+  onNavigate,
+}: {
+  section: DashboardSection;
+  active: string;
+  address: string;
+  onNavigate: () => void;
+}) {
+  const isActive = active === section.segment;
+  return (
+    <Link
+      href={sectionHref(section.segment, address)}
+      onClick={onNavigate}
+      aria-current={isActive ? "page" : undefined}
+      className={cn(
+        "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[0.8125rem] transition-colors",
+        isActive
+          ? "bg-brand/10 font-medium text-brand-text"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      )}
+    >
+      <section.icon className="size-4" />
+      {section.label}
+    </Link>
   );
 }

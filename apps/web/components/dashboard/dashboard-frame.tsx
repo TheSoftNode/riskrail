@@ -35,7 +35,9 @@ const INDEX_TIMEOUT_MS = 180_000;
 /** Wraps every /dashboard page. Reads `?address=` and owns the shared state. */
 export function DashboardFrame({ children }: { children: ReactNode }) {
   const address = useSearchParams().get("address")?.trim() ?? "";
-  if (!address) return <NoAddress />;
+  const section = sectionForPath(usePathname());
+  // Account pages (Developers) work before any wallet is chosen.
+  if (!address && !section.account) return <NoAddress />;
   // Keyed so a different wallet starts from clean indexing state.
   return (
     <WalletDashboard key={address} address={address}>
@@ -62,7 +64,7 @@ function WalletDashboard({ address, children }: { address: string; children: Rea
     if (message.event === "policy.breached") toast.error("On-chain policy breached");
   }, []);
 
-  const { connected } = useRealtime(address, onRealtime);
+  const { connected } = useRealtime(address || null, onRealtime);
 
   useEffect(() => {
     void restoreRiviskWallet().then(setConnectedAddress);
@@ -71,6 +73,7 @@ function WalletDashboard({ address, children }: { address: string; children: Rea
   const portfolio = useQuery({
     queryKey: ["portfolio", address],
     queryFn: () => riviskApi.portfolio(address),
+    enabled: Boolean(address),
     refetchInterval: (query) => {
       const status = query.state.data?.status;
       if (status === "processing" || status === "queued") return 2_000;
@@ -115,7 +118,7 @@ function WalletDashboard({ address, children }: { address: string; children: Rea
   const risk = useQuery({
     queryKey: ["risk", address],
     queryFn: () => riviskApi.risk(address),
-    enabled: hasSnapshot,
+    enabled: Boolean(address) && hasSnapshot,
     retry: false,
     refetchInterval: (query) =>
       query.state.data?.status === "risk-pending" ? 3_000 : false,
@@ -182,20 +185,23 @@ function WalletDashboard({ address, children }: { address: string; children: Rea
       </form>
 
       <div className="ml-auto flex items-center gap-2">
-        <span
-          className="hidden items-center gap-1.5 text-[0.6875rem] text-muted-foreground sm:flex"
-          title={connected ? "Realtime connected" : "Realtime offline"}
-        >
+        {/* Nothing streams until a wallet is chosen, so "Offline" would only mislead. */}
+        {address ? (
           <span
-            className={`size-1.5 rounded-full ${connected ? "bg-healthy" : "bg-muted-foreground"}`}
-          />
-          {connected ? "Live" : "Offline"}
-        </span>
+            className="hidden items-center gap-1.5 text-[0.6875rem] text-muted-foreground sm:flex"
+            title={connected ? "Realtime connected" : "Realtime offline"}
+          >
+            <span
+              className={`size-1.5 rounded-full ${connected ? "bg-healthy" : "bg-muted-foreground"}`}
+            />
+            {connected ? "Live" : "Offline"}
+          </span>
+        ) : null}
         <Button
           size="sm"
           variant="outline"
           className="h-9"
-          disabled={refresh.isPending || isIndexing}
+          disabled={refresh.isPending || isIndexing || !address}
           onClick={() => refresh.mutate()}
         >
           {refresh.isPending || isIndexing ? (
@@ -230,36 +236,51 @@ function WalletDashboard({ address, children }: { address: string; children: Rea
 
   return (
     <DashboardShell topbar={topbar} address={address}>
-      <div className="mb-6 min-w-0">
-        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          {section.label}
-        </p>
-        <h1 className="mt-1.5 truncate font-mono text-2xl font-semibold tracking-tight sm:text-3xl">
-          {shorten(address, 14, 8)}
-        </h1>
-        <p className="mt-1.5 text-[0.8125rem] text-muted-foreground">{section.description}</p>
-      </div>
-
-      {portfolio.error ? (
-        <p className="mb-4 rounded-lg border border-high/30 bg-high/10 px-4 py-3 text-[0.8125rem] text-high">
-          Portfolio request failed: {portfolio.error.message}
-        </p>
-      ) : null}
-
-      {/* Every page needs an indexed wallet, so the pre-portfolio states are
-          handled once here instead of in each page. */}
-      {isIndexing ? (
-        <IndexingCard elapsedSeconds={elapsed} />
-      ) : isFailed ? (
-        <IndexFailedCard
-          onRetry={() => refresh.mutate()}
-          pending={refresh.isPending}
-          correlationId={refresh.data?.correlationId}
-        />
-      ) : isNotIndexed ? (
-        <NotIndexedCard onIndex={() => refresh.mutate()} pending={refresh.isPending} />
+      {section.account ? (
+        <>
+          <div className="mb-6 min-w-0">
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Account
+            </p>
+            <h1 className="mt-1.5 text-2xl font-semibold tracking-tight sm:text-3xl">{section.label}</h1>
+            <p className="mt-1.5 text-[0.8125rem] text-muted-foreground">{section.description}</p>
+          </div>
+          <DashboardContext.Provider value={state}>{children}</DashboardContext.Provider>
+        </>
       ) : (
-        <DashboardContext.Provider value={state}>{children}</DashboardContext.Provider>
+        <>
+          <div className="mb-6 min-w-0">
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              {section.label}
+            </p>
+            <h1 className="mt-1.5 truncate font-mono text-2xl font-semibold tracking-tight sm:text-3xl">
+              {shorten(address, 14, 8)}
+            </h1>
+            <p className="mt-1.5 text-[0.8125rem] text-muted-foreground">{section.description}</p>
+          </div>
+
+          {portfolio.error ? (
+            <p className="mb-4 rounded-lg border border-high/30 bg-high/10 px-4 py-3 text-[0.8125rem] text-high">
+              Portfolio request failed: {portfolio.error.message}
+            </p>
+          ) : null}
+
+          {/* Every wallet page needs an indexed wallet, so the pre-portfolio
+              states are handled once here instead of in each page. */}
+          {isIndexing ? (
+            <IndexingCard elapsedSeconds={elapsed} />
+          ) : isFailed ? (
+            <IndexFailedCard
+              onRetry={() => refresh.mutate()}
+              pending={refresh.isPending}
+              correlationId={refresh.data?.correlationId}
+            />
+          ) : isNotIndexed ? (
+            <NotIndexedCard onIndex={() => refresh.mutate()} pending={refresh.isPending} />
+          ) : (
+            <DashboardContext.Provider value={state}>{children}</DashboardContext.Provider>
+          )}
+        </>
       )}
     </DashboardShell>
   );

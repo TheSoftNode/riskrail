@@ -1,4 +1,4 @@
-import { Bell, FileLock2, Layers, LayoutGrid, Waves, type LucideIcon } from "lucide-react";
+import { Bell, FileLock2, KeyRound, Layers, LayoutGrid, Waves, type LucideIcon } from "lucide-react";
 
 export interface DashboardSection {
   /** Route segment under /dashboard; "" is the overview. */
@@ -6,6 +6,11 @@ export interface DashboardSection {
   label: string;
   description: string;
   icon: LucideIcon;
+  /**
+   * Belongs to the signed-in account rather than the wallet being inspected:
+   * it needs no indexed portfolio and works without an address.
+   */
+  account?: boolean;
 }
 
 export const DASHBOARD_SECTIONS: DashboardSection[] = [
@@ -38,6 +43,13 @@ export const DASHBOARD_SECTIONS: DashboardSection[] = [
     label: "Risk policy",
     description: "Guardrails the wallet writes on chain, for contracts to check before acting.",
     icon: FileLock2,
+  },
+  {
+    segment: "developers",
+    label: "Developers",
+    description: "API keys, webhooks and notification settings for your account.",
+    icon: KeyRound,
+    account: true,
   },
 ];
 
