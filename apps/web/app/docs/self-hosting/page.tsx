@@ -130,6 +130,7 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d --bui
           [<C key="3">PROTOCOL_REGISTRY_CONTRACT</C>, <C key="3v">ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.protocol-registry</C>],
           [<C key="4">RISK_PUBLISHER_ENABLED</C>, <C key="4v">true</C>],
           [<C key="5">RISK_PUBLISHER_SECRET_KEY</C>, "The private key of an authorised publisher. Use a secret manager"],
+          [<C key="6">ATTESTATION_MIN_INTERVAL_BLOCKS</C>, <>Default <C key="6a">120</C>. An unchanged snapshot is republished at most once per this many blocks; a changed figure publishes immediately. <C key="6b">0</C> publishes every snapshot</>],
         ]}
       />
       <P>

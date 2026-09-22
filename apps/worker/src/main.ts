@@ -28,6 +28,7 @@ import { createMailer, dedupeKey, renderAlertEmail } from '@rivisk/notifications
 import { buildEvent } from '@rivisk/webhooks';
 import { crossedIntoBreach, metricValue, policyChecks, type MetricSnapshot } from './alert-evaluator.js';
 import { deliver } from './webhook-delivery.js';
+import { decideAttestation, minIntervalFromEnv } from './attestation-throttle.js';
 
 const METHODOLOGY_VERSION = 'rivisk-v1.2';
 const log = createLogger('rivisk-worker');
@@ -37,6 +38,7 @@ const attestationQueue = createQueue<RiskAttestationJob>(QueueName.Attestations,
 const alertQueue = createQueue<AlertEvaluateJob>(QueueName.Alerts, connection);
 const webhookQueue = createQueue<WebhookDeliverJob>(QueueName.Webhooks, connection);
 const mailer = createMailer();
+const attestationMinIntervalBlocks = minIntervalFromEnv(process.env.ATTESTATION_MIN_INTERVAL_BLOCKS);
 
 const riskWorker = new Worker<RiskRecalculateJob>(
   QueueName.Risk,
@@ -238,6 +240,21 @@ const attestationWorker = new Worker<RiskAttestationJob>(
     if (!snapshot) throw new Error(`Risk snapshot not found: ${job.data.riskSnapshotId}`);
     if (snapshot.onchainTxId) return { txId: snapshot.onchainTxId, alreadyPublished: true };
 
+    // This worker runs with concurrency 1, so the previous job has already
+    // stored its txId: two quick refreshes cannot both slip through.
+    const lastPublished = await prisma.riskSnapshot.findFirst({
+      where: { walletId: snapshot.walletId, id: { not: snapshot.id }, onchainTxId: { not: null } },
+      orderBy: [{ sourceBlock: 'desc' }, { observedAt: 'desc' }],
+    });
+    const decision = decideAttestation(snapshot, lastPublished, attestationMinIntervalBlocks);
+    if (!decision.publish) {
+      log.info(
+        { riskSnapshotId: snapshot.id, lastTxId: lastPublished?.onchainTxId, ...decision },
+        'attestation skipped: unchanged since the last one',
+      );
+      return { skipped: decision.reason, lastTxId: lastPublished?.onchainTxId };
+    }
+
     const publisher = new RiskRegistryPublisher({ riskRegistry: contract, network }, senderKey);
     const result = await publisher.publish({
       wallet: snapshot.wallet.address,
@@ -251,7 +268,7 @@ const attestationWorker = new Worker<RiskAttestationJob>(
     });
 
     await markRiskSnapshotPublished(snapshot.id, { onchainTxId: result.txId });
-    log.info({ riskSnapshotId: snapshot.id, txId: result.txId }, 'risk attestation broadcast');
+    log.info({ riskSnapshotId: snapshot.id, txId: result.txId, reason: decision.reason }, 'risk attestation broadcast');
     return result;
   },
   { connection, concurrency: 1 },
