@@ -36,6 +36,7 @@ export default function Status() {
         rows={[
           ["Clarity contracts", DEPLOYED, "Stacks testnet, block 451066. clarinet check reports 0 warnings; 51 simnet tests"],
           ["Risk attestations end to end", LIVE, "The worker published snapshot #1 from a live index; its report hash matches the API"],
+          ["Chainhook (2.0) confirmations", LIVE, "Registered on testnet; a new attestation's on-chain snapshot id was recorded 11 s after the refresh, with no replay"],
           ["External contract consumption", LIVE, "risk-consumer-example read snapshot #1 through the trait and approved"],
           ["Mainnet deployment", PLANNED, "After an independent review of the contracts"],
         ]}

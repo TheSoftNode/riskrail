@@ -343,4 +343,4 @@ The dashboard/realtime/policy implementation is documented in [33-dashboard-aler
 - the full smoke test (sign-in, API keys, webhooks, alerts, permission boundaries) passed through the proxy;
 - **realtime verified for the first time:** a WSS subscriber received `portfolio.updated` 2.9 s after a refresh of a real testnet wallet, followed by `risk.updated`.
 
-Not yet done: running it on the AWS server itself ([37-aws-beta-deployment.md](./37-aws-beta-deployment.md)).
+**Deployed 2026-09-22** to AWS EC2 (eu-north-1, t3.small) with the web app on Vercel (`rivisk-lilac.vercel.app`). Attestation publishing is on, and the Chainhooks 2.0 hooks for `risk-registry` and `risk-policy` are registered on testnet: a fresh attestation had its on-chain snapshot id recorded 11 s after the refresh.
