@@ -1,34 +1,22 @@
 {
+  "version": "1",
+  "name": "rivisk-zest-vault",
   "chain": "stacks",
-  "uuid": "rivisk-protocol-activity",
-  "name": "Rivisk protocol activity",
-  "version": 1,
-  "networks": {
-    "testnet": {
-      "if_this": {
-        "scope": "print_event",
-        "contract_identifier": "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.bitpay-core",
-        "contains": "stream"
-      },
-      "then_that": {
-        "http_post": {
-          "url": "http://localhost:4000/api/v1/chainhook/protocol",
-          "authorization_header": "Bearer CHANGE_ME"
-        }
+  "network": "mainnet",
+  "filters": {
+    "events": [
+      {
+        "type": "contract_log",
+        "contract_identifier": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-market-vault"
       }
-    },
-    "mainnet": {
-      "if_this": {
-        "scope": "print_event",
-        "contract_identifier": "SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-market-vault",
-        "contains": "account"
-      },
-      "then_that": {
-        "http_post": {
-          "url": "https://YOUR_API_HOST/api/v1/chainhook/protocol",
-          "authorization_header": "Bearer CHANGE_ME"
-        }
-      }
-    }
+    ]
+  },
+  "action": {
+    "type": "http_post",
+    "url": "https://YOUR_API_HOST/api/v1/chainhook/protocol"
+  },
+  "options": {
+    "decode_clarity_values": true,
+    "enable_on_registration": true
   }
 }

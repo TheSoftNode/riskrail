@@ -16,9 +16,22 @@ export interface ChainhookBlock {
   transactions?: unknown[];
 }
 
+/**
+ * Chainhooks 2.0 nests the blocks under `event`; the 1.x node put them at the
+ * top level. Both are accepted, so a delivery from either never parses as an
+ * empty payload and gets silently acknowledged.
+ */
 export interface ChainhookPayload {
   apply?: ChainhookBlock[];
   rollback?: ChainhookBlock[];
+  event?: { apply?: ChainhookBlock[]; rollback?: ChainhookBlock[] };
+}
+
+function blocks(payload: ChainhookPayload): { apply: ChainhookBlock[]; rollback: ChainhookBlock[] } {
+  return {
+    apply: payload.event?.apply ?? payload.apply ?? [],
+    rollback: payload.event?.rollback ?? payload.rollback ?? [],
+  };
 }
 
 /** Every distinct standard principal mentioned anywhere in the value. */
@@ -50,8 +63,9 @@ export interface AffectedWallets {
 export function extractAffected(payload: ChainhookPayload): AffectedWallets {
   const addresses = new Set<string>();
   let blockHeight: number | undefined;
+  const { apply, rollback } = blocks(payload);
 
-  for (const block of payload.apply ?? []) {
+  for (const block of apply) {
     const index = block.block_identifier?.index;
     if (typeof index === 'number') {
       blockHeight = blockHeight === undefined ? index : Math.max(blockHeight, index);
@@ -59,7 +73,6 @@ export function extractAffected(payload: ChainhookPayload): AffectedWallets {
     collectPrincipals(block.transactions, addresses);
   }
 
-  const rollback = payload.rollback ?? [];
   for (const block of rollback) {
     collectPrincipals(block.transactions, addresses);
   }
@@ -90,7 +103,8 @@ export function normalizeTxId(value: string): string {
 
 interface ChainhookTx {
   transaction_identifier?: { hash?: unknown };
-  metadata?: { success?: unknown; result?: unknown };
+  /** 1.x: `success: true`, `result: "(ok u1)"`. 2.0: `status: "success"`, `result: { hex, repr }`. */
+  metadata?: { success?: unknown; status?: unknown; result?: unknown };
 }
 
 function txHash(tx: unknown): string | undefined {
@@ -105,14 +119,23 @@ function txHash(tx: unknown): string | undefined {
  */
 function snapshotIdFromResult(tx: unknown): bigint | undefined {
   const meta = (tx as ChainhookTx | null)?.metadata;
-  if (meta?.success !== true || typeof meta.result !== 'string') return undefined;
-  const match = /^\(ok u(\d+)\)$/.exec(meta.result.trim());
+  if (!meta || (meta.success !== true && meta.status !== 'success')) return undefined;
+  const result = meta.result;
+  const repr =
+    typeof result === 'string'
+      ? result
+      : result && typeof result === 'object' && typeof (result as { repr?: unknown }).repr === 'string'
+        ? (result as { repr: string }).repr
+        : undefined;
+  if (repr === undefined) return undefined;
+  const match = /^\(ok u(\d+)\)$/.exec(repr.trim());
   return match?.[1] ? BigInt(match[1]) : undefined;
 }
 
 export function extractRegistryConfirmations(payload: ChainhookPayload): RegistryConfirmations {
   const confirmed: PublishedSnapshot[] = [];
-  for (const block of payload.apply ?? []) {
+  const { apply, rollback } = blocks(payload);
+  for (const block of apply) {
     const blockHeight = block.block_identifier?.index;
     for (const tx of block.transactions ?? []) {
       const txId = txHash(tx);
@@ -124,7 +147,7 @@ export function extractRegistryConfirmations(payload: ChainhookPayload): Registr
   }
 
   const rolledBack = new Set<string>();
-  for (const block of payload.rollback ?? []) {
+  for (const block of rollback) {
     for (const tx of block.transactions ?? []) {
       const txId = txHash(tx);
       if (txId) rolledBack.add(txId);

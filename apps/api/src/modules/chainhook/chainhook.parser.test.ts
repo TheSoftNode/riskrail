@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  type ChainhookBlock,
   collectPrincipals,
   extractAffected,
   extractRegistryConfirmations,
@@ -218,5 +219,59 @@ describe('extractRegistryConfirmations', () => {
     });
     expect(result.rolledBack).toEqual([HASH]);
     expect(result.confirmed).toEqual([]);
+  });
+});
+
+/** Shaped after Hiro's Chainhooks 2.0 payload reference. */
+describe('Chainhooks 2.0 payloads', () => {
+  const HASH = '0xdba4baf18bf2e515b83ec7fa8c27f1d18102269eff4e5ee992d7c5a113a67e69';
+  const PUBLISHER = 'ST3YFXHB07XYK0XZWE43JCDBEYFKTR7SXEK41TJ75';
+  const v2Tx = (status: string, repr: string) => ({
+    transaction_identifier: { hash: HASH },
+    metadata: { type: 'contract_call', result: { hex: '0x0701', repr }, status, sender_address: PUBLISHER },
+    operations: [
+      {
+        type: 'contract_call',
+        status,
+        account: { address: PUBLISHER },
+        metadata: {
+          contract_identifier: 'ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry',
+          function_name: 'publish-risk-snapshot',
+          args: [{ name: 'wallet', repr: `'${WALLET}`, type: 'principal' }],
+        },
+      },
+    ],
+  });
+  const delivery = (apply: ChainhookBlock[], rollback: ChainhookBlock[] = []) => ({
+    event: { apply, rollback, chain: 'stacks', network: 'testnet' },
+    chainhook: { name: 'rivisk-risk-registry', uuid: 'be4ab3ed-b606-4fe0-97c4-6c0b1ac9b185' },
+  });
+
+  it('reads a confirmation from event.apply with a { hex, repr } result', () => {
+    const payload = delivery([{ block_identifier: { index: 464077 }, transactions: [v2Tx('success', '(ok u2)')] }]);
+    expect(extractRegistryConfirmations(payload).confirmed).toEqual([
+      { txId: HASH.slice(2), snapshotId: 2n, blockHeight: 464077 },
+    ]);
+  });
+
+  it('ignores a transaction whose status is not success', () => {
+    const payload = delivery([{ transactions: [v2Tx('abort_by_response', '(err u100)')] }]);
+    expect(extractRegistryConfirmations(payload).confirmed).toEqual([]);
+  });
+
+  it('reads rollbacks from event.rollback', () => {
+    const payload = delivery([], [{ transactions: [v2Tx('success', '(ok u2)')] }]);
+    expect(extractRegistryConfirmations(payload).rolledBack).toEqual([HASH.slice(2)]);
+  });
+
+  it('finds affected wallets and the block height in event.apply', () => {
+    const result = extractAffected(delivery([{ block_identifier: { index: 464077 }, transactions: [v2Tx('success', '(ok u2)')] }]));
+    expect(result.blockHeight).toBe(464077);
+    expect(result.addresses).toEqual(expect.arrayContaining([WALLET, PUBLISHER]));
+    expect(result.reorg).toBe(false);
+  });
+
+  it('flags a reorg from event.rollback', () => {
+    expect(extractAffected(delivery([], [{ transactions: [WALLET] }])).reorg).toBe(true);
   });
 });

@@ -1,21 +1,23 @@
 {
+  "version": "1",
+  "name": "rivisk-risk-registry",
   "chain": "stacks",
-  "uuid": "rivisk-risk-snapshot-published",
-  "name": "Rivisk risk snapshot publishing",
-  "version": 1,
-  "networks": {
-    "testnet": {
-      "if_this": {
-        "scope": "contract_call",
+  "network": "testnet",
+  "filters": {
+    "events": [
+      {
+        "type": "contract_call",
         "contract_identifier": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry",
-        "method": "publish-risk-snapshot"
-      },
-      "then_that": {
-        "http_post": {
-          "url": "http://localhost:4000/api/v1/chainhook/risk-registry",
-          "authorization_header": "Bearer CHANGE_ME"
-        }
+        "function_name": "publish-risk-snapshot"
       }
-    }
+    ]
+  },
+  "action": {
+    "type": "http_post",
+    "url": "https://YOUR_API_HOST/api/v1/chainhook/risk-registry"
+  },
+  "options": {
+    "decode_clarity_values": true,
+    "enable_on_registration": true
   }
 }

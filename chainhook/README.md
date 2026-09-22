@@ -1,15 +1,34 @@
 # Chainhook predicates
 
-The Rivisk contract predicates point at the testnet deployment
-(`ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7`, see
-`contracts/deployments/testnet.json`). The Zest mainnet predicate is verified
-against the live deployment (see below).
+Chainhook definitions in the **Chainhooks 2.0** format (`version: "1"`,
+`filters.events`, `action.http_post`), checked against the schema in
+`@hirosystems/chainhooks-client` 2.1. The Rivisk contract hooks target the
+testnet deployment (`ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7`, see
+`contracts/deployments/testnet.json`).
 
-Before registering a predicate:
-1. Replace the callback URL with the deployed API. Chainhook runs remotely and
-   cannot reach `localhost`.
-2. Replace `Bearer CHANGE_ME` with `CHAINHOOK_AUTH_TOKEN`, kept outside source control.
-3. Validate the predicate against the Chainhook version used in the target environment.
+| File | Network | Watches | Route |
+| --- | --- | --- | --- |
+| `risk-registry.publish.json` | testnet | `publish-risk-snapshot` calls | `risk-registry` |
+| `risk-policy.updated.json` | testnet | `set-risk-policy`, `set-policy-enabled`, `delete-risk-policy` | `risk-policy` |
+| `protocol.activity.json` | mainnet | print events of the Zest V2 market vault | `protocol` |
+
+Before registering, replace `YOUR_API_HOST` with the deployed API host.
+Chainhook runs remotely and cannot reach `localhost`.
+
+**Authentication.** Chainhooks 2.0 generates one consumer secret per account
+(`/chainhooks/me/secret`) and sends it as `Authorization: Bearer <secret>`.
+Put that secret in `CHAINHOOK_AUTH_TOKEN`. The setting accepts a
+comma-separated list, so after a rotation the old and new secrets can both be
+accepted until deliveries signed with the old one have drained.
+
+**Payloads.** 2.0 nests blocks under `event.apply` / `event.rollback`, reports
+`metadata.status` instead of `success`, and gives `metadata.result` as
+`{ hex, repr }`. The receiver accepts both this and the 1.x shape; see
+`apps/api/src/modules/chainhook/chainhook.parser.ts`.
+
+**Network.** The Zest hook is mainnet. It only does useful work when the
+indexer reads mainnet (`STACKS_NETWORK=mainnet`); against a testnet stack the
+wallets it names are never tracked, so every delivery is a no-op.
 
 ## Attestation confirmations
 
@@ -31,7 +50,7 @@ reasons: `get-position` is a `read_only` function, so calling it never produces
 a transaction, and the contract identifier used a Zest V1 governance deployer
 rather than the V2 deployer the adapter actually reads from.
 
-The replacement watches **print events on the market vault**:
+The replacement watches **print events** (`contract_log`) **on the market vault**:
 
 ```
 SP1A27KFY4XERQCCRCARCYD1CC5N7M6688BSYADJ7.v0-market-vault
@@ -53,8 +72,9 @@ Watching the vault therefore gives one predicate instead of one per method, and
 it keeps working when Zest ships a new market contract (`v0-8-market` →
 `v0-9-market`), because the storage layer is the part that stays put.
 
-`contains: "account"` matches those prints because the vault includes the
-affected principal in every one of them — which is also what the receiver needs.
+The vault includes the affected `account` principal in every one of those
+prints, which is what the receiver extracts. (Chainhooks 2.0 has no `contains`
+filter on `contract_log`; the receiver's wallet filter does that job instead.)
 
 > Verified against mainnet transactions on 2026-09-20. If Zest migrates the
 > vault itself, this identifier has to be updated.

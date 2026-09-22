@@ -1,21 +1,33 @@
 {
+  "version": "1",
+  "name": "rivisk-risk-policy",
   "chain": "stacks",
-  "uuid": "rivisk-risk-policy-updated",
-  "name": "Rivisk risk policy updates",
-  "version": 1,
-  "networks": {
-    "testnet": {
-      "if_this": {
-        "scope": "contract_call",
+  "network": "testnet",
+  "filters": {
+    "events": [
+      {
+        "type": "contract_call",
         "contract_identifier": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-policy",
-        "method": "set-risk-policy"
+        "function_name": "set-risk-policy"
       },
-      "then_that": {
-        "http_post": {
-          "url": "http://localhost:4000/api/v1/chainhook/risk-policy",
-          "authorization_header": "Bearer CHANGE_ME"
-        }
+      {
+        "type": "contract_call",
+        "contract_identifier": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-policy",
+        "function_name": "set-policy-enabled"
+      },
+      {
+        "type": "contract_call",
+        "contract_identifier": "ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-policy",
+        "function_name": "delete-risk-policy"
       }
-    }
+    ]
+  },
+  "action": {
+    "type": "http_post",
+    "url": "https://YOUR_API_HOST/api/v1/chainhook/risk-policy"
+  },
+  "options": {
+    "decode_clarity_values": true,
+    "enable_on_registration": true
   }
 }
