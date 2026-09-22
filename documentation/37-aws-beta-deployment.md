@@ -94,8 +94,11 @@ Do **not** open 5432 (Postgres), 6379 (Redis), 4000 or 4001.
 **Launch instance.** Keep the `.pem` file safe; it is the only way in. Don't
 commit it, email it, or paste it anywhere.
 
-> `t3.micro` (the free-tier size) has 1 GiB and cannot run seven services plus
-> an image build. `t3.small` (2 GiB) works only with swap and builds slowly.
+> `t3.micro` has 1 GiB and cannot run the stack. **Accounts on the AWS free
+> plan** only offer free-tier types (t3.micro, t3.small, c7i-flex.large,
+> m7i-flex.large). There, pick **t3.small** (2 GiB, ≈ $15/month): it runs the
+> stack with 2 GiB of swap, but it is too small to build the image, so build it
+> on your laptop and ship it — see [Building off the server](#building-off-the-server).
 
 ### 5. Give it a fixed IP
 
@@ -248,6 +251,38 @@ sed -i 's/^RISK_PUBLISHER_ENABLED=false/RISK_PUBLISHER_ENABLED=true/' .env.produ
 Every risk snapshot then costs one testnet transaction, paid by the publisher
 account. Check its balance on the explorer now and then; testnet STX comes from
 the faucet.
+
+### Amazon Linux instead of Ubuntu
+
+If the instance runs Amazon Linux 2023, the user is `ec2-user` and Docker comes
+from `dnf`; `get.docker.com` does not support it:
+
+```bash
+sudo dnf -y install docker git
+sudo systemctl enable --now docker
+sudo usermod -aG docker ec2-user
+sudo mkdir -p /usr/local/lib/docker/cli-plugins
+sudo curl -fsSL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+```
+
+Swap is the same, but use `dd if=/dev/zero of=/swapfile bs=1M count=2048`;
+`fallocate` swap files are refused on XFS. Amazon Linux grows the root
+filesystem to a resized volume on boot.
+
+### Building off the server
+
+On a 2 GiB instance, build on your laptop (x86_64, or pass
+`--platform linux/amd64` on Apple Silicon) and stream the image over SSH:
+
+```bash
+docker build -f infrastructure/docker/Dockerfile -t rivisk-backend .
+docker save rivisk-backend:latest | gzip -1 | ssh -i <key>.pem <user>@<IP> 'gunzip | docker load'
+```
+
+Then start with `--no-build` instead of `--build`, so Compose uses the loaded
+image. A redeploy is the same two commands followed by `up -d --no-build`.
 
 ### 11. Build and start
 
