@@ -34,7 +34,11 @@ export function OpenDashboardButton({
   className?: string;
   size?: "sm" | "lg" | "default";
   children: ReactNode;
-  /** Lets a containing mobile sheet close itself. */
+  /**
+   * Lets a containing mobile sheet close itself. Called on navigation, or when
+   * the dialog closes - never while it opens: the dialog is rendered by this
+   * component, so a sheet that unmounted it would take the dialog with it.
+   */
   onNavigate?: () => void;
   /** Render as a plain anchor instead of a Button (for the mobile sheet). */
   render?: "anchor";
@@ -60,8 +64,12 @@ export function OpenDashboardButton({
       return;
     }
     event.preventDefault();
-    onNavigate?.();
     setOpen(true);
+  }
+
+  function onOpenChange(next: boolean) {
+    setOpen(next);
+    if (!next) onNavigate?.();
   }
 
   const link = <Link href={href} onClick={onClick} />;
@@ -78,7 +86,7 @@ export function OpenDashboardButton({
         </Button>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Start with a Stacks address</DialogTitle>
@@ -87,7 +95,7 @@ export function OpenDashboardButton({
               address to inspect it read-only.
             </DialogDescription>
           </DialogHeader>
-          <WalletEntry autoFocus onNavigate={() => setOpen(false)} />
+          <WalletEntry autoFocus onNavigate={() => onOpenChange(false)} />
         </DialogContent>
       </Dialog>
     </>
