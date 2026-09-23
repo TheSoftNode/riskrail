@@ -11,7 +11,7 @@
     "verify:testnet": "node scripts/verify-deployment.mjs"
   },
   "devDependencies": {
-    "@stacks/clarinet-sdk": "3.23.1",
+    "@stacks/clarinet-sdk": "3.24.0",
     "@stacks/transactions": "^7.6.0",
     "@stacks/wallet-sdk": "^7.6.0",
     "@types/node": "^22.18.0",
