@@ -34,6 +34,36 @@ free. The web app's traffic is Vercel's, not AWS's.
 > ([Building off the server](#building-off-the-server)). Elastic IP
 > `13.49.129.179`; web app `https://rivisk-lilac.vercel.app`.
 
+## Current beta economics
+
+This deployment was kept deliberately small for the grant-submission beta, and is
+currently covered by **temporary AWS promotional credits**. It proves the
+architecture works end to end in public; it is **not** the final production cost
+model. The credits expire, and running the API, indexer, worker, realtime gateway,
+Redis and the database continues to cost money after that.
+
+Rough monthly figures for the current shape are in the cost table below: about
+$15–20/month for a `t3.small` with its disk and Elastic IP, plus $0 for the web app
+on Vercel's free tier. A production shape — persistent database with tested
+restores, monitoring, a custom domain and headroom for real traffic — costs more,
+and that is what the grant funds.
+
+## Grant infrastructure work
+
+[22-grant-milestones.md](./22-grant-milestones.md) funds, in Milestone 1 and
+Milestone 3:
+
+- an architecture review of this single-server design, with a written decision on
+  what moves and what stays;
+- sustainable paid hosting once the credits run out;
+- persistent database infrastructure with tested backups **and tested restores**;
+- monitoring and alerting across the services and the queues;
+- a documented, exercised recovery procedure;
+- a custom domain and certificate renewal under monitoring, replacing the
+  `sslip.io` hostnames;
+- publisher key handling through a secret manager;
+- capacity changes as real usage appears, rather than provisioned up front.
+
 ## What you need
 
 | Item | Where |

@@ -27,14 +27,28 @@ export default function GrantScope() {
         rows={[
           ["Clarity contracts", <>{TODAY}: deployed on testnet, read by an external consumer</>, "Independent security and readiness review"],
           ["Attestations", <>{TODAY}: live, throttled, confirmed back by Chainhook</>, "Reliability work: retries, nonce handling, publisher key management, monitoring"],
-          ["TypeScript SDK", <>{TODAY}: published as {<C key="c">@rivisk/sdk@0.1.0</C>}</>, "Iterate on feedback from external developers; versioning and release discipline"],
-          ["Hosted API", <>{TODAY}: beta on one small server</>, "Production architecture review: managed database, backups, monitoring, rate-limit and abuse handling"],
+          ["TypeScript SDK", <>{TODAY}: published as {<C key="c">@rivisk/sdk@0.1.1</C>}</>, "Iterate on feedback from external developers; versioning and release discipline"],
+          ["Hosted API", <>{TODAY}: beta on one small server, on temporary AWS credits</>, "Architecture review, then sustainable paid hosting: persistent database with tested backups and restores, monitoring, recovery, rate-limit and abuse handling"],
           ["Liquidity", <>{TODAY}: capital accessibility, labelled as a proxy</>, "Real market-depth and exit-risk modelling"],
           ["Risk explanations", "Not built", "Optional AI layer that explains an existing report in plain language"],
           ["External integration", <>{TODAY}: reference consumer contract only</>, "One real external Stacks project integrating against the API or the trait"],
-          ["Mainnet", "Not deployed", "Only after the review supports it"],
+          ["Mainnet", "Not deployed", "Review the current contracts, make any changes they call for, redeploy and revalidate on testnet if the code changes, then deploy the reviewed contracts to mainnet if no blocking finding remains"],
         ]}
       />
+
+      <P>
+        The contracts on testnet today are a working beta deployment, not a claim that the design
+        is final. Reviewing that design is part of the grant. If the review calls for changes, a
+        revised version is deployed and validated on testnet before any mainnet release — a Clarity
+        contract cannot be edited in place, so a change means a new deployment.
+      </P>
+
+      <Callout type="warning" title="Beta infrastructure">
+        Rivisk is publicly usable today, but the backend runs on an early-stage AWS deployment
+        currently covered by temporary promotional credits, with no production SLA. Those credits
+        expire. Reviewing the architecture and moving to sustainable, paid hosting is part of the
+        proposed grant work, which is why infrastructure appears in the budget below.
+      </Callout>
 
       <H2 id="milestones">Milestones</H2>
       <Table
@@ -45,6 +59,20 @@ export default function GrantScope() {
           ["3", "Ecosystem integration and production readiness", "$5,000", "2 Dec 2026"],
         ]}
       />
+      <H3 id="budget">Budget</H3>
+      <Table
+        head={["Milestone", "Engineering", "Infrastructure and external costs", "Total"]}
+        rows={[
+          ["1", "$1,100 architecture and hardening", "$600 hosting · $300 monitoring and backups", "$2,000"],
+          ["2", "$2,300 risk depth and AI implementation", "$200 model usage · $500 market data and testing", "$3,000"],
+          ["3", "$2,200 integration and release work", "$1,200 independent review · $1,100 production infrastructure · $500 validation and docs", "$5,000"],
+        ]}
+      />
+      <P>
+        Infrastructure is listed openly because the current hosting is credit-funded and those
+        credits run out; the grant pays for hosting that does not depend on them.
+      </P>
+
       <P>
         The full breakdown, with acceptance criteria per milestone, is in{" "}
         <A href="https://github.com/TheSoftNode/rivisk/blob/main/documentation/22-grant-milestones.md">

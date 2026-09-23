@@ -1,4 +1,4 @@
-import { A, C, DocHeader, H2, P, Table } from "@/components/docs/prose";
+import { A, C, Callout, DocHeader, H2, P, Table } from "@/components/docs/prose";
 
 export const metadata = { title: "Project status" };
 
@@ -52,8 +52,8 @@ export default function Status() {
           ["API keys", TESTED, "Accepted for alerts and webhooks, refused for key management, checked live"],
           ["Signed webhooks", TESTED, "Signing, verification, retry classification"],
           ["Realtime", DEPLOYED, "Live over WSS on the beta: a refresh reached a subscribed browser in 2.3 s. Not yet covered in CI"],
-          ["Hosted beta API", DEPLOYED, <>Live at <C key="h">api.13.49.129.179.sslip.io</C>, powering the dashboard. One small server, no availability guarantee</>],
-          ["Production API and availability commitment", PLANNED, <>The beta runs on deliberately small, low-cost infrastructure. Hardening it is grant work: <A key="g" href="/docs/grant-scope">Grant scope</A></>],
+          ["Hosted beta API", DEPLOYED, <>Live at <C key="h">api.13.49.129.179.sslip.io</C>, powering the dashboard. One small server on temporary AWS promotional credits, with no availability guarantee</>],
+          ["Production infrastructure and availability commitment", PLANNED, <>The credits covering the beta are temporary. Architecture review, sustainable hosting, backups, monitoring and recovery procedures are grant work: <A key="g" href="/docs/grant-scope">Grant scope</A></>],
         ]}
       />
 
@@ -72,6 +72,13 @@ export default function Status() {
           ["AI risk explanations", PLANNED, <>Plain-language explanations of an existing risk report. Never computes risk: <A key="a" href="/docs/grant-scope">Grant scope</A></>],
         ]}
       />
+
+      <Callout type="warning" title="Beta infrastructure">
+        Rivisk is publicly usable today, but the backend runs on an early-stage AWS deployment
+        covered by temporary promotional credits, and carries no production SLA. Those credits
+        expire; sustainable hosting and infrastructure hardening are part of the proposed{" "}
+        <A href="/docs/grant-scope">grant work</A>.
+      </Callout>
 
       <P>
         Where each of these is heading, and what the grant would fund, is on{" "}

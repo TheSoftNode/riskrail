@@ -18,6 +18,8 @@ The project is being built for users who need more than a balance screen. A wall
 | Contracts | `ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7` · [`risk-registry`](https://explorer.hiro.so/txid/ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry?chain=testnet) (see `contracts/deployments/testnet.json`) |
 | SDK | [`@rivisk/sdk`](https://www.npmjs.com/package/@rivisk/sdk) on npm |
 
+**Beta infrastructure:** the backend runs on a small AWS deployment currently covered by temporary promotional credits, with no production SLA. Sustainable hosting is [grant work](#what-this-grant-funds).
+
 The dashboard has a page per section — overview, positions, stress tests, alerts, risk policy and developer settings — each linkable with `?address=`.
 
 Indexing a wallet publishes a risk attestation to the testnet registry (throttled to changes, or once per 120 blocks), and Chainhook confirms each one back into the API. What is and isn't proven is in [the status page](https://rivisk-lilac.vercel.app/docs/status). Hosting: [documentation/37-aws-beta-deployment.md](./documentation/37-aws-beta-deployment.md).
@@ -536,7 +538,7 @@ Everything below is one of three things: **live** (running in the beta and check
 
 - email address verification;
 - market-depth liquidity (today's score measures capital accessibility, and is labelled as such);
-- mainnet deployment of the contracts, which is gated on an independent review;
+- mainnet deployment of the contracts, which follows the independent review ([what depends on the review](#what-depends-on-the-review));
 - a hosted public API with its own terms: the beta is a single server, and self-hosting is documented.
 
 ---
@@ -706,17 +708,36 @@ See [Observability and operations](./documentation/19-observability-and-operatio
 
 ## Grant delivery plan
 
-**Baseline as of 23 September 2026.** Rivisk already has a hosted beta, deployed testnet contracts, live attestations with Chainhook confirmation, a published SDK, wallet authentication, API keys, signed webhooks, realtime updates and a validated Zest V2 adapter. **Those are existing project assets, not grant deliverables** — see [Current implementation status](#current-implementation-status) above and the [status page](https://rivisk-lilac.vercel.app/docs/status).
+### What exists today — self-funded, not grant scope
 
-The grant funds what turns that beta into infrastructure other projects can depend on.
+A public beta, built before applying: the [hosted beta](#live-beta-stacks-testnet) (web app on Vercel, backend on AWS, currently running on **temporary promotional credits**), five Clarity contracts deployed to Stacks testnet, live risk attestations with Chainhook confirming each snapshot id, [`@rivisk/sdk`](https://www.npmjs.com/package/@rivisk/sdk) on npm, wallet-signature authentication, API keys, signed webhooks, realtime updates, and a Zest V2 adapter validated against a real mainnet obligation. Evidence per capability: [status page](https://rivisk-lilac.vercel.app/docs/status) · [29-current-status.md](./documentation/29-current-status.md).
+
+### What this grant funds
 
 | Milestone | Focus | Amount | Target |
 | --- | --- | --- | --- |
-| 1 | **Beta hardening and infrastructure review** — managed database with tested restores, monitoring and alerting, a custom domain, publisher-key and broadcast-failure handling, threat model, and an independent contract review commissioned | $2,000 | 14 Oct 2026 |
-| 2 | **Advanced risk intelligence and AI explanations** — real market-depth and exit-risk modelling to replace the accessibility proxy, plus an optional AI layer that explains an existing report in plain language (including $200–$300 of model cost) | $3,000 | 11 Nov 2026 |
-| 3 | **Ecosystem integration and production readiness** — one real external Stacks project integrating, the independent review delivered and its findings fixed, published API terms, versioning, usage metrics, and a mainnet decision taken on the review's strength | $5,000 | 2 Dec 2026 |
+| 1 | **Beta hardening and infrastructure review** — the credits covering the beta expire, so: architecture review, sustainable paid hosting, persistent database with tested backups *and restores*, monitoring, an exercised recovery procedure, attestation-path reliability, threat model, and the independent contract review commissioned | $2,000 | 14 Oct 2026 |
+| 2 | **Advanced risk intelligence and AI explanations** — market-depth and exit-risk modelling to replace the accessibility proxy, plus an optional AI layer that explains a finished report in plain language (including $200–$300 of model cost) | $3,000 | 11 Nov 2026 |
+| 3 | **Ecosystem integration and production readiness** — one real external Stacks project integrating, the independent review delivered and its findings fixed, published API terms, versioning and usage metrics, and the reviewed contracts released to mainnet | $5,000 | 2 Dec 2026 |
 
-Deliverables and acceptance criteria per milestone are in [Grant milestones](./documentation/22-grant-milestones.md); the same today-versus-next table is on the site at [/docs/grant-scope](https://rivisk-lilac.vercel.app/docs/grant-scope).
+| Milestone | Engineering | Infrastructure and external costs | Total |
+| --- | --- | --- | --- |
+| 1 | $1,100 architecture and hardening | $600 hosting · $300 monitoring and backups | $2,000 |
+| 2 | $2,300 risk depth and AI implementation | $200 model usage · $500 market data and testing | $3,000 |
+| 3 | $2,200 integration and release work | $1,200 independent review · $1,100 production infrastructure · $500 validation and docs | $5,000 |
+
+### What depends on the review
+
+Mainnet is **part of the grant path, not vague future work** — but it is earned, not assumed. The testnet contracts are a working beta deployment, not a finished design, and a Clarity contract cannot be edited in place:
+
+```text
+testnet v1 (today) → independent review → fix findings → redeploy to testnet if the
+code changed → revalidate → mainnet, if no blocking finding remains
+```
+
+If a blocking issue prevents the mainnet release, the finding and its remediation get documented rather than shipping an unsafe contract to meet a date.
+
+Deliverables and acceptance criteria per milestone: [Grant milestones](./documentation/22-grant-milestones.md). The same today-versus-next table is on the site at [/docs/grant-scope](https://rivisk-lilac.vercel.app/docs/grant-scope).
 
 ---
 

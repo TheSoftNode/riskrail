@@ -2,7 +2,7 @@
 
 > **Baseline as of 23 September 2026.** Rivisk already has a hosted beta, deployed
 > testnet contracts, live risk attestations with Chainhook confirmation, a published
-> SDK (`@rivisk/sdk@0.1.0`), wallet-signature authentication, API keys, signed
+> SDK (`@rivisk/sdk`), wallet-signature authentication, API keys, signed
 > webhooks, realtime updates and a Zest V2 adapter validated against a real mainnet
 > obligation. **These are existing project assets and are not being requested as
 > grant-funded deliverables.** Evidence for each is in
@@ -30,15 +30,25 @@ written review, a live integration — not "backend work completed".
 
 ### Goal
 
-Move the beta off deliberately temporary infrastructure and make the parts that
-already run publicly dependable enough for another team to build against.
+Put the beta on hosting that does not depend on expiring credits, and make the
+parts that already run publicly dependable enough for another team to build
+against.
+
+Rivisk's backend already runs on AWS, but on **temporary promotional credits**
+taken to make the beta available for this submission. Those credits expire. This
+milestone reviews the current single-server design and moves what needs moving
+onto a sustainable paid setup — sized for actual usage, not over-engineered for
+traffic that does not exist yet.
 
 ### Work included
 
 #### Infrastructure
 
-- production architecture review of the current single-server beta;
-- managed PostgreSQL with verified restores, rather than a container and a nightly dump;
+- production architecture review of the current single-server beta, and a written
+  decision on what moves and what stays;
+- sustainable paid hosting to replace the credit-funded setup;
+- persistent database infrastructure with tested backups **and tested restores**,
+  rather than a container and a nightly dump;
 - monitoring and alerting on the API, indexer, worker, realtime gateway and queue depth;
 - a custom domain with certificate renewal under monitoring;
 - documented recovery procedure, exercised at least once.
@@ -59,7 +69,8 @@ already run publicly dependable enough for another team to build against.
 
 ### Acceptance criteria
 
-- the API runs on managed infrastructure with a documented restore that has been tested;
+- the API runs on hosting that does not depend on promotional credits, with a
+  documented restore that has been tested;
 - a deliberately failed publish surfaces an alert and is recovered without manual database edits;
 - monitoring dashboards and alert rules are in the repository;
 - the threat model and scanning results are public in `documentation/`.
@@ -148,7 +159,8 @@ protocol data → AI → risk score
 ### Goal
 
 Prove Rivisk is infrastructure by having something outside Rivisk depend on it,
-and finish the review work that mainnet would require.
+and **prepare and — subject to the review finding no blocking issues — deploy the
+reviewed Rivisk contracts to Stacks mainnet.**
 
 ### Work included
 
@@ -159,12 +171,28 @@ and finish the review work that mainnet would require.
 - integration support and the API changes their use exposes;
 - a public write-up of what they built and what it needed.
 
-#### Independent review
+#### Independent review and the path to mainnet
+
+```text
+current testnet deployment (beta v1)
+        ↓
+independent contract / security review
+        ↓
+fix findings, improve the design where needed
+        ↓
+redeploy the revised contracts to testnet if the code changed
+        ↓
+re-run contract and integration validation
+        ↓
+mainnet deployment if no blocking finding remains
+```
 
 - security and readiness review of the Clarity contracts delivered;
 - findings triaged, fixed and re-reviewed where they affect the contracts;
-- decision on mainnet deployment taken **on the strength of the review**, not the
-  calendar: it happens only if the review supports it.
+- a Clarity contract cannot be edited in place, so any change means a new
+  deployment: the revised version is validated on testnet exactly as v1 was,
+  including the external-consumer path;
+- mainnet release is driven by **the review, not the calendar**.
 
 #### Production readiness
 
@@ -177,8 +205,13 @@ and finish the review work that mainnet would require.
 
 - a third party's integration is live and documented;
 - the review report is public, with each finding's resolution;
-- terms, limits and versioning are published;
-- mainnet deployment either done, or explicitly deferred with the reasons written down.
+- any contract change the review calls for is tested and redeployed to **testnet**
+  before mainnet, and revalidated there;
+- the reviewed contracts are deployed to Stacks **mainnet** if no blocking security
+  issue remains, with transactions, addresses and integration documentation published;
+- if a blocking issue prevents the mainnet release, the finding and its remediation
+  are documented rather than shipping an unsafe contract to meet a date;
+- terms, limits and versioning are published.
 
 ### Evidence
 
@@ -191,11 +224,15 @@ and finish the review work that mainnet would require.
 
 ## Budget framing
 
-| Milestone | Amount | Rationale |
-| --- | --- | --- |
-| 1 | $2,000 | Infrastructure and reliability work on an existing, running system |
-| 2 | $3,000 | The largest build: liquidity modelling plus the explanation layer, including $200–$300 of model cost |
-| 3 | $5,000 | Independent review, integration support and production readiness |
+| Milestone | Engineering | Infrastructure and external costs | Total |
+| --- | --- | --- | --- |
+| 1 | $1,100 architecture and hardening | $600 hosting · $300 monitoring and backups | $2,000 |
+| 2 | $2,300 risk depth and AI implementation | $200 model usage · $500 market data and testing | $3,000 |
+| 3 | $2,200 integration and release work | $1,200 independent review · $1,100 production infrastructure · $500 validation and docs | $5,000 |
+
+Infrastructure is a line item rather than an afterthought because the beta's
+hosting is currently covered by temporary AWS credits. When they expire, the API,
+indexer, worker, realtime gateway, Redis and the database all still have to run.
 
 The amounts are weighted towards the end because that is where the work that
 makes Rivisk dependable sits: the review, the external integration and the

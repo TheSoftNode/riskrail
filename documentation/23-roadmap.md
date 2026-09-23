@@ -1,56 +1,53 @@
 # Product Roadmap
 
-The roadmap is written in phases so the team can keep the current milestone focused without losing the longer product direction.
+The roadmap separates what the beta already delivers from what the grant would fund. Amounts and acceptance criteria live in [22-grant-milestones.md](./22-grant-milestones.md).
 
-## Phase 0 — Repository and engineering foundation
+## Delivered — the beta (self-funded, as of 23 September 2026)
 
-Status: started.
+Everything below runs in public today and is **not** grant scope. Evidence per
+capability is in [29-current-status.md](./29-current-status.md).
 
-- monorepo structure;
-- deployable app boundaries;
-- Prisma schema;
-- Redis/BullMQ structure;
-- adapter interfaces;
-- initial native/BitPay adapter code;
-- initial risk functions;
-- Clarity contracts;
-- CI/security scaffolding;
-- long-form documentation.
+- monorepo, app boundaries, Prisma schema, Redis/BullMQ, CI;
+- native Stacks/sBTC indexing, portfolio persistence and valuation;
+- Zest V2 lending adapter, validated against a real mainnet obligation;
+- risk engine, stress engine, canonical reports and report hashing;
+- five Clarity contracts deployed to testnet, with live attestations, the
+  external-consumer path proven, and Chainhook confirming snapshot ids;
+- REST API, wallet-signature auth, API keys, signed webhooks, realtime updates;
+- dashboard, documentation site and `@rivisk/sdk` on npm;
+- hosted beta: web app on Vercel, backend on AWS (currently on temporary credits).
 
-Exit condition: repository installs/builds/tests cleanly and the baseline architecture is stable enough for feature work.
+## Grant Milestone 1 — Beta hardening and infrastructure review
 
-## Phase 1 — Grant Milestone 1
+- architecture review of the single-server beta;
+- sustainable paid hosting to replace the expiring credits;
+- persistent database with tested backups **and restores**;
+- monitoring, alerting and an exercised recovery procedure;
+- attestation-path reliability: retries, nonce handling, publisher key in a
+  secret manager, low-balance alerting;
+- threat model, dependency and secret scanning, and the independent contract
+  review commissioned.
 
-- native Stacks/sBTC indexing;
-- live BitPay adapter;
-- portfolio persistence;
-- valuation source integration;
-- report schema/canonicalization;
-- risk registry testnet publication;
-- initial API responses backed by the database rather than placeholders.
+## Grant Milestone 2 — Advanced risk intelligence and AI explanations
 
-## Phase 2 — Grant Milestone 2
+- market-depth and exit-risk modelling to replace the accessibility proxy;
+- the **optional AI explanation layer**: it turns a completed deterministic risk
+  report into plain language, and never calculates risk, changes a score or
+  contributes anything to an attestation;
+- explanations exposed through the API and SDK, cached by report hash, with the
+  product fully functional when the explainer is disabled.
 
-- lending/collateral adapter;
-- liquidation/health methodology;
-- stress engine;
-- dashboard;
-- alerts;
-- on-chain user policy;
-- realtime updates.
+## Grant Milestone 3 — Ecosystem integration and production readiness
 
-## Phase 3 — Grant Milestone 3
+- one real external Stacks project integrating against the API, SDK or trait;
+- the independent contract review delivered, findings fixed, and any revised
+  contract redeployed and revalidated **on testnet** first;
+- **mainnet deployment of the reviewed contracts** if no blocking finding remains;
+- published API terms, versioning, usage metrics and a status page.
 
-- public beta;
-- API keys;
-- SDK;
-- OpenAPI documentation;
-- signed webhooks;
-- external developer testing;
-- integration proof of concept;
-- beta metrics and feedback.
+Amounts, targets and acceptance criteria: [22-grant-milestones.md](./22-grant-milestones.md).
 
-## Phase 4 — Broader protocol coverage
+## After the grant — broader protocol coverage
 
 After the grant, add integrations based on actual user capital and demand rather than integration count.
 
@@ -63,7 +60,7 @@ Potential categories:
 - staking products;
 - additional payment/streaming contracts.
 
-## Phase 5 — Treasury workspace
+## Later — treasury workspace
 
 - multi-address portfolios;
 - organization/team roles;
@@ -72,7 +69,7 @@ Potential categories:
 - export/API support;
 - stronger historical analysis.
 
-## Phase 6 — Market-wide risk intelligence
+## Later — market-wide risk intelligence
 
 If enough wallets/protocols are indexed and privacy considerations are handled well, Rivisk can publish aggregate ecosystem health metrics.
 
@@ -87,7 +84,7 @@ Examples:
 
 This should be built from aggregated data, not by exposing individual user behavior unnecessarily.
 
-## Phase 7 — Advanced quantitative models
+## Later — advanced quantitative models
 
 Only after the deterministic foundation is trusted:
 

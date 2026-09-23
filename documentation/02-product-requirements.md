@@ -213,6 +213,36 @@ The web application should receive relevant portfolio and risk updates over Sock
 
 Rivisk should retain portfolio, position and risk snapshots so a user can see how exposure changed over time and so published attestations can be connected back to the underlying report state.
 
+### FR-23 — Plain-language risk explanations (planned)
+
+Rivisk plans an **optional** AI explanation layer that turns a completed
+deterministic risk report into plain language. It does not calculate risk, alter
+a risk score, discover positions or contribute any data to on-chain attestations:
+it reads the finished report and explains it.
+
+The questions it should answer, each answerable from fields the report already
+contains:
+
+```text
+Why did my risk score increase?
+What is my biggest risk right now?
+What happens to me if BTC falls 20%?
+Which position is closest to liquidation?
+What changed since my previous snapshot?
+```
+
+Requirements:
+
+- every statement must be traceable to fields of the report it explains;
+- explanations are served through the API and SDK as well as the dashboard, so
+  wallets and other Stacks applications get the same capability;
+- responses are cached by `reportHash` plus question type, and no model is called
+  during indexing, scoring, pricing or attestation;
+- the product must work fully with the explainer disabled, which is how the beta
+  runs today.
+
+This is [Milestone 2 grant work](./22-grant-milestones.md), not a beta feature.
+
 ## Non-functional requirements
 
 ### Reliability

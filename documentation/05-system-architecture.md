@@ -179,6 +179,39 @@ flowchart LR
 
 This is intentionally one-way. The reporting system can survive a temporary failure to publish on-chain; the database remains the working source for rich reports while the contract is the verifiable anchor.
 
+## Planned: the AI explanation layer
+
+The explanation layer is an **optional consumer of the canonical risk report**,
+never a step inside the calculation:
+
+```text
+Protocol data
+     ↓
+Adapters
+     ↓
+Portfolio engine
+     ↓
+Deterministic risk engine
+     ↓
+Canonical risk report
+   ↙        ↓         ↘
+API    Attestation   AI explainer
+            ↓             ↓
+         Stacks    Plain-language result
+```
+
+Two rules keep it honest:
+
+- **AI failure must never prevent indexing, risk calculation, alerts, API
+  responses or attestations.** Every one of those paths runs to completion with
+  the explainer switched off, unreachable or out of budget.
+- **No model output is ever hashed or published on chain.** Attestations commit to
+  the deterministic report alone, so a report stays reproducible from its hash
+  whether or not anything ever explained it.
+
+See [22-grant-milestones.md](./22-grant-milestones.md) — this is planned
+Milestone 2 work, not something the beta ships.
+
 ## Deployment shape
 
 The repository has five deployable application processes:

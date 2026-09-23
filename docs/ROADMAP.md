@@ -1,51 +1,25 @@
 # Rivisk grant delivery roadmap
 
-## Milestone 1 — Cross-protocol portfolio + contract foundation (Weeks 1–3)
+> **This file is superseded.** The delivery plan now lives in
+> [documentation/22-grant-milestones.md](../documentation/22-grant-milestones.md),
+> with the product roadmap in
+> [documentation/23-roadmap.md](../documentation/23-roadmap.md) and the
+> today-versus-grant table at
+> [rivisk-lilac.vercel.app/docs/grant-scope](https://rivisk-lilac.vercel.app/docs/grant-scope).
 
-Deliver:
-- Native Stacks/sBTC balance adapter.
-- BitPay protocol adapter.
-- External adapter interface and normalized position schema.
-- Portfolio aggregation and concentration metrics.
-- `risk-provider-trait`, `risk-registry`, and `protocol-registry` contracts.
-- Testnet risk-attestation flow: report -> canonical hash -> on-chain snapshot.
+The original three milestones described work that the beta has since delivered
+without grant funding: cross-protocol indexing, the contracts, testnet
+attestations, the dashboard, alerts, the hosted beta, API keys, signed webhooks
+and the SDK. Keeping that plan here would misrepresent what the grant is being
+asked to fund.
 
-Status: the repository now contains the working Milestone 1 data path. Testnet deployment/confirmation tracking still needs environment-level validation.
+The current plan is:
 
-## Milestone 2 — Risk product + user policies (Weeks 4–7)
+| Milestone | Focus | Amount | Target |
+| --- | --- | --- | --- |
+| 1 | Beta hardening and infrastructure review | $2,000 | 14 Oct 2026 |
+| 2 | Advanced risk intelligence and AI explanations | $3,000 | 11 Nov 2026 |
+| 3 | Ecosystem integration and production readiness | $5,000 | 2 Dec 2026 |
 
-Deliver:
-- Lending/collateral integration.
-- Collateral health and liquidation-distance analytics.
-- BTC -10/-20/-30 stress scenarios and custom shock input.
-- Risk dashboard and realtime updates.
-- `risk-policy.clar` with Chainhook-driven alert evaluation.
-
-Current progress:
-- Zest V2 adapter foundation is implemented against the public V2 contract model.
-- Shared lending LTV/health/liquidation calculations are implemented.
-- Built-in and custom deterministic stress scenarios are implemented.
-- Simulation API endpoints are implemented.
-- Default stress results are included in versioned risk reports.
-
-Still required for Milestone 2 completion:
-- live Zest mainnet validation against known obligations;
-- dashboard screens;
-- risk-policy evaluation;
-- Chainhook-driven incremental refresh;
-- realtime/cooldown-aware alert delivery;
-- market-depth liquidity analysis.
-
-## Milestone 3 — Public beta + developer infrastructure (Weeks 8–10)
-
-Deliver:
-- Public beta deployment.
-- Versioned REST API and OpenAPI docs.
-- TypeScript SDK.
-- Signed developer webhooks and API-key infrastructure.
-- External developer testing and one integration proof of concept.
-
-Acceptance:
-- Public API/SDK documentation exists.
-- External developers can retrieve portfolio/risk data and on-chain attestation metadata.
-- Usage and tester feedback are documented for the next roadmap.
+What the beta already delivers, and how far each part is proven, is in
+[documentation/29-current-status.md](../documentation/29-current-status.md).

@@ -58,6 +58,31 @@ export default function Contracts() {
         is kept byte-for-byte identical to what is on chain.
       </Callout>
 
+      <H2 id="lifecycle">Deployment lifecycle</H2>
+      <P>
+        These are the <strong>beta v1</strong> contracts. They work — attestations are published
+        against them and an external consumer has read one through the trait — but that is not a
+        claim that the design is final. An independent security and readiness review is planned
+        grant work (<A href="/docs/grant-scope">Grant scope</A>), and a Clarity contract cannot be
+        edited in place:
+      </P>
+      <CodeBlock
+        lang="text"
+        code={`
+testnet v1 (today)
+      ↓  independent contract / security review
+      ↓  fix findings, improve the design where needed
+      ↓  redeploy to testnet if the code changed
+      ↓  re-run contract and integration validation
+mainnet, if no blocking finding remains
+`}
+      />
+      <P>
+        So any change the review calls for means a new deployment and a fresh validation pass on
+        testnet before mainnet. Integrate against the <strong>trait</strong> rather than a hardcoded
+        address, and a new registry version costs you a configuration change rather than a rewrite.
+      </P>
+
       <H2 id="trait">risk-provider-trait</H2>
       <P>
         The interface to integrate against. A trait cannot change once deployed, so this surface is

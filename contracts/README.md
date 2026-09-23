@@ -30,6 +30,34 @@ integrator.
 
 Full integration guide: [documentation/35-consuming-rivisk-onchain.md](../documentation/35-consuming-rivisk-onchain.md).
 
+## Deployment lifecycle
+
+The contracts on Stacks testnet today are the **beta v1 deployment**
+(`contracts/deployments/testnet.json`). They work: attestations are published
+against them and `risk-consumer-example` has read one through the trait. That is
+not the same as the design being final.
+
+```text
+testnet v1 (today)
+      ↓
+independent contract / security review
+      ↓
+fix findings, improve the design where needed
+      ↓
+redeploy the revised contracts to testnet if the code changed
+      ↓
+re-run contract and integration validation, including the consumer path
+      ↓
+mainnet deployment if no blocking finding remains
+```
+
+A Clarity contract cannot be edited in place, so any change the review calls for
+means a **new deployment and a new validation pass on testnet** before mainnet.
+The review and the mainnet release are
+[Milestone 3 grant work](../documentation/22-grant-milestones.md); mainnet is
+targeted only after the reviewed version has passed tests and testnet validation,
+never simply because a beta deployment already exists.
+
 ## Tests
 
 `tests/external-consumption.test.ts` is written from the outside in: it checks
