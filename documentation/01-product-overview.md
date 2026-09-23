@@ -95,6 +95,15 @@ Rivisk observes and explains. It does not need to move user assets for the MVP.
 
 AI can explain a metric. It cannot be the metric.
 
+Rivisk will add an optional AI explanation layer on top of the deterministic risk
+engine ([Milestone 2](./22-grant-milestones.md)). It reads the structured risk
+report Rivisk already produces and explains, in plain language, what is driving a
+user's risk, what changed since the last snapshot and what a stress scenario
+means. It never discovers positions, calculates metrics or replaces a formula, and
+no model output is hashed or published on chain: the flow is
+`report → AI → explanation`, never `data → AI → risk score`. Every figure stays
+reproducible from the report hash with the explainer switched off.
+
 ### Show the source of a number
 
 For important values, we should know the block height, protocol, pricing source and observation time that produced them.

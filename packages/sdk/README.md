@@ -10,9 +10,12 @@ npm install @rivisk/sdk
 
 ESM only, Node 18 or newer.
 
-> There is no public hosted Rivisk API yet. Point `baseUrl` at an instance you
-> run ([self-hosting](https://github.com/TheSoftNode/rivisk#readme)). The Clarity
-> contracts, by contrast, are live on Stacks testnet and can be read today.
+> A hosted **beta** API is live at `https://api.13.49.129.179.sslip.io/api/v1`
+> and powers the Rivisk dashboard. It runs on deliberately small, low-cost
+> infrastructure: fine for trying the SDK, but it carries no availability
+> guarantee, so point `baseUrl` at your own instance for anything that matters
+> ([self-hosting](https://github.com/TheSoftNode/rivisk#readme)). The Clarity
+> contracts are live on Stacks testnet and can be read today.
 
 ## Quick start
 

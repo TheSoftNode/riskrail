@@ -58,7 +58,10 @@ flowchart LR
     E --> H[Canonical risk report]
     H --> I[SHA-256 report hash]
     I --> J[Optional on-chain attestation]
+    H -.planned.-> K[AI explanation]
 ```
+
+**The planned AI layer sits at the end of that chain, never in the middle.** Rivisk will add an optional explanation layer on top of the deterministic risk engine: it reads the finished structured report and explains, in plain language, what is driving a wallet's risk, what changed and what a stress scenario means. It does not calculate risk, discover positions or replace any formula, and nothing it produces is ever hashed or published on chain. Every number stays reproducible from the report hash with the explainer switched off. It is [Milestone 2 grant work](./documentation/22-grant-milestones.md), not something the beta ships today.
 
 The same normalized portfolio drives the web application, API, SDK, alerts and risk reports. That is intentional: there should not be one set of calculations for the dashboard and another hidden implementation for developers.
 
@@ -703,19 +706,17 @@ See [Observability and operations](./documentation/19-observability-and-operatio
 
 ## Grant delivery plan
 
-### Milestone 1 — Cross-protocol portfolio + contract foundation (Weeks 1–3)
+**Baseline as of 23 September 2026.** Rivisk already has a hosted beta, deployed testnet contracts, live attestations with Chainhook confirmation, a published SDK, wallet authentication, API keys, signed webhooks, realtime updates and a validated Zest V2 adapter. **Those are existing project assets, not grant deliverables** — see [Current implementation status](#current-implementation-status) above and the [status page](https://rivisk-lilac.vercel.app/docs/status).
 
-Deliver native Stacks/sBTC indexing, BitPay adapter, normalized position/portfolio foundation, initial risk metrics, risk/protocol contracts, and a verifiable testnet report-hash attestation.
+The grant funds what turns that beta into infrastructure other projects can depend on.
 
-### Milestone 2 — Risk product + user policies (Weeks 4–7)
+| Milestone | Focus | Amount | Target |
+| --- | --- | --- | --- |
+| 1 | **Beta hardening and infrastructure review** — managed database with tested restores, monitoring and alerting, a custom domain, publisher-key and broadcast-failure handling, threat model, and an independent contract review commissioned | $2,000 | 14 Oct 2026 |
+| 2 | **Advanced risk intelligence and AI explanations** — real market-depth and exit-risk modelling to replace the accessibility proxy, plus an optional AI layer that explains an existing report in plain language (including $200–$300 of model cost) | $3,000 | 11 Nov 2026 |
+| 3 | **Ecosystem integration and production readiness** — one real external Stacks project integrating, the independent review delivered and its findings fixed, published API terms, versioning, usage metrics, and a mainnet decision taken on the review's strength | $5,000 | 2 Dec 2026 |
 
-Most of the user-facing Milestone 2 path is now represented in code: Zest V2 lending normalization, shared health/liquidation analytics, deterministic stress scenarios, the dashboard, address-scoped alert rules, realtime updates and read/evaluate support for `risk-policy.clar`. Remaining work is live protocol validation, browser policy-write UX, authenticated notification delivery, Chainhook-driven incremental refresh and market-depth liquidity analysis.
-
-### Milestone 3 — Public beta + developer infrastructure (Weeks 8–10)
-
-Deliver hosted beta, versioned API, OpenAPI docs, SDK, API keys, signed webhooks, external developer testing and one integration proof of concept.
-
-Full deliverables and acceptance criteria are in [Grant milestones](./documentation/22-grant-milestones.md).
+Deliverables and acceptance criteria per milestone are in [Grant milestones](./documentation/22-grant-milestones.md); the same today-versus-next table is on the site at [/docs/grant-scope](https://rivisk-lilac.vercel.app/docs/grant-scope).
 
 ---
 

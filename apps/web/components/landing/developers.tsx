@@ -9,7 +9,7 @@ const TABS = {
   sdk: {
     label: "TypeScript SDK",
     planned: false,
-    note: "Implemented in-repo. Not yet published to npm.",
+    note: "Published as @rivisk/sdk@0.1.0 on npm.",
     lines: [
       ['import { RiviskClient } from ', '"@rivisk/sdk"', ";"],
       [""],
@@ -57,7 +57,7 @@ const TABS = {
   clarity: {
     label: "Clarity",
     planned: false,
-    note: "risk-provider-trait, tested in simnet. Not yet deployed to testnet.",
+    note: "risk-provider-trait, deployed on testnet and read by an external consumer contract.",
     lines: [
       ["(use-trait risk-provider ", ".risk-provider-trait.risk-provider-trait", ")"],
       [""],

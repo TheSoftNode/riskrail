@@ -99,7 +99,7 @@ The event model is designed so the platform can move to heavier infrastructure l
 
 ### AI deciding risk
 
-If an explanation model is added, it receives structured deterministic results and turns them into plain language. It does not set health factors, invent liquidity values or decide whether a user is at risk.
+The planned explanation layer ([Milestone 2](./22-grant-milestones.md)) receives structured deterministic results and turns them into plain language. It does not set health factors, invent liquidity values or decide whether a user is at risk. Model calls happen only when a user asks for an explanation, are cached by report hash, and are never part of indexing, scoring or attestation — so the core product works, and costs nothing extra, with the explainer disabled.
 
 ## Later possibilities, not promises
 

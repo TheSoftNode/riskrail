@@ -15,7 +15,7 @@ export default function Status() {
       <DocHeader
         eyebrow="Operate"
         title="Project status"
-        lede="What exists, and how far each part has been proven. The labels are applied strictly, because an integration is only as solid as the weakest piece it depends on."
+        lede="What exists, and how far each part has been proven, as of 23 September 2026. The labels are applied strictly, because an integration is only as solid as the weakest piece it depends on. What is still to come is on Grant scope."
       />
 
       <H2 id="labels">Labels</H2>
@@ -51,8 +51,9 @@ export default function Status() {
           ["Wallet-signature authentication", LIVE, "Real challenge, signature and verification in the smoke test"],
           ["API keys", TESTED, "Accepted for alerts and webhooks, refused for key management, checked live"],
           ["Signed webhooks", TESTED, "Signing, verification, retry classification"],
-          ["Realtime", IMPLEMENTED, "Exercised end to end through the production stack: a refresh reached a WSS subscriber in 2.9 s. Not yet covered in CI"],
-          ["Hosted public API", PLANNED, <>Self-host for now: <A key="s" href="/docs/self-hosting">Self-hosting</A></>],
+          ["Realtime", DEPLOYED, "Live over WSS on the beta: a refresh reached a subscribed browser in 2.3 s. Not yet covered in CI"],
+          ["Hosted beta API", DEPLOYED, <>Live at <C key="h">api.13.49.129.179.sslip.io</C>, powering the dashboard. One small server, no availability guarantee</>],
+          ["Production API and availability commitment", PLANNED, <>The beta runs on deliberately small, low-cost infrastructure. Hardening it is grant work: <A key="g" href="/docs/grant-scope">Grant scope</A></>],
         ]}
       />
 
@@ -68,8 +69,14 @@ export default function Status() {
           ["Stress testing", TESTED, "Deterministic presets and custom shocks"],
           ["Market-depth liquidity", PLANNED, "Today's liquidity score measures accessibility, not exit depth"],
           ["Email address verification", PLANNED, "Alerts can currently be sent to an unverified address"],
+          ["AI risk explanations", PLANNED, <>Plain-language explanations of an existing risk report. Never computes risk: <A key="a" href="/docs/grant-scope">Grant scope</A></>],
         ]}
       />
+
+      <P>
+        Where each of these is heading, and what the grant would fund, is on{" "}
+        <A href="/docs/grant-scope">Grant scope</A>.
+      </P>
 
       <P>
         Found something this page overstates? Open an issue at{" "}

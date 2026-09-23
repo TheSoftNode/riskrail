@@ -9,14 +9,16 @@ export default function Quickstart() {
       <DocHeader
         eyebrow="Getting started"
         title="Quickstart"
-        lede="Read a wallet's risk, stress it against a BTC drawdown, and receive a signed event. Assumes a Rivisk API you can reach; there is no public hosted one yet."
+        lede="Read a wallet's risk, stress it against a BTC drawdown, and receive a signed event. Point it at the hosted beta API or at your own instance."
       />
 
-      <Callout type="warning" title="Before you start">
+      <Callout type="note" title="Before you start">
         <p>
-          You need a running Rivisk API. <A href="/docs/self-hosting">Self-hosting</A> brings one up
-          locally with Docker in a few commands. Everything below uses{" "}
-          <C>http://localhost:4000/api/v1</C>; substitute your own origin.
+          The hosted beta API is <C>https://api.13.49.129.179.sslip.io/api/v1</C>, and the examples below use{" "}
+          <C>http://localhost:4000/api/v1</C> — substitute whichever you are calling.{" "}
+          <A href="/docs/self-hosting">Self-hosting</A> brings an instance up locally with Docker in
+          a few commands. The beta runs on small, low-cost infrastructure and carries no
+          availability guarantee.
         </p>
       </Callout>
 

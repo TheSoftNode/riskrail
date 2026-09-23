@@ -114,6 +114,12 @@ export const DOCS_NAV: DocGroup[] = [
         description: "What is implemented, tested, deployed and live-validated.",
         keywords: ["roadmap", "planned", "validated", "maturity"],
       },
+      {
+        title: "Grant scope",
+        href: "/docs/grant-scope",
+        description: "What exists today versus what the Stacks Endowment grant would fund.",
+        keywords: ["grant", "milestones", "roadmap", "funding", "ai", "explainer", "baseline"],
+      },
     ],
   },
 ];

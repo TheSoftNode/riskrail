@@ -2,9 +2,16 @@
 
 This page is intentionally conservative. It says what is in the repository today, what is usable now, and what still needs work. Rivisk has moved beyond the original scaffold and now has a real indexing/risk path, but the project is not being presented as production-complete before it has been validated in a hosted environment.
 
-Last reviewed 2026-09-20, after the authentication, API-key, webhook, email and
-Chainhook pass, the first live validation of the Zest adapter, and the
-Contracts v1 design pass that made the trait an external-consumer interface.
+Last reviewed **2026-09-23**, after the public beta went live: hosted API,
+realtime gateway, testnet contracts publishing attestations, and Chainhooks 2.0
+confirming them back. What is still to come, and what the grant would fund, is in
+[22-grant-milestones.md](./22-grant-milestones.md) and on the site's
+[Grant scope](https://rivisk-lilac.vercel.app/docs/grant-scope) page.
+
+**Live beta:** app `https://rivisk-lilac.vercel.app` · API
+`https://api.13.49.129.179.sslip.io/api/v1` · realtime
+`wss://ws.13.49.129.179.sslip.io`. Deployment record:
+[37-aws-beta-deployment.md](./37-aws-beta-deployment.md).
 
 ## Status at a glance
 
@@ -22,41 +29,49 @@ Five labels, applied strictly:
 | --- | --- |
 | Stacks data access (balances, FT, read-only calls) | LIVE-VALIDATED |
 | Native wallet adapter | TESTED |
-| BitPay stream adapter | TESTED |
+| BitPay stream adapter | TESTED — no `bitpay-core` contract exists on the current testnet (checked 2026-09-23), so it is disabled in the beta |
 | Zest V2 lending adapter | LIVE-VALIDATED — see [validation/zest-v2](../docs/validation/zest-v2.md) |
 | Clarity value decoding | TESTED · LIVE-VALIDATED |
 | Portfolio engine and normalization | LIVE-VALIDATED (indexed a real mainnet wallet end to end) |
 | Risk engine (LTV, health factor, liquidation distance, concentration) | LIVE-VALIDATED (health factor matched Zest's own threshold maths) |
 | Stress engine | TESTED |
 | Risk report canonicalization and SHA-256 | TESTED |
-| Wallet-signature authentication (challenge, nonce, JWT) | IMPLEMENTED |
-| API keys | IMPLEMENTED |
+| Wallet-signature authentication (challenge, nonce, JWT) | LIVE-VALIDATED (real challenge, signature and verification against the hosted beta) |
+| API keys | DEPLOYED (accepted for alerts and webhooks, refused for key management, checked against the beta) |
 | Signed webhooks (encrypt at rest, HMAC, retry) | TESTED |
 | Email notifications | TESTED |
 | Alert evaluation (edge-triggered) | TESTED |
-| Alert ownership enforcement | IMPLEMENTED |
-| Rate limiting on public refresh | IMPLEMENTED |
-| Chainhook incremental indexing | TESTED (job enqueue fixed; receiver not yet driven by a real Chainhook) |
+| Alert ownership enforcement | DEPLOYED (403 on another wallet's rules, checked against the beta) |
+| Rate limiting on public refresh | DEPLOYED (429 with `Retry-After`, checked live) |
+| Chainhook incremental indexing | LIVE-VALIDATED — Chainhooks 2.0 hooks registered on testnet; a new attestation's on-chain snapshot id was recorded 11 s after the refresh |
 | Chainhook Zest predicate | LIVE-VALIDATED (contract and events verified on mainnet) |
 | Database schema | TESTED (migrations apply and drift-check in CI) |
 | SDK | PUBLISHED — `@rivisk/sdk@0.1.0` on npm, verified by a clean install from the public registry |
 | SDK webhook signature verification | TESTED (WebCrypto, runs on edge runtimes) |
-| Dashboard, landing page, developer surface | IMPLEMENTED |
-| On-chain policy write from the browser | IMPLEMENTED |
-| Clarity contracts (v1 external interface) | TESTED (simnet, 51 tests; `clarinet check` clean, 0 warnings) |
+| Dashboard, landing page, developer surface | DEPLOYED — `rivisk-lilac.vercel.app`, a page per dashboard section |
+| On-chain policy write from the browser | IMPLEMENTED — not yet exercised with a real wallet |
+| Clarity contracts (v1 external interface) | DEPLOYED — testnet, 51 simnet tests, `clarinet check` clean |
 | On-chain consumer integration path | LIVE-VALIDATED — example consumer approved from snapshot #1 on testnet (tx `0xb4bb63a6…`) |
 | Contract deployment to testnet | DEPLOYED — block 451066, deployer `ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7`; see `contracts/deployments/testnet.json` |
 | On-chain risk attestations end to end | LIVE-VALIDATED — worker published snapshot #1 to testnet (tx `0x0877e7b2…`), report hash matches the API |
-| Hosted beta | PLANNED |
+| Hosted beta (web, API, realtime, workers) | DEPLOYED — one small EC2 server plus Vercel; see [37-aws-beta-deployment.md](./37-aws-beta-deployment.md) |
+| Realtime gateway | DEPLOYED — live over WSS; a refresh reached a subscribed browser in 2.3 s |
+| Attestation throttle | DEPLOYED — `ATTESTATION_MIN_INTERVAL_BLOCKS` (default 120); three rapid refreshes produced one transaction |
+| Email notification delivery in the beta | PLANNED — implemented, but no SMTP server is configured |
+| Production API, availability commitment, managed database | PLANNED — grant work; the beta is deliberately small and low-cost |
 | Market-depth liquidity analysis | PLANNED |
+| AI risk explanations (explains an existing report; never computes risk) | PLANNED — grant work |
 | Email address verification | PLANNED |
 | Usage metrics and evidence capture | PLANNED |
 
-The indexer, worker and API have now been run together against a real Postgres,
-Redis and mainnet, producing a risk snapshot from a live wallet. Nothing has run
-outside a developer machine.
-No part of the authenticated stack has been exercised against a live Postgres or
-Redis by a real browser session.
+The whole stack now runs in public: a wallet lookup indexes, scores, pushes the
+update to the browser over WSS, publishes an attestation when the risk actually
+changed, and records the on-chain snapshot id when Chainhook confirms it. The
+authenticated paths (sign-in, API keys, webhooks, alerts and their permission
+boundaries) are exercised against the hosted beta by `apps/api/scripts/smoke.mjs`.
+
+Two user paths have still never been run with a real browser wallet: signing in
+from the dashboard, and writing a risk policy on chain.
 
 ## Repository foundation — present
 

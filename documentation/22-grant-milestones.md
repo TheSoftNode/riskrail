@@ -1,261 +1,202 @@
 # Grant Milestones
 
-The grant delivery plan is designed around three milestones over roughly ten weeks. The milestones are outcome-based: each one should leave behind something demonstrable and testable, not just "backend work completed."
+> **Baseline as of 23 September 2026.** Rivisk already has a hosted beta, deployed
+> testnet contracts, live risk attestations with Chainhook confirmation, a published
+> SDK (`@rivisk/sdk@0.1.0`), wallet-signature authentication, API keys, signed
+> webhooks, realtime updates and a Zest V2 adapter validated against a real mainnet
+> obligation. **These are existing project assets and are not being requested as
+> grant-funded deliverables.** Evidence for each is in
+> [29-current-status.md](./29-current-status.md) and on
+> [rivisk-lilac.vercel.app/docs/status](https://rivisk-lilac.vercel.app/docs/status).
 
-## Milestone 1 — Cross-Protocol Portfolio and Contract Foundation
+The grant funds the work that turns a working beta into infrastructure other
+Stacks projects can depend on: an independent review, real liquidity modelling,
+explanations users can act on, and a first external integration.
 
-**Target:** Weeks 1–3
+| Milestone | Focus | Amount | Target |
+| --- | --- | --- | --- |
+| 1 | Beta hardening and infrastructure review | $2,000 | 14 Oct 2026 |
+| 2 | Advanced risk intelligence and AI explanations | $3,000 | 11 Nov 2026 |
+| 3 | Ecosystem integration and production readiness | $5,000 | 2 Dec 2026 |
 
-### Goal
-
-Prove that Rivisk can take a Stacks address, discover more than one kind of position, normalize those positions, calculate initial deterministic metrics, and anchor a report hash on Stacks testnet.
-
-### Work included
-
-#### Native Stacks indexing
-
-- validate Stacks principals;
-- retrieve STX and fungible-token balances;
-- identify sBTC correctly for the configured network;
-- resolve token metadata where needed;
-- preserve source block/freshness.
-
-#### BitPay adapter
-
-- implement a concrete `BitPayReader` using contract reads/indexed state;
-- discover stream ids for a wallet;
-- read stream state;
-- calculate remaining/withdrawable values;
-- emit normalized stream positions;
-- respond to relevant contract events.
-
-#### Adapter/normalization foundation
-
-- finalize `ProtocolAdapter` v1;
-- finalize `NormalizedPosition` v1;
-- adapter registry in the indexer;
-- partial-failure behavior;
-- fixtures and tests.
-
-#### Portfolio engine
-
-- aggregate positions;
-- known USD total;
-- by-protocol exposure;
-- capital accessibility;
-- valuation coverage warnings.
-
-#### Initial risk engine
-
-- protocol concentration;
-- capital accessibility;
-- health-factor classification infrastructure;
-- deterministic report input/output shape.
-
-#### Clarity foundation
-
-- `risk-provider-trait.clar`;
-- `risk-registry.clar`;
-- `protocol-registry.clar`;
-- authorization and history tests;
-- testnet deployment configuration.
-
-#### Attestation proof
-
-- canonicalize one risk report;
-- hash it;
-- publish summary/hash on testnet;
-- verify the off-chain report against the contract snapshot.
-
-### Acceptance criteria
-
-Milestone 1 is complete when:
-
-1. a valid Stacks address can be indexed;
-2. native wallet assets are represented as normalized positions;
-3. BitPay positions can be represented for an address that has streams;
-4. at least two position sources can appear in one portfolio;
-5. concentration/accessibility calculations pass exact unit tests;
-6. a risk report has deterministic serialization/hash behavior;
-7. an authorized publisher can create a testnet risk snapshot;
-8. the report hash can be verified against that snapshot;
-9. all milestone code is documented and reproducible from the repository.
-
-### Evidence
-
-- public repository commits;
-- test output;
-- testnet transaction/contract principal;
-- short screen recording or live demo;
-- example report + hash;
-- API response showing the normalized portfolio.
+Each milestone leaves behind something demonstrable: a public endpoint, a
+written review, a live integration — not "backend work completed".
 
 ---
 
-## Milestone 2 — Risk Product, Stress Testing and User Policies
+## Milestone 1 — Beta hardening and infrastructure review
 
-**Target:** Weeks 4–7
+**Target:** 14 October 2026 · **$2,000**
 
 ### Goal
 
-Turn the portfolio/indexing foundation into a useful risk product, with real collateral analytics, stress scenarios and alerts.
+Move the beta off deliberately temporary infrastructure and make the parts that
+already run publicly dependable enough for another team to build against.
 
 ### Work included
 
-#### External lending/collateral adapter
+#### Infrastructure
 
-- choose a Stacks protocol with meaningful sBTC/collateral relevance;
-- document contract and calculation sources;
-- read supplied/borrowed/collateral state;
-- map health/liquidation inputs;
-- add fixtures and adapter tests.
+- production architecture review of the current single-server beta;
+- managed PostgreSQL with verified restores, rather than a container and a nightly dump;
+- monitoring and alerting on the API, indexer, worker, realtime gateway and queue depth;
+- a custom domain with certificate renewal under monitoring;
+- documented recovery procedure, exercised at least once.
 
-#### Collateral risk
+#### Reliability of the attestation path
 
-- health-factor calculation or validation;
-- liquidation threshold/distance where supported;
-- exact/estimated source flags;
-- methodology documentation.
+- publisher key handling through a secret manager;
+- retry, nonce and failure handling for broadcast transactions;
+- alerting when the publisher balance runs low or a publish fails;
+- a reconciliation pass that detects attestations broadcast but never confirmed.
 
-#### Stress engine
+#### Security review preparation
 
-- BTC -10%;
-- BTC -20%;
-- BTC -30%;
-- custom shocks;
-- before/after position and portfolio metrics;
-- warnings for unsupported scenario dimensions.
-
-#### Dashboard
-
-- address input/wallet connection;
-- portfolio summary;
-- positions;
-- concentration/accessibility;
-- collateral health;
-- stress-test screen;
-- freshness and source details.
-
-#### Alerts
-
-- off-chain alert rules;
-- edge-triggered evaluation;
-- email/in-app delivery;
-- `risk-policy.clar` integration;
-- Chainhook event for policy changes.
-
-#### Realtime
-
-- wallet/risk rooms;
-- update events after snapshot changes;
-- query invalidation/refetch on the frontend.
+- threat model written down;
+- dependency and secret scanning in CI;
+- an independent review of the Clarity contracts commissioned (the review itself
+  lands in Milestone 3).
 
 ### Acceptance criteria
 
-Milestone 2 is complete when:
-
-1. a supported lending position displays real collateral metrics;
-2. a BTC stress scenario changes those metrics deterministically;
-3. the user can compare baseline and stressed states;
-4. the user can configure an alert;
-5. the user can set an on-chain risk policy;
-6. a threshold crossing creates an alert event and at least one notification;
-7. the platform does not move user funds to perform any of the above.
+- the API runs on managed infrastructure with a documented restore that has been tested;
+- a deliberately failed publish surfaces an alert and is recovered without manual database edits;
+- monitoring dashboards and alert rules are in the repository;
+- the threat model and scanning results are public in `documentation/`.
 
 ### Evidence
 
-- dashboard demo;
-- lending adapter tests;
-- scenario fixtures;
-- on-chain policy transaction;
-- alert-event history;
-- documentation of the risk formulas.
+- public endpoint on its own domain;
+- restore exercise write-up with timings;
+- alert screenshots from the induced failure;
+- commissioned review scope and reviewer.
 
 ---
 
-## Milestone 3 — Public Beta and Developer Infrastructure
+## Milestone 2 — Advanced risk intelligence and AI explanations
 
-**Target:** Weeks 8–10
+**Target:** 11 November 2026 · **$3,000**
 
 ### Goal
 
-Make Rivisk usable by people outside the core team and demonstrate that the same infrastructure can be consumed programmatically.
+Close two gaps the beta makes obvious: the liquidity score is an accessibility
+proxy rather than exit risk, and correct risk numbers are still hard for people
+to interpret together.
 
 ### Work included
 
-#### Public beta
+#### Market-depth and exit-risk modelling
 
-- hosted web app;
-- hosted API;
-- PostgreSQL/Redis managed deployment;
-- health/monitoring;
-- staging/production configuration.
+- read venue liquidity for the assets Rivisk already values;
+- estimate realistic exit size and slippage, rather than "how much is unlocked";
+- express the limits of the estimate in the report, in the same conservative style
+  as `valuationCoverageBps`;
+- keep the current accessibility metric, clearly separated from exit risk.
 
-#### REST API
+#### AI risk explanations
 
-- versioned resources;
-- validation/auth/rate limits;
-- OpenAPI docs;
-- freshness metadata;
-- error conventions.
+The AI **never computes risk**. It reads a finished, deterministic report and
+explains it:
 
-#### TypeScript SDK
+```text
+protocol data → adapters → risk engine → structured report → AI → explanation
+```
 
-- typed client;
-- portfolio/risk/simulation resources;
-- examples;
-- package release or documented local package use.
+not
 
-#### Developer authentication
+```text
+protocol data → AI → risk score
+```
 
-- API key creation/revocation;
-- safe key hashing;
-- test/live convention;
-- rate-limit identity.
-
-#### Webhooks
-
-- endpoint registration;
-- signed events;
-- retries/backoff;
-- delivery history.
-
-#### External validation
-
-Targets:
-
-- 100+ wallet analyses;
-- 25+ recurring monitored wallets;
-- 50+ stress simulations;
-- 10+ configured alerts;
-- 3+ external developers trying API/SDK;
-- 1 integration proof of concept.
+- explain what is driving a wallet's risk, what changed since the previous
+  snapshot, and what a stress scenario means, in plain language;
+- ground every sentence in fields of the report, so the explanation can be checked
+  against the numbers;
+- exposed through the API and SDK, so wallets and other Stacks apps get the same
+  capability, not just the Rivisk dashboard;
+- **cost control by design:** no model call during indexing, scoring, pricing or
+  attestation; a call happens only when someone asks for an explanation; answers
+  are cached by `reportHash` plus question type; a small, low-cost model by
+  default; the provider is replaceable; the core API keeps working with the
+  explainer disabled;
+- **nothing from the model is ever hashed or published on chain.** Attestations
+  stay fully deterministic.
+- an explicit **$200–$300** of this milestone covers model evaluation and beta usage.
 
 ### Acceptance criteria
 
-Milestone 3 is complete when:
+- exit-risk estimates published for the supported assets, with the methodology and
+  its limits documented;
+- explanations available through the API, SDK and dashboard, each traceable to
+  fields of the report;
+- an explanation for an unchanged report is served from cache, demonstrated by
+  request counts;
+- the whole stack passes its checks with the explainer turned off.
 
-1. a public beta URL is available;
-2. developer documentation is public;
-3. an external developer can obtain portfolio/risk data;
-4. webhooks can be verified using the documented signature method;
-5. an external proof-of-concept integration exists;
-6. tester feedback and usage metrics are summarized;
-7. next-step backlog is documented.
+### Evidence
+
+- before/after comparison of accessibility versus exit risk on a real wallet;
+- worked examples of explanations beside the reports they describe;
+- cache-hit measurements and a model-cost estimate per active wallet.
+
+---
+
+## Milestone 3 — Ecosystem integration and production readiness
+
+**Target:** 2 December 2026 · **$5,000**
+
+### Goal
+
+Prove Rivisk is infrastructure by having something outside Rivisk depend on it,
+and finish the review work that mainnet would require.
+
+### Work included
+
+#### External integration
+
+- one real Stacks project consuming Rivisk, through the REST API, the SDK or the
+  `risk-provider-trait` on chain;
+- integration support and the API changes their use exposes;
+- a public write-up of what they built and what it needed.
+
+#### Independent review
+
+- security and readiness review of the Clarity contracts delivered;
+- findings triaged, fixed and re-reviewed where they affect the contracts;
+- decision on mainnet deployment taken **on the strength of the review**, not the
+  calendar: it happens only if the review supports it.
+
+#### Production readiness
+
+- published API terms, rate limits and support expectations;
+- versioning and deprecation policy for the API and SDK;
+- usage metrics and a public status page;
+- external developer testing round with feedback folded into the SDK.
+
+### Acceptance criteria
+
+- a third party's integration is live and documented;
+- the review report is public, with each finding's resolution;
+- terms, limits and versioning are published;
+- mainnet deployment either done, or explicitly deferred with the reasons written down.
+
+### Evidence
+
+- link to the integrating project and its write-up;
+- the review report and the fixes;
+- usage metrics from the beta period;
+- transaction record if mainnet deployment proceeds.
+
+---
 
 ## Budget framing
 
-A reasonable $10,000 grant budget can be described by workstream rather than pretending the numbers represent fixed vendor invoices:
+| Milestone | Amount | Rationale |
+| --- | --- | --- |
+| 1 | $2,000 | Infrastructure and reliability work on an existing, running system |
+| 2 | $3,000 | The largest build: liquidity modelling plus the explanation layer, including $200–$300 of model cost |
+| 3 | $5,000 | Independent review, integration support and production readiness |
 
-| Workstream | Amount |
-| --- | ---: |
-| Core indexing and risk engine | $3,000 |
-| Protocol integrations | $2,000 |
-| Frontend/dashboard | $1,750 |
-| Stress testing and alerting | $1,000 |
-| API/SDK and developer docs | $750 |
-| Testing, security and infrastructure | $750 |
-| User testing and ecosystem validation | $750 |
-| **Total** | **$10,000** |
-
-A possible milestone payment split is $4,000 / $3,500 / $2,500, but the final application should match the Endowment form and terms.
+The amounts are weighted towards the end because that is where the work that
+makes Rivisk dependable sits: the review, the external integration and the
+production commitments. Nothing in this plan pays for what already exists.

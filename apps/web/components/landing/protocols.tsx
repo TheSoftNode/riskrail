@@ -40,7 +40,7 @@ const ADAPTERS = [
   {
     name: "BitPay streams",
     kind: "Streaming",
-    status: "Integrated",
+    status: "Off in the beta",
     tone: "brand" as const,
     body: "Discovers sender and recipient streams and splits locked, vested, withdrawn and currently withdrawable sBTC — the capital a wallet owns economically but cannot spend right now.",
     surfaces: ["Locked", "Vested", "Withdrawable"],
@@ -48,9 +48,9 @@ const ADAPTERS = [
     // the Zest card above, which has not been done for streams.
     validation: {
       tone: "warning" as const,
-      title: "Not yet live-validated",
-      rows: [["Unit tested", "yes"], ["Checked vs live stream", "not yet"]] as Array<[string, string]>,
-      note: "The adapter is implemented and tested, but has not been compared against a real stream on mainnet.",
+      title: "No contract to read yet",
+      rows: [["Unit tested", "yes"], ["Live on current testnet", "no contract"]] as Array<[string, string]>,
+      note: "The reader matches bitpay-core's interface, but no BitPay contract exists on the current Stacks testnet, so the adapter stays disabled in the beta.",
     },
   },
 ];

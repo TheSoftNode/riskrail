@@ -9,7 +9,7 @@ export default function SelfHosting() {
       <DocHeader
         eyebrow="Operate"
         title="Self-hosting"
-        lede="Run the whole stack yourself: an API, an indexer, a worker and a realtime gateway, backed by Postgres and Redis. There is no public hosted Rivisk API yet, so this is currently the way to integrate off-chain."
+        lede="Run the whole stack yourself: an API, an indexer, a worker and a realtime gateway, backed by Postgres and Redis. A hosted beta API exists for trying Rivisk out, but it runs on early-stage infrastructure with no availability guarantee, so anything that matters should run its own instance."
       />
 
       <H2 id="services">Services</H2>

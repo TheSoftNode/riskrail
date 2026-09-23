@@ -57,9 +57,10 @@ export default function DocsIntroduction() {
           <strong>The SDK is published</strong> as <C>@rivisk/sdk</C> on npm.
         </li>
         <li>
-          <strong>There is no public hosted API yet.</strong> The API, indexer and worker run, and
-          have been exercised end to end against real Postgres, Redis and mainnet data, but you run
-          them yourself. See <A href="/docs/self-hosting">Self-hosting</A>.
+          <strong>A hosted beta API is live</strong> at <C>https://api.13.49.129.179.sslip.io/api/v1</C>, and it powers the Rivisk
+          dashboard. It runs on deliberately small, low-cost infrastructure for the beta: treat it
+          as a testing endpoint, not a production service with availability guarantees. You can
+          also <A href="/docs/self-hosting">run the whole stack yourself</A>.
         </li>
       </UL>
       <Callout type="note">
