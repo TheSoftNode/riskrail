@@ -12,11 +12,13 @@ The project is being built for users who need more than a balance screen. A wall
 
 | | |
 | --- | --- |
-| App and docs | https://rivisk-lilac.vercel.app · [/docs](https://rivisk-lilac.vercel.app/docs) |
+| App and docs | https://rivisk-lilac.vercel.app · [dashboard](https://rivisk-lilac.vercel.app/dashboard) · [/docs](https://rivisk-lilac.vercel.app/docs) |
 | REST API | https://api.13.49.129.179.sslip.io/api/v1 · [interactive reference](https://api.13.49.129.179.sslip.io/docs) |
 | Realtime | `wss://ws.13.49.129.179.sslip.io` |
 | Contracts | `ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7` · [`risk-registry`](https://explorer.hiro.so/txid/ST2F3J1PK46D6XVRBB9SQ66PY89P8G0EBDW5E05M7.risk-registry?chain=testnet) (see `contracts/deployments/testnet.json`) |
 | SDK | [`@rivisk/sdk`](https://www.npmjs.com/package/@rivisk/sdk) on npm |
+
+The dashboard has a page per section — overview, positions, stress tests, alerts, risk policy and developer settings — each linkable with `?address=`.
 
 Indexing a wallet publishes a risk attestation to the testnet registry (throttled to changes, or once per 120 blocks), and Chainhook confirms each one back into the API. What is and isn't proven is in [the status page](https://rivisk-lilac.vercel.app/docs/status). Hosting: [documentation/37-aws-beta-deployment.md](./documentation/37-aws-beta-deployment.md).
 
@@ -476,7 +478,7 @@ Authenticated email/webhook delivery and API-key management are implemented; see
 
 The SDK should remain a thin typed client over these resources rather than reimplementing business logic.
 
-Developer webhooks will be signed, retried and stored with delivery history.
+Developer webhooks are signed (`rivisk-signature`, Stripe-style `t=,v1=` HMAC), retried with backoff, and stored with delivery history.
 
 See [API, SDK and webhooks](./documentation/15-api-sdk-and-webhooks.md).
 
@@ -503,57 +505,36 @@ See [Realtime updates and alerts](./documentation/16-realtime-and-alerts.md).
 
 ## Current implementation status
 
-This repository is an enterprise-shaped **foundation**, not a claim that every product feature is already shipped.
+Everything below is one of three things: **live** (running in the beta and checked against real chain or protocol state), **built** (implemented and tested, but never proven end to end), or **not built**. The same breakdown, per capability, is on the [status page](https://rivisk-lilac.vercel.app/docs/status) and in [29-current-status.md](./documentation/29-current-status.md).
 
-### Present now
+### Live in the beta
 
-- monorepo/application/package structure;
-- Next.js, NestJS, indexer, worker and realtime application boundaries;
-- PostgreSQL/Prisma schema with current positions, historical snapshots, indexing runs and risk reports;
-- Redis/BullMQ job infrastructure;
-- current Hiro v3 STX/FT balance reads with a compatibility fallback;
-- SIP-010 token metadata resolution through Hiro's metadata API;
-- native Stacks wallet adapter with STX lock/accessibility information;
-- concrete BitPay contract reader for sender/recipient streams;
-- BitPay stream normalization into Rivisk positions;
-- Zest V2 external lending adapter foundation with current mainnet contract defaults and environment overrides;
-- zToken collateral normalization and scaled-debt normalization for Zest positions;
-- protocol-supplied borrow/partial/full liquidation thresholds normalized into common lending metadata;
-- BTC/STX/sBTC/USDC USD valuation through a price-oracle abstraction;
-- normalized net portfolio equity plus totals by protocol and asset;
-- shared current-LTV, borrow-headroom, health-factor, liquidation-distance and single-collateral liquidation-price calculations;
-- deterministic BTC -10/-20/-30, STX -20 and custom multi-asset stress scenarios;
-- production-shaped Next.js landing page and address/wallet dashboard;
-- live portfolio/risk query invalidation through Redis pub/sub and Socket.IO;
-- address-scoped in-app alert rules with edge-trigger evaluation;
-- read-only `risk-policy.clar` lookup and worker-side policy evaluation;
-- persisted on-chain policy breach events;
-- `GET /api/v1/simulations/presets` and `POST /api/v1/simulations`;
-- persistent wallet indexing and position snapshots;
-- queue-backed `POST /api/v1/portfolios/:address/refresh` flow;
-- database-backed portfolio and risk API responses;
-- deterministic protocol/asset concentration and capital-accessibility metrics;
-- canonical SHA-256 risk reports with default stress results and methodology versioning (`rivisk-v1.2`);
-- four Clarity contract components;
-- testnet-capable `risk-registry.clar` attestation publisher worker;
-- initial unit/contract tests and CI/security scaffolding;
-- full long-form documentation set.
+- **Indexing:** native Stacks balances (STX and SIP-010, including sBTC), read at a named block and matched against the chain to the last micro-STX.
+- **Portfolio and risk:** normalized positions, net equity, per-protocol and per-asset totals, concentration, capital accessibility, health factor and liquidation distance, all deterministic and integer-only.
+- **Stress testing:** BTC −10/−20/−30, STX −20 and custom multi-asset shocks.
+- **Zest V2 lending adapter:** validated against a real mainnet obligation, reproducing the protocol's own debt figure to eight significant figures. Off in the testnet beta, where Zest does not exist.
+- **Clarity contracts:** `risk-provider-trait`, `risk-registry`, `risk-policy`, `protocol-registry` and a reference consumer, deployed to testnet.
+- **On-chain attestations:** the worker publishes a snapshot whose report hash matches the API, throttled to real changes or one per 120 blocks (`ATTESTATION_MIN_INTERVAL_BLOCKS`), so public traffic cannot drain the publisher.
+- **External consumption:** `risk-consumer-example` reads a snapshot through the trait and approves or rejects a position.
+- **Chainhook 2.0:** registered on testnet; a new attestation's on-chain snapshot id is recorded back into the API seconds after it is mined, and rollbacks clear it.
+- **API, auth and credentials:** wallet-signature sessions, API keys (`rv_live_`/`rv_test_`) accepted for alerts and webhooks and refused for key management, per-IP rate limiting with `Retry-After`.
+- **Realtime:** Socket.IO over WSS; a refresh reaches a subscribed browser in about two seconds.
+- **Signed webhooks:** HMAC-signed delivery with retry backoff.
+- **Dashboard and docs site:** wallet or read-only address inspection, live updates, and 13 documentation pages with search.
+- **SDK:** [`@rivisk/sdk`](https://www.npmjs.com/package/@rivisk/sdk), zero-dependency and isomorphic.
 
-### Still being implemented
+### Built, not yet proven
 
-- authenticated wallet/user sessions and protected settings;
-- email and signed webhook notification delivery;
-- browser transaction flow for writing/updating on-chain risk policies;
-- live mainnet validation of the Zest adapter against known lending obligations;
-- closer protocol-oracle parity for execution-level Zest health checks;
-- market-depth liquidity model (the current MVP score uses capital accessibility as a clearly-labelled proxy);
-- authentication/API keys;
-- Chainhook-driven incremental position updates and reorg handling;
-- on-chain attestation confirmation tracking/snapshot-id reconciliation;
-- public SDK methods;
-- hosted beta and production observability.
+- **BitPay stream adapter:** the reader matches `bitpay-core`'s interface, but no BitPay contract exists on the current testnet, so it stays disabled — see [29-current-status.md](./documentation/29-current-status.md).
+- **Browser transaction flow for `risk-policy`:** implemented; not yet exercised with a real wallet.
+- **Email delivery:** implemented; no SMTP server is configured in the beta.
 
-See [Current implementation status](./documentation/29-current-status.md) for the detailed breakdown.
+### Not built
+
+- email address verification;
+- market-depth liquidity (today's score measures capital accessibility, and is labelled as such);
+- mainnet deployment of the contracts, which is gated on an independent review;
+- a hosted public API with its own terms: the beta is a single server, and self-hosting is documented.
 
 ---
 
